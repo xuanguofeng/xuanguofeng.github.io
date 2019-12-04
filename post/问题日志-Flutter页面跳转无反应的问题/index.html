@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>问题日志-Flutter页面跳转无反应的问题 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">问题日志-Flutter页面跳转无反应的问题</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2018-07-11 21:28:21">2018-07-11 / 2 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>描述：在使用Flutter做页面跳转时候，官方的描述使用方法是这样的。</p>
+<!-- more -->
+<pre><code>void main() {
+  runApp(new MaterialApp(
+    home: new MyAppHome(), // becomes the route named '/'
+    routes: &lt;String, WidgetBuilder&gt; {
+      '/a': (BuildContext context) =&gt; new MyPage(title: 'page A'),
+      '/b': (BuildContext context) =&gt; new MyPage(title: 'page B'),
+      '/c': (BuildContext context) =&gt; new MyPage(title: 'page C'),
+    },
+  ));
+}
+</code></pre>
+<p>接着就可以通过如下方式来操作 Route。</p>
+<pre><code>Navigator.of(context).pushNamed('/b');
+</code></pre>
+<p>看一些代码确实也是这样使用的，但是之前自己使用的时候就是无法跳转。<br>
+提示：</p>
+<pre><code>The context used to push or pop routes from the Navigator 
+must be that of a widget that is a descendant of a 
+Navigator widget.
+</code></pre>
+<h2 id="解决步骤">解决步骤</h2>
+<p>上网查询资料，此时Flutter的资料还不是很多。</p>
+<h2 id="解决方法">解决方法</h2>
+<pre><code>
+class _FWMainAppState extends State&lt;FWMainApp&gt; {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+          primaryColor: AppColors.colorPrimary, accentColor: Colors.blue),
+      home: _Home(),
+      routes: &lt;String, WidgetBuilder&gt;{
+        '/BtnSamplePage': (BuildContext context) =&gt; BtnSamplePage(),
+        '/TextSamplePage': (BuildContext context) =&gt; TextSamplePage(),
+        '/DialogSamplePage': (BuildContext context) =&gt; DialogSamplePage(),
+        '/LayoutSamplePage': (BuildContext context) =&gt; LayoutSamplePage(),
+      },
+    );
+  }
+}
+
+</code></pre>
+<p>主要看home:由于这是首页之前在home是直接创建的控件，一直提示失败。</p>
+<p>后来通过home：后面引入一个类，在类里创建想要创建的控件就解决了。</p>
+<pre><code>class _Home extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+  
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text(AppStrings.appBarTitle),
+        actions: &lt;Widget&gt;[
+          new IconButton(
+            icon: const Icon(Icons.build),
+            onPressed: () async {},
+            tooltip: 'tool',
+          )
+        ],
+      ),
+      body: _body,
+    );
+  }
+}
+</code></pre>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结">【Flutter笔记】之Widget的一些总结</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别">【Flutter笔记】之Dart与Java的一些直观区别</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android中创建so库存储密钥，NDK环境搭建与jni介绍 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android中创建so库存储密钥，NDK环境搭建与jni介绍</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2016-06-25 22:51:51">2016-06-25 / 7 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>介绍</strong></p>
+<ul>
+<li>
+<p>so库介绍：Android开发中经常会见到jinLibs文件夹下的so库文件，就算用第三方的sdk也会经常看到so库，so库是一个用c/c++语言些的函数库。Android中可以用过使用jni的方式来调取so库。在某些方面so函数库可能会更高效更安全。</p>
+</li>
+<li>
+<p>JNI介绍：Java Native Interface，它是Java平台的一个特性(并不是Android系统特有的)。其实主要是定义了一些JNI函数，让开发者可以通过调用这些函数实现Java代码调用C/C++的代码，C/C++的代码也可以调用Java的代码，JNI也有些自己的语法和函数。</p>
+</li>
+</ul>
+<!-- more -->
+<ul>
+<li>NDK介绍：NDK是一系列工具的集合。它提供了一系列的工具，帮助开发者快速开发C（或C++）的动态库，并能自动将so和java应用一起打包成apk。以下是google官方对于NDK的介绍</li>
+</ul>
+<p>The Native Development Kit (NDK) is a set of tools that allows you to use C and C++ code with Android, and provides platform libraries you can use to manage native activities and access physical device components, such as sensors and touch input. The NDK may not be appropriate for most novice Android programmers who need to use only Java code and framework APIs to develop their apps. However, the NDK can be useful for cases in which you need to do one or more of the following:</p>
+<p>Squeeze extra performance out of a device to achieve low latency or run computationally intensive applications, such as games or physics simulations.<br>
+Reuse your own or other developers' C or C++ libraries.</p>
+<h3 id="在androidstudio中配置ndk环境">在AndroidStudio中配置NDK环境</h3>
+<h5 id="1下载">1.下载</h5>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-5311cfa4fa066af6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="配置NDK环境"><br>
+也可以直接在官方网站下载zip不过需要科学上网哦！<br>
+官网地址：https://developer.android.com/ndk/downloads/index.html</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9152a43f3f69efd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="local.properties文件"><br>
+local.properties文件中出现ndk.dir则配置成功。</p>
+<h5 id="2配置gradleproperties文件添加androidusedeprecatedndktrue">2.配置<strong><strong>gradle.properties</strong></strong>文件，添加android.useDeprecatedNdk=true</h5>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-3c8f54e5cb359909.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gradle.properties文件"></figure>
+<p>这样NDK环境就搭建ok了。</p>
+<h3 id="java-cc代码编写以及so的生成与使用">Java、C/C++代码编写以及so的生成与使用</h3>
+<h5 id="1创建对应的java类">1.创建对应的java类</h5>
+<pre><code>package com.xuanguofeng.t2_ndk;
+
+public class JniUtil {   
+ static {     
+   //jniutil这个参数对应着c的文件名，以及后面的配置名以及so的库名称   
+   System.loadLibrary(&quot;jniutil&quot;);   
+   }   
+   //c/c++中要对应实现的方法，必须声明native
+ public native String getKey(String key);
+
+}
+</code></pre>
+<h5 id="2对项目进行编译">2.对项目进行编译</h5>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-f4220d1920901bb9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="编译项目"></figure>
+<p>编译后对项目会在文件夹下出现class文件</p>
+<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-1b7531f95a6b8abb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></figure>
+<h5 id="2生成h文件">2.生成.h文件</h5>
+<p>打开Android Studio的Terminal也可以在对应目录的命令窗口中，切换到项目的app/src/main目录下，执行命令：</p>
+<pre><code>javah -d jni -classpath 编译后的class文件的绝对路径
+</code></pre>
+<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-ab9dcb13a7b43d67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成对应的.h文件"></figure>
+<p>.h文件会在app目录下的jni文件夹中，如果在不同的目录下执行命令会在不同的目录中生成jni文件夹</p>
+<h5 id="3编写ccpp文件">3.编写.c/.cpp文件</h5>
+<p>.c/.cpp文件的文件名要与之前在java类中定义的System.loadLibrary(&quot;jniutil&quot;);中的“jniutil”一致。<br>
+说明：.c文件对应的c语言,.cpp对应的是c++语言。</p>
+<pre><code>#include&quot;com_xuanguofeng_t2_ndk_JniUtil.h&quot;
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+char *RELEASE_SIGN = &quot;330818b310f300d0660355040a0c0ce7acace4b880e8bda6e7bd9131b7f5d1bd5e607ecdc1d9a0fef8eec91b621d6071a10af23135bd3d7115865f3e5859d8f7d44b78479adeb071f48d91eb162aced5510cddc106734d152c75db1622cfdb935d7213817589d7c4a33f829c9d74ff0dd008caa9f705e30550be64fe22887373644bbb63134ec1aff680171214643cb8d1c7e5...&quot;;
+char *APK_SIGN_ERROR = &quot;签名不一致&quot;;
+char *a = &quot;a&quot;;
+#... 这里可以定义更多的干扰字符
+char *b = &quot;b&quot;;
+char *c = &quot;c&quot;;
+char *d = &quot;d&quot;;
+char *e = &quot;e&quot;;
+char *f = &quot;f&quot;;
+char *g = &quot;g&quot;;
+char *x = &quot;x&quot;;
+char *y = &quot;y&quot;;
+char *z = &quot;z&quot;;
+char *i1 = &quot;1&quot;;
+char *i2 = &quot;2&quot;;
+char *i3 = &quot;3&quot;;
+char *i4 = &quot;4&quot;;
+char *i5 = &quot;5&quot;;
+char *i6 = &quot;6&quot;;
+char *i7 = &quot;7&quot;;
+char *i8 = &quot;8&quot;;
+char *i9 = &quot;9&quot;;
+char *i0 = &quot;0&quot;;
+JNIEXPORT jstring JNICALL  Java_com_xuanguofeng_t2_1ndk_JniUtil_getKey        (JNIEnv *env, jobject obj, jstring appkey) 
+{    
+char *rtn = NULL;    
+jclass clsstring = env-&gt;FindClass(&quot;java/lang/String&quot;);   
+jstring strencode = env-&gt;NewStringUTF(&quot;utf-8&quot;);   
+jmethodID mid = env-&gt;GetMethodID(clsstring, &quot;getBytes&quot;, (Ljava/lang/String;)[B&quot;);   
+jbyteArray barr = (jbyteArray) env-&gt;CallObjectMethod(appkey, mid, strencode);  
+jsize alen = env-&gt;GetArrayLength(barr);   
+jbyte *ba = env-&gt;GetByteArrayElements(barr, JNI_FALSE);    
+if (alen &gt; 0) 
+{       
+ rtn = (char *) malloc(alen + 1);       
+ memcpy(rtn, ba, alen);        
+ rtn[alen] = 0;   
+ }    
+env-&gt;ReleaseByteArrayElements(barr, ba, 0);    
+if (strcmp(RELEASE_SIGN, rtn) == 0) 
+  {        
+char ack[6] = &quot;&quot;;        
+strcat(ack, i1);        
+strcat(ack, i2);        
+strcat(ack, i3);        
+strcat(ack, i4);        
+strcat(ack, i5);        
+strcat(ack, i6);        
+return env-&gt;NewStringUTF(ack);    
+  } else 
+    {        
+return env-&gt;NewStringUTF(APK_SIGN_ERROR);    
+    }
+}
+</code></pre>
+<p><strong>代码说明</strong>：<br>
+RELEASE_SIGN是定一个了一个key的变量，这个key固定在so里面 是通过keystore文件生成的后面会讲解方法。原因是如果直接单纯的返回密钥，拿到so一样不是那么安全，只有通过对应的签名文件验证通过后才会返回具体的密钥。这里返回的ack变量则是要返回给java的密钥。</p>
+<p>说明：由于本次不怎么懂c所以只是通过查询资料简单的对密钥进行打乱拼接。读者可自行优化c算法。如有建议或者纠正欢迎留言。</p>
+<h5 id="4在app目录下的buildgradle文件中添加如下代码">4.在app目录下的build.gradle文件中添加如下代码</h5>
+<figure data-type="image" tabindex="5"><img src="http://upload-images.jianshu.io/upload_images/1980287-f43f84343b3f91fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="build.gradle配置"></figure>
+<pre><code>ndk {    
+moduleName &quot;jniutil&quot;    
+abiFilters 'armeabi', 'x86', 'armeabi-v7a'
+}
+</code></pre>
+<p>注意：此处的moduleName还是与之前配置的  System.loadLibrary(&quot;jniutil&quot;);   中的jniutil一直。</p>
+<h5 id="5在activity调用库中的方法">5.在activity调用库中的方法。</h5>
+<pre><code>package com.xuanguofeng.t2_ndk;
+
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;import android.util.Log;
+import android.widget.TextView;
+public class MainActivity extends AppCompatActivity {    
+private TextView textView;    
+@Override    
+protected void onCreate(Bundle savedInstanceState) {        
+      super.onCreate(savedInstanceState);        
+      setContentView(R.layout.activity_main);        
+      textView= (TextView) findViewById(R.id.text);        
+      try {            
+         PackageInfo packageInfo =    getPackageManager().getPackageInfo(getPackageName(),    PackageManager.GET_SIGNATURES);            
+         Signature[] signs = packageInfo.signatures;            
+         Signature sign = signs[0];            
+         textView.setText(new JniUtil().getKey(sign.toCharsString()));        
+         } catch (Exception e) {       
+     e.printStackTrace();       
+        }    
+}}
+</code></pre>
+<p><strong>代码说明</strong>：<br>
+sign.toCharsString()这个方法就是获取keystore中的值来和so库中的进行比较。开发时候debug的和正式发布的keystore值是不一样的所以要注意更换。</p>
+<p>这时候点击运行项目如果签名一致就会打印密钥，如果不一致就会打印签名错误。</p>
+<figure data-type="image" tabindex="6"><img src="http://upload-images.jianshu.io/upload_images/1980287-b8e0c019ec079baa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成so文件"></figure>
+<h5 id="6so的使用">6.so的使用</h5>
+<p>在main文件夹下创建jniLibs有的项目会放在libs中，但是需要在gradle中配置目录，其实是一样的，复制我们之前生成的so文件。复制对应的JniUtil类注意，包名要与之前创建的so时的包名一致。之前的jni文件下的.h和c/c++源文件以及gradle里面配置的ndk信息也都不需要了。</p>
+<p>当然 关于ndk，jni，so的相关知识可能还有很多推荐几篇文章给大家参考。<br>
+jni讲解：http://www.jianshu.com/p/aba734d5b5cd</p>
+<p>NDK下载：https://developer.android.com/ndk/downloads/index.html</p>
+<p>google官方NDK介绍：https://developer.android.google.cn/ndk/guides/index.html</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结">Android沉浸式状态栏方法总结</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画共享元素(例列表图片放大到详情图片动画)">Android动画共享元素(例列表图片放大到详情图片动画)</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

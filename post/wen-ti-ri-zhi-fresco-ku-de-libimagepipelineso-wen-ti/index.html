@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>问题日志-Fresco库的libimagepipeline.so问题 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">问题日志-Fresco库的libimagepipeline.so问题</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-07-07 20:20:14">2019-07-07 / 2 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
+<!-- more -->
+<h2 id="问题描述">问题描述</h2>
+<pre><code>java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit
+at com.facebook.soloader.SoLoader.initSoSources(SoLoader.java)
+     doLoadLibraryBySoName(SoLoader.java)
+     makeNonZipPath(SoLoader.java)
+     getNativeLoadRuntimeMethod(SoLoader.java)
+    at com.facebook.soloader.SoLoader.init(SoLoader.java)
+     loadLibrary(SoLoader.java)
+     init(SoLoader.java)
+     makePrepareFlags(SoLoader.java)
+     loadLibraryBySoName(SoLoader.java)
+     initSoLoader(SoLoader.java)
+//后面的省略了
+</code></pre>
+<h2 id="原因与解决">原因与解决</h2>
+<p>首先有一句log很重要那就是“libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit”这里的信息能看出来主要是libimagepipeline.so的so文件引起的。</p>
+<p>所以主要考虑是cpu指令集与so文件的兼容问题。其实大部分so是相互兼容的，但是查看项目发现里面同时有arm64-v8a文件夹和armeabi-v7a，所以通过解析apk发现里面的so对应的不一样。所以发现在arm64-v8a的设备上先找到了里面的so，如果有些三方库支持的so文件夹不一致就会导致crash。</p>
+<p>所以要解决的话首先要保证支持的目录里的so文件是一样的。或者可以只使用一个兼容的文件夹。</p>
+<p>参考文章：<br>
+https://developer.android.com/ndk/guides/abis<br>
+https://blog.csdn.net/u013531824/article/details/53931307<br>
+https://www.jianshu.com/p/ad95c885c2f8</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi">EventBus源码分析</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题">问题日志-低版本Didn&#39;t find class &#34;~FileProvider&#34;</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

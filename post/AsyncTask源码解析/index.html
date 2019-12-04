@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>AsyncTask源码解析 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">AsyncTask源码解析</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-03-15 19:19:26">2019-03-15 / 8 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>AsyncTask是用来在实现在子线程执行任务后切换到UI线程，常见的比如下载任务的更新，执行下载后在UI线程实时更新进度条。由于是基本的API所以还是很有必要了解源码的。</p>
+<!-- more -->
+<h2 id="使用">使用</h2>
+<p>使用其实也很简单，主要是实现AsyncTask类，然后执行excute方法。其中有3个参数和4个方法是必须要掌握的。</p>
+<pre><code>  private class MyAsyncTask extends AsyncTask&lt;String, String, String&gt; {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
+</code></pre>
+<h3 id="onpreexecute">onPreExecute</h3>
+<p>这个方法是在UI线程执行，并且在后台任务开始前执行。</p>
+<h3 id="doinbackground">doInBackground</h3>
+<p>这个在线程执行，这里主要是做耗时任务。这个方法有参数和返回值，参数就是在调用execute传进来的参数，返回值就是我们经过一些列操作后返回给onProgressUpdate方法的，主要用于UI的更新。例如我下载到50%然后同志UI实时更新。</p>
+<h3 id="onprogressupdate">onProgressUpdate</h3>
+<p>从方法名看就是更新进度，这个参数就是doInBackground中返回的。</p>
+<h3 id="onpostexecute">onPostExecute</h3>
+<p>这个方法就是任务执行完成后要执行的方法。参数也是执行的结果。</p>
+<h3 id="三个参数">三个参数</h3>
+<p>掌握了这4个方法，这三个参数就很容易理解了。</p>
+<p>第一个，是传入的参数。</p>
+<p>第二个，是执行任务时进度更新的值。</p>
+<p>第三个，任务执行结束的返回值。</p>
+<h2 id="源码">源码</h2>
+<p>其实源码无非就是看内部的核心机制，和这几个方法的调用流程。最直观的就从execute方法开始。</p>
+<pre><code> @MainThread
+    public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
+        return executeOnExecutor(sDefaultExecutor, params);
+    }
+</code></pre>
+<p>这里直接调用了executeOnExecutor，传入了sDefaultExecutor和参数。</p>
+<pre><code> @MainThread
+    public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
+            Params... params) {
+        if (mStatus != Status.PENDING) {
+            switch (mStatus) {
+                case RUNNING:
+                    throw new IllegalStateException(&quot;Cannot execute task:&quot;
+                            + &quot; the task is already running.&quot;);
+                case FINISHED:
+                    throw new IllegalStateException(&quot;Cannot execute task:&quot;
+                            + &quot; the task has already been executed &quot;
+                            + &quot;(a task can be executed only once)&quot;);
+            }
+        }
+
+        mStatus = Status.RUNNING;
+
+        onPreExecute();
+
+        mWorker.mParams = params;
+        exec.execute(mFuture);
+
+        return this;
+    }
+</code></pre>
+<p>先看下这个函数里面都做了什么，在分析sDefaultExecutor。executeOnExecutor这个函数是public的所以我们也可以直接通过这个函数执行任务。如果我们通过executeOnExecutor()这个方法的话就要自己创建一个Executor，因为默认的Executor是使用队列维护同时只有一个线程执行任务，多任务时会被添加到队列中，后面会讲到。</p>
+<p>首先，进来先判断状态，如果如果不是没执行过的要抛出异常，这就是为什么如果执行两次任务会报java.lang.IllegalStateException这个错的原因。</p>
+<p>其次，将状态改为正在执行。</p>
+<p>然后，执行onPreExecute()方法，这就是为什么这个方法在主线程，而且在任务前执行。</p>
+<p>再然后开始执行Executor的任务，这时候我们可以分析sDefaultExecutor了。</p>
+<p>类里可以看到</p>
+<pre><code>private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
+
+public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
+
+</code></pre>
+<p>这两个常量其实就是默认创建了一个Executor</p>
+<pre><code>
+    private static class SerialExecutor implements Executor {
+        final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
+        Runnable mActive;
+
+        public synchronized void execute(final Runnable r) {
+            mTasks.offer(new Runnable() {
+                public void run() {
+                    try {
+                        r.run();
+                    } finally {
+                        scheduleNext();
+                    }
+                }
+            });
+            if (mActive == null) {
+                scheduleNext();
+            }
+        }
+
+        protected synchronized void scheduleNext() {
+            if ((mActive = mTasks.poll()) != null) {
+                THREAD_POOL_EXECUTOR.execute(mActive);
+            }
+        }
+    }
+</code></pre>
+<p>这个SerialExecutor里面维护了一个队列，然后通过offer()在队列的末尾加入任务，通过poll()在头部检索出任务并删除，检索后赋值给mActive。因为首次mActive为null，所以加入了判断mActive==null的时候执行scheduleNext(),后面再有任务来的话mActive就不是null了，所以是在runable中，通过finally调用了scheduleNext()，这时候就会等任务执行完成后在执行下一个任务。这就是上面说的为什么默认的SerialExecutor只能同时在一个线程执行任务。</p>
+<pre><code>    /**
+     * An {@link Executor} that can be used to execute tasks in parallel.
+     */
+    public static final Executor THREAD_POOL_EXECUTOR;
+
+    static {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+                sPoolWorkQueue, sThreadFactory);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        THREAD_POOL_EXECUTOR = threadPoolExecutor;
+    }
+</code></pre>
+<p>这个主要就是通过各种默认为的参数创建了一个线程池去执行任务。</p>
+<p>这就是主要流程，但是在这个流程中还忽略了很多内容，在我们了解了整体框架流程后，在去填充我们想知道的细节，就更容易理解了。</p>
+<p>首先看executeOnExecutor()方法中有两个很重要的内容一个是mWorker和mFuture。其实执行任务的时候传入了mFuture，而mFuture是一个mFutureTask真正执行的是mWorker。</p>
+<pre><code>     /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     */
+    public AsyncTask() {
+        this((Looper) null);
+    }
+
+    /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     *
+     * @hide
+     */
+    public AsyncTask(@Nullable Handler handler) {
+        this(handler != null ? handler.getLooper() : null);
+    }
+
+    /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     *
+     * @hide
+     */
+    public AsyncTask(@Nullable Looper callbackLooper) {
+        mHandler = callbackLooper == null || callbackLooper == Looper.getMainLooper()
+            ? getMainHandler()
+            : new Handler(callbackLooper);
+
+        mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
+            public Result call() throws Exception {
+                mTaskInvoked.set(true);
+                Result result = null;
+                try {
+                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                    //noinspection unchecked
+                    result = doInBackground(mParams);
+                    Binder.flushPendingCommands();
+                } catch (Throwable tr) {
+                    mCancelled.set(true);
+                    throw tr;
+                } finally {
+                    postResult(result);
+                }
+                return result;
+            }
+        };
+
+        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
+            @Override
+            protected void done() {
+                try {
+                    postResultIfNotInvoked(get());
+                } catch (InterruptedException e) {
+                    android.util.Log.w(LOG_TAG, e);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(&quot;An error occurred while executing doInBackground()&quot;,
+                            e.getCause());
+                } catch (CancellationException e) {
+                    postResultIfNotInvoked(null);
+                }
+            }
+        };
+    }
+
+</code></pre>
+<p>在构造里创建了三部分内容，mHandler、mWorker、mFutur</p>
+<p>可以看到首先会创建handler因为，线程通信还是需要依靠Handler。然后mWorker中主要就是执行doInBackground()然后将result传给postResult。</p>
+<pre><code>private Result postResult(Result result) {
+        @SuppressWarnings(&quot;unchecked&quot;)
+        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
+                new AsyncTaskResult&lt;Result&gt;(this, result));
+        message.sendToTarget();
+        return result;
+    }
+
+  
+</code></pre>
+<p>postResult主要就是通过handler发送一个what为MESSAGE_POST_RESULT，obj为result的message。</p>
+<pre><code> private static class InternalHandler extends Handler {
+        public InternalHandler(Looper looper) {
+            super(looper);
+        }
+
+        @SuppressWarnings({&quot;unchecked&quot;, &quot;RawUseOfParameterizedType&quot;})
+        @Override
+        public void handleMessage(Message msg) {
+            AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
+            switch (msg.what) {
+                case MESSAGE_POST_RESULT:
+                    // There is only one result
+                    result.mTask.finish(result.mData[0]);
+                    break;
+                case MESSAGE_POST_PROGRESS:
+                    result.mTask.onProgressUpdate(result.mData);
+                    break;
+            }
+        }
+    }
+    
+</code></pre>
+<p>这时候看handleMessage是怎么处理的。<br>
+这里主要是调用区分what是完成还是未完成完成的话就是调用finish方法，未完成就是onProgressUpdate方法，</p>
+<pre><code>    private void finish(Result result) {
+        if (isCancelled()) {
+            onCancelled(result);
+        } else {
+            onPostExecute(result);
+        }
+        mStatus = Status.FINISHED;
+    }
+
+</code></pre>
+<p>在看finish方法就是判断是否取消然后调用onPostExecut方法将结果传入。<br>
+hadlerMessage还处理一个就是更新进度，那这个message是在哪里发的呢？</p>
+<pre><code>   protected final void publishProgress(Progress... values) {
+        if (!isCancelled()) {
+            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
+                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
+        }
+    }
+</code></pre>
+<p>可以看到是通过publishProgress这个方法，所以我们如果需要更新进度的话要自己在doInBackground这个方法里调用publishProgress()方法传入进度。然后在才会在onProgressUpdate()这个方法中收到。</p>
+<h2 id="总结">总结</h2>
+<p>至此 整个流程也就清晰了，这四个方法是分别在哪里调用的在能实现异步然后更新UI的功能，其实原理很简单，就是用了一个线城池然后我们在子线程实时通过Handler发送Message到UI线程中执行进度的任务，默认通过一个队列维护任务，也可以自定义Executor来实现多线程执行任务。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题">问题日志-低版本Didn&#39;t find class &#34;~FileProvider&#34;</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/hello-gridea">Hello Gridea</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

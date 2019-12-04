@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android优化-绘制优化 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android优化-绘制优化</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-13 21:24:56">2017-12-13 / 6 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>Android系统显示原理</strong><br>
+Android应用程序把经过测量，绘制，布局的surface缓存数据，通过SufraceFilnger把数据渲染到显示屏幕上通过Android的刷新机制来刷新数据。也就是说应用层负责绘制，系统层负责渲染，通过进程间通信把应用层需要绘制的数据传递到系统层服务，系统层服务他通过刷新机制把数据更新到屏幕。</p>
+<!-- more -->
+<h3 id="应用层">应用层</h3>
+<p>view的绘制有三个核心步骤，通过Measure和Layout来确定当前需要绘制的View所在的大小和位置，通过绘制（Draw）到surface,递归方式获取View的大小和位置，并以深度作为优先级，层级越深，元素越多，耗时也就越长。</p>
+<h3 id="系统层">系统层</h3>
+<p>系统层主要是将要显示的数据渲染到屏幕上，CPU主要负责数据计算工作，GPU负责渲染。API不允许CPU和GPU直接通信， 所以通过中间的一个图形驱动器来连接这两部分。图形驱动维护了一个队列，cpu把 diplay list添加到队列中，GPU从这个队列取出数据并进行绘制，最终在屏幕显示出来。</p>
+<h2 id="android页面卡顿的原因">Android页面卡顿的原因</h2>
+<h3 id="界面绘制方面">界面绘制方面</h3>
+<p>主要原因是绘制的层级深、页面复杂、刷新不合理、由于这些原因导致卡顿的场景更多出现在UI和启动后的初始界面以及跳转到页面的绘制上。</p>
+<h3 id="数据处理方面">数据处理方面</h3>
+<p>原因是数据的处理量太大，一般分为三种情况<br>
+数据处理在UI线程</p>
+<p>数据处理占用CPU搞导致主线程拿不到时间片</p>
+<p>内存增加导致GC频繁</p>
+<h2 id="优化方法">优化方法</h2>
+<h3 id="布局优化">布局优化</h3>
+<h4 id="merge-viewstub">merge viewStub</h4>
+<p>https://xuanguofeng.github.io/2016/06/10/Android%E5%B8%83%E5%B1%80%E4%BC%98%E5%8C%96merge%E3%80%81ViewStub%E7%9A%84%E7%94%A8%E6%B3%95/</p>
+<h4 id="reativelayout和linearlayout">ReativeLayout和LinearLayout</h4>
+<p>ReativeLayout存在性能低的问题，原因是ReativeLayout会对子view做两次测量，如果LinearLayout中有weight属性，也需要进行两次测量，因为没有更多的依赖关系，所有仍然会比ReativeLayout效率高，但是如果LinearyLayout嵌套过多，层次过深灰增加内存消耗，甚至引起溢出等问题。在布局上RelativeLayout不如LinearLayout快。如果嵌套过多的话要选用RelativeLayout，如果优化掉两层仅仅增加一次测量，还是非常值得的。</p>
+<p>总结：</p>
+<p>尽量使用​​RelativeLayout和LinearLayout</p>
+<p>布局层级相同情况下，使用​LinearLayout</p>
+<p>LinearLayout如果会嵌套过多使用​RelativeLayout</p>
+<h3 id="避免过度绘制">避免过度绘制</h3>
+<p>过度重绘是指在屏幕上的某个像素在同一帧的时间内被绘制了多次。</p>
+<p>例如：<br>
+LIstView中把ImageView的Background设置为Transparent,只有当图像没有获取到时，才设置对应Background占位图，这样可以避免给Avatar设置背景图而导致的过度渲染。</p>
+<p>避免过度绘制的一些方法：</p>
+<p>1.移除XML中非必须的背景</p>
+<p>2.移除window默认的背景</p>
+<p>3.按需显示站位背景图片。</p>
+<p>4.自定义view优化：可以通过canvas.clipRect()来帮助系统识别那些可见的区域。​​S</p>
+<pre><code>this.getWindow().setBackgroundDrawable(null);​
+</code></pre>
+<h3 id="页面刷新">页面刷新</h3>
+<p>要合理的控制页面的刷新机制，尽量减少刷新次数和缩小刷新区域。</p>
+<h3 id="关于动画">关于动画</h3>
+<p>Android提供了3种动画机制，其中帧动画是最消耗内存的，效果也最差，所以一般不推荐使用，补间动画也会导致view重绘频繁，而且事件也不会跟随动画，所以推荐基于性能考虑推荐使用属性动画，属性动画递归的次数要明显小于补间动画，也没有补间动画事件的问题。</p>
+<h3 id="使用硬件加速">使用硬件加速</h3>
+<p>Android3.0后引入了硬件加速概念，用来提高渲染速度，并达到更顺畅的效果</p>
+<h3 id="启动优化">启动优化</h3>
+<p>启动优化主要就是在APP的启动过程中做尽量少的事情，启动主要完成三件事，UI布局、绘制和数据准备，启动速度就的优化就是要优化这个三个过程。</p>
+<h2 id="性能分析工具">性能分析工具</h2>
+<h3 id="profile-gpu-rendering">Profile GPU Rendering</h3>
+<p>这个工具在开发者选项中可以打开，主要功能：</p>
+<p>图形检测工具，能实时反映当前绘制的耗时。</p>
+<p>横轴表示时间，纵轴表示每一帧的耗时。</p>
+<p>随之时间推移，从左到右的刷新呈现。</p>
+<p>提供了一个标准的耗时。</p>
+<h3 id="traceview">TraceView</h3>
+<p>TraceView是Android SDK自带工具，用来分析函数调用过程，可以对Android的应用程序以及Framework层的代码进行性能分析。</p>
+<h3 id="hierarchy-viewer-布局优化工具">Hierarchy Viewer 布局优化工具</h3>
+<p>Hierarchy Viewer工具提供了一个可视化界面显示布局的层次结构，用来检测Layout嵌套及绘制时间，以可视化的布局角度直观获取Layout布局设计和各种属性信息，开发者在台欧式和布局UI界面可以很方便的使用。</p>
+<h3 id="过度绘制检测工具">过度绘制检测工具</h3>
+<p>开发者选项中打开 show GPU Overdraw选项<br>
+描述方式：</p>
+<p>无色：没有过度绘制，每个像素绘制了1次。</p>
+<p>蓝色：每个像素多绘制了1次。大片蓝色还是可以接受的如果整个窗口是蓝色的，可以尝试优化减少一层绘制。</p>
+<p>绿色：每个像素多绘制了2次。</p>
+<p>淡红：每个像素多绘制了3次，一般来说这个区域不超过屏幕的1/4是可以接受的。</p>
+<p>深红：每个像素多绘制4次或者更多。严重影响性能，需要优化，避免深红色区域。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/OkHttp_No.1">Android热门开源框架-Okhttp源码探究一</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/重温java基础-反射机制">重温java基础-反射机制</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

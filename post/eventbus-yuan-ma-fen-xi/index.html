@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>EventBus源码分析 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">EventBus源码分析</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-07-21 17:50:50">2019-07-21 / 12 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="http://xuanguofeng.com/images/EventBus-Publish-Subscribe.png" alt=""></figure>
+<p>这是来自官网的一段介绍。</p>
+<h2 id="使用">使用</h2>
+<p>其实使用很简单，大概就是四个步骤。</p>
+<ul>
+<li>步骤一：注册</li>
+</ul>
+<pre><code>EventBus.getDefault().register(this);
+</code></pre>
+<ul>
+<li>步骤二：编写接收事件代码</li>
+</ul>
+<pre><code> @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(String message) {
+        mTextView.setText(message);
+    }
+</code></pre>
+<ul>
+<li>步骤三：在需要的地方发送事件</li>
+</ul>
+<pre><code> EventBus.getDefault().post(&quot;这是一个事件，可以是Object，接收方将会接收&quot;);
+</code></pre>
+<ul>
+<li>步骤四：注销</li>
+</ul>
+<pre><code>EventBus.getDefault().unregister(this);
+</code></pre>
+<h2 id="源码">源码</h2>
+<p>既然主要分为了上面的四个步骤，所以源码可以从四个步骤方面入手。</p>
+<h3 id="初始化">初始化</h3>
+<p>首先所有的流程都要先调用EventBus.getDefault()。</p>
+<pre><code>
+ static volatile EventBus defaultInstance;
+ 
+ public static EventBus getDefault() {
+        if (defaultInstance == null) {
+            synchronized (EventBus.class) {
+                if (defaultInstance == null) {
+                    defaultInstance = new EventBus();
+                }
+            }
+        }
+        return defaultInstance;
+    }
+</code></pre>
+<p>这里看到是一个单例模式，而且也使用volatile关键字，主要是保证并发时候的可见性。看EventBus的构造也能发现是使用了builder模式来创建EventBus。</p>
+<h3 id="register注册">register注册</h3>
+<pre><code>public void register(Object subscriber) {
+        Class&lt;?&gt; subscriberClass = subscriber.getClass();
+        List&lt;SubscriberMethod&gt; subscriberMethods = subscriberMethodFinder.findSubscriberMethods(subscriberClass);//根据当前注册对象查找这个对象相关的订阅方法
+        synchronized (this) {
+            for (SubscriberMethod subscriberMethod : subscriberMethods) {
+                subscribe(subscriber, subscriberMethod);//循环将注册类与订阅方法创建订阅关系
+            }
+        }
+    }
+</code></pre>
+<p>这段代码其实包含一个重要的类就是：subscriberMethodFinder，订阅方法的查找类，register的时候先查找订阅方法，这个订阅方法其实就是我们在注册的类里面通过@Subscribe注解产生的方法。</p>
+<pre><code> List&lt;SubscriberMethod&gt; findSubscriberMethods(Class&lt;?&gt; subscriberClass) {
+        List&lt;SubscriberMethod&gt; subscriberMethods = METHOD_CACHE.get(subscriberClass);//先从缓存中查找
+        if (subscriberMethods != null) {
+            return subscriberMethods;//缓存中有的话直接返回
+        }
+
+        if (ignoreGeneratedIndex) {//通过getDefault默认为false
+            subscriberMethods = findUsingReflection(subscriberClass);//通过反射查找
+        } else {
+            subscriberMethods = findUsingInfo(subscriberClass);//从index中查找，这里只有通过实现EventBusBuilder的addindex方法时才会有，否则默认还是会通过反射查找。
+        }
+        if (subscriberMethods.isEmpty()) {//判断如果订阅方法为空的话将会抛出异常。
+            throw new EventBusException(&quot;Subscriber &quot; + subscriberClass
+                    + &quot; and its super classes have no public methods with the @Subscribe annotation&quot;);
+        } else {//不为空的话 添加到缓存中。
+            METHOD_CACHE.put(subscriberClass, subscriberMethods);
+            return subscriberMethods;
+        }
+    }
+</code></pre>
+<p>这个方法其实主要是判断怎么查找订阅方法，其实多数情况还是通过反射查找。这里有一个需要注意的就是如果我们注册了，如果没有通过 @Subscribe(threadMode = ThreadMode.MAIN)这种注解添加订阅方法，会抛出EventBusException异常。如下<br>
+<img src="http://xuanguofeng.com/images/evenbuserror.png" alt=""></p>
+<p>接下来主要分析从反射中查找订阅方法</p>
+<pre><code>private List&lt;SubscriberMethod&gt; findUsingReflection(Class&lt;?&gt; subscriberClass) {
+				 //代码省略主要调用 findUsingReflectionInSingleClass方法。
+    }
+		
+    private void findUsingReflectionInSingleClass(FindState findState) {
+        Method[] methods;
+        try {
+            // This is faster than getMethods, especially when subscribers are fat classes like Activities
+            methods = findState.clazz.getDeclaredMethods();
+        } catch (Throwable th) {
+            // Workaround for java.lang.NoClassDefFoundError, see https://github.com/greenrobot/EventBus/issues/149
+            methods = findState.clazz.getMethods();
+            findState.skipSuperClasses = true;
+        }
+				//前面主要是通过反射根据注册的类获取方法数组。
+        for (Method method : methods) {//循环所有方法
+            int modifiers = method.getModifiers();//获取方法的修饰符
+            if ((modifiers &amp; Modifier.PUBLIC) != 0 &amp;&amp; (modifiers &amp; MODIFIERS_IGNORE) == 0) {
+                Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();//获取参数类型
+                if (parameterTypes.length == 1) {//如果一个参数的话继续，否则会报错
+                    Subscribe subscribeAnnotation = method.getAnnotation(Subscribe.class);//获取定义的注解
+                    if (subscribeAnnotation != null) {//如果能正常获取到注解
+                        Class&lt;?&gt; eventType = parameterTypes[0];
+                        if (findState.checkAdd(method, eventType)) {
+                            ThreadMode threadMode = subscribeAnnotation.threadMode();
+                            findState.subscriberMethods.add(new SubscriberMethod(method, eventType, threadMode,
+                                    subscribeAnnotation.priority(), subscribeAnnotation.sticky()));//如果检查正常的话将会创建一个SubscriberMethod添加到findState里面的订阅方法集合
+                        }
+                    }
+                } else if (strictMethodVerification &amp;&amp; method.isAnnotationPresent(Subscribe.class)) {
+                    String methodName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+                    throw new EventBusException(&quot;@Subscribe method &quot; + methodName +
+                            &quot;must have exactly 1 parameter but has &quot; + parameterTypes.length);
+                }
+            } else if (strictMethodVerification &amp;&amp; method.isAnnotationPresent(Subscribe.class)) {
+                String methodName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+                throw new EventBusException(methodName +
+                        &quot; is a illegal @Subscribe method: must be public, non-static, and non-abstract&quot;);
+            }
+        }
+    }
+</code></pre>
+<p>由于strictMethodVerification如果通过getDefault()方式的话默认为false所以不会走后面的代码。SubscriberMethod这个类很明显就是对应一个订阅的方法包括一些属性。</p>
+<pre><code>public class SubscriberMethod {
+    final Method method;//方法
+    final ThreadMode threadMode;//线程类型对应POSTING、MAIN、MAIN_ORDERED、BACKGROUND、ASYNC
+    final Class&lt;?&gt; eventType;//在反射时候获取的参数类型
+    final int priority;//优先级
+    final boolean sticky;//是否是粘性事件
+    /** Used for efficient comparison */
+    String methodString;
+		//省略后面代码。。。
+</code></pre>
+<p>再回来看register里面有一个循环订阅的过程，也就是subscribe()这个方法。</p>
+<pre><code> // Must be called in synchronized block
+    private void subscribe(Object subscriber, SubscriberMethod subscriberMethod) {
+        Class&lt;?&gt; eventType = subscriberMethod.eventType;
+        Subscription newSubscription = new Subscription(subscriber, subscriberMethod);//Subscription其实就是根据注册对象和方法创建的一个订阅关系的维护类，里面重写了equals和hashCode方法。
+        CopyOnWriteArrayList&lt;Subscription&gt; subscriptions = subscriptionsByEventType.get(eventType);//subscriptionsByEventType是一个订阅者队列
+        if (subscriptions == null) {//里面没有订阅者的话创建一个队列并根据key添加subscriptions
+            subscriptions = new CopyOnWriteArrayList&lt;&gt;();
+            subscriptionsByEventType.put(eventType, subscriptions);
+        } else {
+            if (subscriptions.contains(newSubscription)) {//如果包含了抛出异常
+                throw new EventBusException(&quot;Subscriber &quot; + subscriber.getClass() + &quot; already registered to event &quot;
+                        + eventType);
+            }
+        }
+
+        int size = subscriptions.size();
+        for (int i = 0; i &lt;= size; i++) {
+            if (i == size || subscriberMethod.priority &gt; subscriptions.get(i).subscriberMethod.priority) {
+                subscriptions.add(i, newSubscription);//根据优先级将订阅关系添加到队列中
+                break;
+            }
+        }
+
+        List&lt;Class&lt;?&gt;&gt; subscribedEvents = typesBySubscriber.get(subscriber);//typesBySubscriber保存的是订阅者与订阅者的事件的map，后续通过这个解除注册和判断是否注册
+        if (subscribedEvents == null) {
+            subscribedEvents = new ArrayList&lt;&gt;();
+            typesBySubscriber.put(subscriber, subscribedEvents);
+        }
+        subscribedEvents.add(eventType);//将事件添加到事件队列中
+
+        if (subscriberMethod.sticky) {//如果是粘性事件 将会立即发送执行
+            if (eventInheritance) {
+                // Existing sticky events of all subclasses of eventType have to be considered.
+                // Note: Iterating over all events may be inefficient with lots of sticky events,
+                // thus data structure should be changed to allow a more efficient lookup
+                // (e.g. an additional map storing sub classes of super classes: Class -&gt; List&lt;Class&gt;).
+                Set&lt;Map.Entry&lt;Class&lt;?&gt;, Object&gt;&gt; entries = stickyEvents.entrySet();
+                for (Map.Entry&lt;Class&lt;?&gt;, Object&gt; entry : entries) {
+                    Class&lt;?&gt; candidateEventType = entry.getKey();
+                    if (eventType.isAssignableFrom(candidateEventType)) {
+                        Object stickyEvent = entry.getValue();
+                        checkPostStickyEventToSubscription(newSubscription, stickyEvent);
+                    }
+                }
+            } else {
+                Object stickyEvent = stickyEvents.get(eventType);
+                checkPostStickyEventToSubscription(newSubscription, stickyEvent);
+            }
+        }
+    }
+
+</code></pre>
+<p>粘性事件主要就是可以先发送，然后在注册的话也可以直接收到事件。其实整个注册流程就是将时间添加到队列中，不过这里的队列也不止一个。这里有几个比较重要的概念后面也要用的到。</p>
+<h3 id="post发送事件">post发送事件</h3>
+<pre><code>  public void post(Object event) {
+        PostingThreadState postingState = currentPostingThreadState.get();//通过ThreadLocal维护一个PostingThreadState里面有对应的queue
+        List&lt;Object&gt; eventQueue = postingState.eventQueue;
+        eventQueue.add(event);//将event事件添加到事件队列中
+
+        if (!postingState.isPosting) {//isPosting默认为false
+            postingState.isMainThread = isMainThread();//判断当前线程是否主线程并保存状态
+            postingState.isPosting = true;
+            if (postingState.canceled) {//判断状态是否被canceled
+                throw new EventBusException(&quot;Internal error. Abort state was not reset&quot;);
+            }
+            try {
+                while (!eventQueue.isEmpty()) {//循环消息队列不断调用postSingleEvent
+                    postSingleEvent(eventQueue.remove(0), postingState);//这里用的是remove也就是说事件执行一个移除一个
+                }
+            } finally {
+                postingState.isPosting = false;
+                postingState.isMainThread = false;
+            }
+        }
+    }
+</code></pre>
+<p>这个方法主要是创建对应的PostingThreadState，这是一个简单的对象，可以理解为线程发送状态然后里面有一个消息队列和一些状态值。PostingThreadState是通过ThreadLocal保存的，也就是说是和线程绑定的。下面看postSingleEvent方法：</p>
+<pre><code>private void postSingleEvent(Object event, PostingThreadState postingState) throws Error {
+        Class&lt;?&gt; eventClass = event.getClass();
+        boolean subscriptionFound = false;//保存是否能找到订阅关系的标记
+        if (eventInheritance) {//默认为true 是否支持继承关系
+            List&lt;Class&lt;?&gt;&gt; eventTypes = lookupAllEventTypes(eventClass);
+            int countTypes = eventTypes.size();
+            for (int h = 0; h &lt; countTypes; h++) {
+                Class&lt;?&gt; clazz = eventTypes.get(h);
+                subscriptionFound |= postSingleEventForEventType(event, postingState, clazz);//通过postSingleEventForEventType方法发送事件
+            }
+        } else {//如果false不查找继承关系
+            subscriptionFound = postSingleEventForEventType(event, postingState, eventClass);
+        }
+        if (!subscriptionFound) {
+            if (logNoSubscriberMessages) {
+                logger.log(Level.FINE, &quot;No subscribers registered for event &quot; + eventClass);
+            }
+            if (sendNoSubscriberEvent &amp;&amp; eventClass != NoSubscriberEvent.class &amp;&amp;
+                    eventClass != SubscriberExceptionEvent.class) {
+                post(new NoSubscriberEvent(this, event));
+            }
+        }
+    }
+
+</code></pre>
+<pre><code>    private boolean postSingleEventForEventType(Object event, PostingThreadState postingState, Class&lt;?&gt; eventClass) {
+        CopyOnWriteArrayList&lt;Subscription&gt; subscriptions;
+        synchronized (this) {
+            subscriptions = subscriptionsByEventType.get(eventClass);//subscriptionsByEventType之前在注册的时候保存的订阅者队列，在这里根据key查询到这个事件的所有订阅者
+        }
+        if (subscriptions != null &amp;&amp; !subscriptions.isEmpty()) {
+            for (Subscription subscription : subscriptions) {//迭代所有的订阅者维护postingState
+                postingState.event = event;
+                postingState.subscription = subscription;
+                boolean aborted = false;
+                try {
+                    postToSubscription(subscription, event, postingState.isMainThread);//根据subscription和事件 去进行线程分发然后调用
+                    aborted = postingState.canceled;
+                } finally {
+                    postingState.event = null;
+                    postingState.subscription = null;
+                    postingState.canceled = false;
+                }
+                if (aborted) {
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+</code></pre>
+<pre><code>private void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
+        switch (subscription.subscriberMethod.threadMode) {
+            case POSTING:
+                invokeSubscriber(subscription, event);
+                break;
+            case MAIN:
+                if (isMainThread) {
+                    invokeSubscriber(subscription, event);
+                } else {
+                    mainThreadPoster.enqueue(subscription, event);
+                }
+                break;
+            case MAIN_ORDERED:
+                if (mainThreadPoster != null) {
+                    mainThreadPoster.enqueue(subscription, event);
+                } else {
+                    // temporary: technically not correct as poster not decoupled from subscriber
+                    invokeSubscriber(subscription, event);
+                }
+                break;
+            case BACKGROUND:
+                if (isMainThread) {
+                    backgroundPoster.enqueue(subscription, event);
+                } else {
+                    invokeSubscriber(subscription, event);
+                }
+                break;
+            case ASYNC:
+                asyncPoster.enqueue(subscription, event);
+                break;
+            default:
+                throw new IllegalStateException(&quot;Unknown thread mode: &quot; + subscription.subscriberMethod.threadMode);
+        }
+    }
+</code></pre>
+<p>上面这段代码其实就是根据之前绑定的Subscription里的Method判断线程模式，然后根据不同的方式处理事件，其实这几种方式主要是通过Poster的实现类。<br>
+<img src="http://xuanguofeng.com/images/1566533005873.png" alt=""><br>
+主要是有4种方式：反射直接调用、在主线程发射事件、在单独子线程发送、异步发送。其实无论哪种方式最后都是通过invokeSubscriber()方法返回到Eventbus通过反射调用，只不过通过Handler、链表、队列和线程池等技术手段实现在在后台或者主线程执行。其实线程池在EventBusBuilder中已经在初始化的时候就创建了。</p>
+<pre><code> void invokeSubscriber(Subscription subscription, Object event) {
+        try {
+            subscription.subscriberMethod.method.invoke(subscription.subscriber, event);
+        } catch (InvocationTargetException e) {
+            handleSubscriberException(subscription, event, e.getCause());
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(&quot;Unexpected exception&quot;, e);
+        }
+    }
+</code></pre>
+<p>这就是最终通过反射调用方法。</p>
+<h3 id="解注册">解注册</h3>
+<pre><code>  /** Unregisters the given subscriber from all event classes. */
+    public synchronized void unregister(Object subscriber) {
+        List&lt;Class&lt;?&gt;&gt; subscribedTypes = typesBySubscriber.get(subscriber);
+        if (subscribedTypes != null) {
+            for (Class&lt;?&gt; eventType : subscribedTypes) {
+                unsubscribeByEventType(subscriber, eventType);
+            }
+            typesBySubscriber.remove(subscriber);
+        } else {
+            logger.log(Level.WARNING, &quot;Subscriber to unregister was not registered before: &quot; + subscriber.getClass());
+        }
+    }
+
+</code></pre>
+<p>其实解注册主要就是在之前分析的typesBySubscriber集合和subscriptionsByEventType集合根据subscriber移除掉。</p>
+<h3 id="总结">总结</h3>
+<p>其实文章中有一些细节没有写出来，不过笔者已经看过了，建议读者自己也想想有什么问题去看看，这里分析的是基本流程。</p>
+<p>EventBus感觉可以分开两个词Event Bus，而且主要还是以EventBus这类为主延伸出来的一些处理类，比如SubscriberMethodFinder、EventBusBuilder，Poster等等，然后又回到EventBus来处理相关的逻辑。</p>
+<h3 id="thanks">Thanks</h3>
+<p><a href="https://juejin.im/entry/59409f178d6d810058b1d2a5">Android 框架学习：源码分析 EventBus 3.0 如何实现事件总线</a></p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/recyclerview">问题日志-RecyclerView在notify时焦点丢失</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti">问题日志-Fresco库的libimagepipeline.so问题</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

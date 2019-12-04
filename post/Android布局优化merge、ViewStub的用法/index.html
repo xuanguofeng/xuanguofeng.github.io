@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android布局优化merge、ViewStub的用法 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android布局优化merge、ViewStub的用法</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2016-06-10 22:44:24">2016-06-10 / 3 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><h4 id="描述">描述</h4>
+<p>由于在Android开发工程中需要开发很多界面，每个界面又是以xml布局的形式进行加载。所以在加载这些布局文件的时候是一个开销很大的过程。因此我们在写布局文件的时候需要考虑一些优化来加快程序的性能.</p>
+<!-- more -->
+<h4 id="性能方面优化">性能方面优化</h4>
+<h5 id="尽量避免多层次的嵌套因为布局可以无限制的进行嵌套-所以写起来难免有些肆无忌惮但是布局结构尽量要避免多层次的嵌套来减少开销-数量应最多不要超过10层">尽量避免多层次的嵌套，因为布局可以无限制的进行嵌套。所以写起来难免有些肆无忌惮，但是布局结构尽量要避免多层次的嵌套来减少开销。数量应最多不要超过10层。</h5>
+<h5 id="使用merge标签">使用merge标签</h5>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9d63be5c2ef60d2a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="使用merge标签"><br>
+如图，使用merge标签可以减少多余的层次结构，多用于一个布局需要包含另一个布局的时候，或者这一个布局用到的重复样式比较多。在加载merge标签的时候，不会加载父控件，只会加载merge标签中的子view。merge标签结合include一起使用可以灵活的、可复用性强的创建布局。</p>
+<h5 id="避免过多的view填充每个view都要花费一些资源和时间为了更快速加载应尽量减少view的加载-如果布局包含的view个数超过80填充布局花费的时间将成为一个显著的问题">避免过多的view，填充每个view都要花费一些资源和时间，为了更快速加载，应尽量减少view的加载。如果布局包含的view个数超过80，填充布局花费的时间将成为一个显著的问题。</h5>
+<h5 id="使用viewstub">使用ViewStub</h5>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-8c9ac95754333995.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-95ff463987b56343.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>
+ViewStub有一个比较大的优点就是当你用到这个布局的时候才会去加载，例如我们在布局里写了ViewStub并引用一个我们写好的布局。这时候我们可以在我们的activity中使用的时候，必须先设置visible。 这样这个布局才会被加载显示。否则是不会显示的。为了防止都findViewById 方法，我们可以调用inflate()方法，这个方法会返回一个view，我们可以直接对这个view进行操作。</p>
+<h4 id="代码可视性的优化">代码可视性的优化。</h4>
+<h5 id="写布局的时候可以尽量在父控件中做操作这样会影响到每个子view-例如我们经常写距离左边距这个时候一个在父母局中写一次而不是在每个子控件中都写一遍">写布局的时候，可以尽量在父控件中做操作，这样会影响到每个子view。例如，我们经常写距离左边距，这个时候一个在父母局中写一次，而不是在每个子控件中都写一遍。</h5>
+<h5 id="写线性布局的时候可以使用权重这样也会对屏幕适配起作用">写线性布局的时候可以使用权重，这样也会对屏幕适配起作用。</h5>
+<h5 id="android-studio中可以直接对多次重用的空间进行属性抽取">Android studio中可以直接对多次重用的空间进行属性抽取。</h5>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-1efd1f18e746f493.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>
+如图，抽取的属性将会在style中，我们在布局文件中就可以直接引用。多次需要用到这个属性的时候我们可以直接用一行代码引用即可。</p>
+<h5 id="使用include标签来引用比较复杂或者抽象的布局文件">使用include标签，来引用比较复杂，或者抽象的布局文件。</h5>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android拍照或从系统相册获取图片">Android拍照或从系统相册获取图片</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"></div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

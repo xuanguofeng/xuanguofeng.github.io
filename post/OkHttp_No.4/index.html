@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android热门开源框架-OkHttp源码探究四 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android热门开源框架-OkHttp源码探究四</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-25 15:55:17">2017-12-25 / 3 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>本篇继续探究OkHttp，这次主要看OkHttp中的一个核心机制Dispatcher</p>
+<!-- more -->
+<h2 id="dispatcher是什么">Dispatcher是什么？</h2>
+<pre><code>/**
+ * Policy on when async requests are executed.
+ *
+ * &lt;p&gt;Each dispatcher uses an {@link ExecutorService} to run calls internally. If you supply your
+ * own executor, it should be able to run {@linkplain #getMaxRequests the configured maximum} number
+ * of calls concurrently.
+ */
+</code></pre>
+<p>这是Dispatcher的注释文档，异步请求的执行策略，其实Dispatcher主要用在异步请求中，但是同步请求也会涉及。发送同步和异步请求都会在Dispatcher中管理其状态，Dispatcher维护请求状态，并且维护一个线程池。</p>
+<pre><code> private int maxRequests = 64;
+  private int maxRequestsPerHost = 5;
+  private @Nullable Runnable idleCallback;
+
+  /** Executes calls. Created lazily. */
+  private @Nullable ExecutorService executorService;
+
+  /** Ready async calls in the order they'll be run. */
+  private final Deque&lt;AsyncCall&gt; readyAsyncCalls = new ArrayDeque&lt;&gt;();
+
+  /** Running asynchronous calls. Includes canceled calls that haven't finished yet. */
+  private final Deque&lt;AsyncCall&gt; runningAsyncCalls = new ArrayDeque&lt;&gt;();
+
+  /** Running synchronous calls. Includes canceled calls that haven't finished yet. */
+  private final Deque&lt;RealCall&gt; runningSyncCalls = new ArrayDeque&lt;&gt;();
+
+</code></pre>
+<p>首先看下这几个成员变量</p>
+<table>
+<thead>
+<tr>
+<th>成员变量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>maxRequests</td>
+<td>异步请求中最大的请求数量</td>
+</tr>
+<tr>
+<td>maxRequestsPerHost</td>
+<td>请求中支持最大的host数量</td>
+</tr>
+<tr>
+<td>executorService</td>
+<td>线程池</td>
+</tr>
+<tr>
+<td>readyAsyncCalls</td>
+<td>异步中准备请求队列</td>
+</tr>
+<tr>
+<td>runningAsyncCalls</td>
+<td>异步中正在运行的请求队列</td>
+</tr>
+<tr>
+<td>runningSyncCalls</td>
+<td>运行的同步请求队列</td>
+</tr>
+</tbody>
+</table>
+<h2 id="之前用到的几个重要方法">之前用到的几个重要方法</h2>
+<h3 id="enqueue方法">enqueue()方法</h3>
+<p>这个方法之前说过主要是进行异步请求。这里有一个</p>
+<pre><code> executorService().execute(call);
+</code></pre>
+<p>这个方法</p>
+<pre><code>  public synchronized ExecutorService executorService() {
+    if (executorService == null) {
+      executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
+          new SynchronousQueue&lt;Runnable&gt;(), Util.threadFactory(&quot;OkHttp Dispatcher&quot;, false));
+    }
+    return executorService;
+  }
+
+</code></pre>
+<p>这个方法主要是创建一个线程池。</p>
+<h3 id="finished方法">finished方法</h3>
+<pre><code>  private &lt;T&gt; void finished(Deque&lt;T&gt; calls, T call, boolean promoteCalls) {
+    int runningCallsCount;
+    Runnable idleCallback;
+    synchronized (this) {
+      if (!calls.remove(call)) throw new AssertionError(&quot;Call wasn't in-flight!&quot;);
+      if (promoteCalls) promoteCalls();
+      runningCallsCount = runningCallsCount();
+      idleCallback = this.idleCallback;
+    }
+
+    if (runningCallsCount == 0 &amp;&amp; idleCallback != null) {
+      idleCallback.run();
+    }
+  }
+</code></pre>
+<ol>
+<li>
+<p>由于有两个队列，准备的对列要想加入运行队列 可定要在运行队列删除对应的请求，!calls.remove(call)这个方法就是将执行完的异步请求，从正在执行的队列中删除。</p>
+</li>
+<li>
+<p>promoteCalls()方法主要就是将ready请求队列移到running请求队列的方法</p>
+</li>
+<li>
+<p>runningCallsCount()进行重新计算请求队列和ready队列的数量</p>
+</li>
+</ol>
+<h3 id="其他方法">其他方法</h3>
+<p>还有些其他方法，其实也比较简单就不贴源码了，如取消所有请求的方法，获取最大请求数量、设置最大请求数量等配置方法。</p>
+<h2 id="总结">总结：</h2>
+<p>其实Dispatcher的代码并不复杂，但是却在这个类里封装了关于所有的请求的管理，这要是Dispatcher的核心所在。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/OkHttp_No.5">Android热门开源框架-OkHttp源码探究五</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/OkHttp_No.3">Android热门开源框架-OkHttp源码探究三</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

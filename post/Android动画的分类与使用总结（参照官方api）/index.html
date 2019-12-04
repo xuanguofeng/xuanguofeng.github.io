@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android动画的分类与使用总结（参照官方api） | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android动画的分类与使用总结（参照官方api）</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-06-15 11:00:40">2017-06-15 / 6 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>为什么使用动画</strong>自从Android5.0以后，Google宣布了Material Design的设计语言，也增加了很多动画效果，使得app看起来更自然美观，交互体验更好。在我们的app里如果适当的使用动画的话，会给app带来更棒的交互体验，当然如果动画用的不合适或者滥用的话，也会带来更糟的体验。所以我们在了解动画机制的情况下适当的使用动画才是锦上添花。</p>
+<p>这里提供Google对Material Design对介绍地址：https://material.io/guidelines/motion/material-motion.html#</p>
+<!-- more -->
+<h2 id="android中动画的分类">Android中动画的分类</h2>
+<p>Android framework 提供了2中动画框架：属性动画和视图动画。两种动画框架都是可行的，但一般来说属性动画是首选的方法，因为它使用起来更灵活也提供了更多的特性，除了这两种动画框架，也可以使用帧动画（Drawable animation），帧动画允许加载并展示一张一张的可描绘资源组成动画。</p>
+<!-- more -->
+<h3 id="property-animation属性动画">Property Animation（属性动画）</h3>
+<p>属性动画是在Android3.0之后提供的动画，可以对一个对象的属性进行操作，从而达到动画的效果，包括没有被渲染到屏幕上的，该系统是可扩展的，让您可以将定制类型的属性进行动画化。</p>
+<h3 id="view-animation视图动画">View Animation（视图动画）</h3>
+<p>视图动画是较老的系统，只能用于视图，设置和提供足够的能力来满足许多应用程序的需求是相对容易的</p>
+<h3 id="drawable-animation帧动画">Drawable Animation（帧动画）</h3>
+<p>可绘制的动画需要一个接一个地显示可绘制的资源，就像胶卷一样。如果您希望用可绘制的资源来表示更容易表示的动画，比如位图的进展，那么这种动画方法是非常有用的。</p>
+<h2 id="视图动画与属性动画的区别how-property-animation-differs-from-view-animation">视图动画与属性动画的区别（How Property Animation Differs from View Animation）</h2>
+<p>只能支持简单的缩放、平移、旋转、透明度基本的动画，且有一定的局限性。</p>
+<p>视图动画系统的另一个缺点是它只修改了视图被绘制的地方，而不是实际的视图本身。例如对一个imageview添加事件后，平移那么事件还是会在之前的位置。</p>
+<p>属性动画将不存在这些限制，您可以对任何对象(视图和非视图)的任何属性进行动画，并且对象本身实际上是被修改的。视图动画的使用比较简单。</p>
+<h3 id="属性动画的使用">属性动画的使用</h3>
+<h4 id="objectanimator">ObjectAnimator</h4>
+<p>ObjectAnimator是属性动画框架中最重要的实行类，创建一个ObjectAnimator只需要通过静态工厂类直接返回一个ObjectAnimator对象即可。参数包含一个对象和对象的属性名字，但是这个属性必须有get和set函数，内部会通过反射机制来调用set函数修改对象的属性值。</p>
+<p>例如：一个图片平移的动画</p>
+<pre><code>ObjectAnimator anim = ObjectAnimator
+             .ofFloat(view, &quot;translationX&quot;, 300)
+             .setDuration(500);
+           anim.start();
+</code></pre>
+<p>通过这段代码就能使得这个view进行平移动画。<br>
+ofFloat源码：</p>
+<pre><code>public static &lt;T&gt; ObjectAnimator ofArgb(T target, Property&lt;T, Integer&gt; property,
+            int... values) {
+        ObjectAnimator animator = ofInt(target, property, values);
+        animator.setEvaluator(ArgbEvaluator.getInstance());
+        return animator;
+    }
+</code></pre>
+<p>第一个参数是我们要操纵的view，第二个参数是要操纵的属性。<br>
+最后一个是一个可变数组参数，需要穿进去该属性变化的一个取值过程，这里设置了一个参数，即变化到300。<br>
+常用的属性：</p>
+<table>
+<thead>
+<tr>
+<th>属性名称</th>
+<th>属性描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>translationX和translationY</td>
+<td>这两个属性作为一种增量来控制着view对象从它布局容器的左上角坐标偏移的位置</td>
+</tr>
+<tr>
+<td>ratation,rotationX,rotationY</td>
+<td>这三个属性控制view对象围绕支点进行2D和3D旋转</td>
+</tr>
+<tr>
+<td>scaleX,scaleY</td>
+<td>这两个属性控制着view对象围绕它的指点进行2D缩放</td>
+</tr>
+<tr>
+<td>pivotX,pivotY</td>
+<td>这两个属性控制着view对象的支点位置，围绕这个支点进行旋转和缩放变换处理。默认情况下，该质点的位置就是view对象的中心点</td>
+</tr>
+<tr>
+<td>x,y</td>
+<td>这两个简单实用的属性，它描述了view对象在它的容器中的最终位置，它是最初的组奥上交坐标和translationX，translationY值的累积和。</td>
+</tr>
+<tr>
+<td>alpha</td>
+<td>它表示view对象的alpha透明度。默认值是1（不透明），0代表完全透明（不可见）。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="valueanimator">ValueAnimator</h3>
+<p>ValueAnimator类允许您通过指定一组int、float或颜色值来激活动画的持续时间，从而监听数值的变化完成动画的变换。</p>
+<pre><code>ValueAnimator animation = ValueAnimator.ofFloat(0, 100);
+        animation.setTarget(view);
+        animation.setDuration(1000);
+        animation.start();
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Float value = animation.getAnimatedFraction();
+                Log.e(&quot;tag&quot;, String.valueOf(value));
+            }
+        });
+</code></pre>
+<h3 id="动画事件的监听">动画事件的监听</h3>
+<p>objectAnimator可以监听动画从开始到结束的四个过程。</p>
+<pre><code> anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+</code></pre>
+<p>不过大部分时候我们需要关心动画结束时，所以可以直接这样：</p>
+<pre><code>  anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+            }
+        });
+</code></pre>
+<h3 id="animatorset">AnimatorSet</h3>
+<p>AnimatorSet可以实现多种动画的展示。</p>
+<pre><code>AnimatorSet set=new AnimatorSet();
+        set.setDuration(1000);
+        set.playTogether(anim1,anim2);
+        set.start();
+</code></pre>
+<p>除了set.playTogether（）方法，还有playSequentially(),set.play().with(),set.play().before(),set.play().after()等方法来控制多个动画的协同工作方式，从而控制顺序。</p>
+<h2 id="视图动画的使用">视图动画的使用</h2>
+<p>在3.0之前，视图动画是被广泛应用，但3.0后属性动画的出现，使得视图动画的缺点也就被放大了。主要一个缺点就是当视图移动后，其响应事件的位置还依然在动画前的地方，所以视图动画只能做普通的动画展示效果，避免交互的发生。</p>
+<p>主要提供了AlphaAnimation,RotateAnimation,TranslateAnimation,ScaleAnimation四种动画方式，也提供了AnimationSet动画集合，混合使用多种动画。</p>
+<h3 id="rotateanimation旋转动画">RotateAnimation（旋转动画）</h3>
+<pre><code>RotateAnimation rotateAnimation=new RotateAnimation(0,360,100,100);
+rotateAnimation.setDuration(1000);
+view.startAnimation(rotateAnimation);
+</code></pre>
+<p>参数分别为旋转的起始角度和旋转中心点的坐标。</p>
+<h3 id="translateanimation位移动画">TranslateAnimation（位移动画）</h3>
+<h3 id="scaleanimation缩放动画">ScaleAnimation（缩放动画）</h3>
+<p>总结：其实每种动画的的使用方式基本相同，无非就是一些参数的特性不同。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/RxJava简单使用">RxJava简单使用</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结">Java常用排序算法冒泡排序与选择排序总结</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

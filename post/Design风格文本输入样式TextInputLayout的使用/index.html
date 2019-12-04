@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Material Design风格输入样式TextInputLayout使用 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Material Design风格输入样式TextInputLayout使用</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-04-21 16:21:23">2017-04-21 / 3 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>TextInputLayout</strong>是Google基于Material Design风格出现的一个文本输入布局。主要特点在样式上，官方第一句介绍是当输入的文本显示或者隐藏的时候，EditText显示浮动标签的布局。</p>
+<!-- more -->
+<h3 id="先看看样式">先看看样式</h3>
+<p>样式其实是有动画效果的<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-a7845f09e08f7556.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2017-04-22 下午12.32.49副本.png"></p>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-6c115a1daa6d7a76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2017-04-22 下午12.33.07副本.png"></figure>
+<h3 id="使用方法">使用方法</h3>
+<h4 id="引入包环境">引入包环境</h4>
+<p>由于这个控件在这个android.support.design.widget包下，所以要查看是否已经引入了:</p>
+<p>compile ‘com.android.support:design:22.2.0’</p>
+<p>compile ‘com.android.support:appcompat-v7:22.2.0’</p>
+<p>版本可根据需求自行调整</p>
+<h4 id="在布局中加入代码">在布局中加入代码</h4>
+<pre><code>&lt;android.support.design.widget.TextInputLayout
+         android:layout_width=&quot;match_parent&quot;
+         android:layout_height=&quot;wrap_content&quot;&gt;
+
+     &lt;android.support.design.widget.TextInputEditText
+             android:layout_width=&quot;match_parent&quot;
+             android:layout_height=&quot;wrap_content&quot;
+             android:hint=&quot;@string/form_username&quot;/&gt;
+
+ &lt;/android.support.design.widget.TextInputLayout&gt;
+ 
+</code></pre>
+<h3 id="样式修改">样式修改</h3>
+<p>将默认的AppTheme主体添加如下属性</p>
+<pre><code>&lt;item name=&quot;android:textColorHint&quot;&gt;@colorcommonTextColorWhite&lt;/item&gt;
+&lt;item name=&quot;colorControlNormal&quot;&gt;@colorcommonTextColorWhite&lt;/item&gt;
+&lt;item name=&quot;colorControlActivated&quot;&gt;@colorcommonTextColorWhite&lt;/item&gt;
+&lt;item name=&quot;colorControlHighlight&quot;&gt;@colorcommonTextColorWhite&lt;/item&gt;
+</code></pre>
+<p>解释：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>android:textColorHint</td>
+<td>提示字体的颜色</td>
+</tr>
+<tr>
+<td>colorControlNormal</td>
+<td>下划线没有获取焦点，也就是默认的颜色</td>
+</tr>
+<tr>
+<td>colorControlActivated</td>
+<td>点击时下划线的颜色</td>
+</tr>
+</tbody>
+</table>
+<h3 id="计数器功能">计数器功能</h3>
+<h4 id="使用">使用</h4>
+<p>TextInputLayout还实现了输入时候记录输入字符数的功能，可以通过设置参数实现,导入如下环境</p>
+<pre><code>  xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;
+</code></pre>
+<p>添加如下属性</p>
+<pre><code>app:counterEnabled=&quot;true&quot;
+app:counterMaxLength=&quot;11&quot;
+app:counterTextAppearance=&quot;@style/text_style&quot;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app:counterEnabled</td>
+<td>是否开启此功能</td>
+</tr>
+<tr>
+<td>app:counterMaxLength</td>
+<td>计数器限制的最大值</td>
+</tr>
+<tr>
+<td>app:counterTextAppearance</td>
+<td>计数器的字体样式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="错误提示功能">错误提示功能</h3>
+<p>TextInputLayout还有个错误提示的功能，可以直接通过api使用。</p>
+<p>添加如下代码</p>
+<pre><code>app:errorEnabled=&quot;true&quot;
+app:errorTextAppearance=&quot;@style/error_text_style&quot;
+</code></pre>
+<p>在java代码中设置</p>
+<pre><code>textInputLayout.setError(&quot;这是textInputLayout的错误提示&quot;);
+mobile.setError(&quot;这是EditText的错误提示&quot;);
+</code></pre>
+<h3 id="密码可视功能">密码可视功能</h3>
+<p>将inputType的类型设置为password之后，可以通过设置如下属性。而且默认效果支持Material Design效果和默认动画，也是酷酷的。</p>
+<pre><code>app:passwordToggleEnabled=&quot;true&quot;
+app:passwordToggleTint=&quot;@color/colorAccent&quot;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>app: passwordToggleEnabled</td>
+<td>是否开启密码可视的功能</td>
+</tr>
+<tr>
+<td>app: passwordToggleTint</td>
+<td>修改提示图标的颜色</td>
+</tr>
+</tbody>
+</table>
+<h3 id="总结">总结</h3>
+<p>google继Android5.0后出了一系列Material Design风格的控件，也引起了部分web端与Android端的的Material Design风格化。个人认为这也是一个比较好的设计语言。如果利用的好，将会对APP的交互很有利。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结">Java常用排序算法冒泡排序与选择排序总结</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/工欲善其事必先利其器-android Studio技巧与插件">工欲善其事必先利其器-android Studio技巧与插件</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

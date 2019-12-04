@@ -1,0 +1,2633 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://xuanguofeng.com</id>
+    <title>开飞机的老舒克</title>
+    <updated>2019-12-04T06:20:11.779Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="http://xuanguofeng.com"/>
+    <link rel="self" href="http://xuanguofeng.com/atom.xml"/>
+    <subtitle>Follow your heart</subtitle>
+    <logo>http://xuanguofeng.com/images/avatar.png</logo>
+    <icon>http://xuanguofeng.com/favicon.ico</icon>
+    <rights>All rights reserved 2019, 开飞机的老舒克</rights>
+    <entry>
+        <title type="html"><![CDATA[问题日志-RecyclerView在notify时焦点丢失]]></title>
+        <id>http://xuanguofeng.com/post/recyclerview</id>
+        <link href="http://xuanguofeng.com/post/recyclerview">
+        </link>
+        <updated>2019-09-01T13:43:22.000Z</updated>
+        <summary type="html"><![CDATA[<p>在进行TV开发的时候经常需要处理焦点问题。最近发现在RecyclerView列表中如果需要更新数据的时候，也就是调用notifyDataSetChanged的时候，会导致焦点丢失。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在进行TV开发的时候经常需要处理焦点问题。最近发现在RecyclerView列表中如果需要更新数据的时候，也就是调用notifyDataSetChanged的时候，会导致焦点丢失。</p>
+<!-- more -->
+<h2 id="解决办法">解决办法</h2>
+<pre><code> @Override
+    public long getItemId(int position) {
+        return position;
+    }
+</code></pre>
+<p>在adapter中重写getItemId方法。</p>
+<pre><code>mListAdapter.setHasStableIds(true);
+</code></pre>
+<p>然后调用adapter的setHasStableIds方法传入true，就能解决。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[EventBus源码分析]]></title>
+        <id>http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi</id>
+        <link href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi">
+        </link>
+        <updated>2019-07-21T09:50:50.000Z</updated>
+        <summary type="html"><![CDATA[<p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
+<!-- more -->
+<figure data-type="image" tabindex="1"><img src="http://xuanguofeng.com/images/EventBus-Publish-Subscribe.png" alt=""></figure>
+<p>这是来自官网的一段介绍。</p>
+<h2 id="使用">使用</h2>
+<p>其实使用很简单，大概就是四个步骤。</p>
+<ul>
+<li>步骤一：注册</li>
+</ul>
+<pre><code>EventBus.getDefault().register(this);
+</code></pre>
+<ul>
+<li>步骤二：编写接收事件代码</li>
+</ul>
+<pre><code> @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(String message) {
+        mTextView.setText(message);
+    }
+</code></pre>
+<ul>
+<li>步骤三：在需要的地方发送事件</li>
+</ul>
+<pre><code> EventBus.getDefault().post(&quot;这是一个事件，可以是Object，接收方将会接收&quot;);
+</code></pre>
+<ul>
+<li>步骤四：注销</li>
+</ul>
+<pre><code>EventBus.getDefault().unregister(this);
+</code></pre>
+<h2 id="源码">源码</h2>
+<p>既然主要分为了上面的四个步骤，所以源码可以从四个步骤方面入手。</p>
+<h3 id="初始化">初始化</h3>
+<p>首先所有的流程都要先调用EventBus.getDefault()。</p>
+<pre><code>
+ static volatile EventBus defaultInstance;
+ 
+ public static EventBus getDefault() {
+        if (defaultInstance == null) {
+            synchronized (EventBus.class) {
+                if (defaultInstance == null) {
+                    defaultInstance = new EventBus();
+                }
+            }
+        }
+        return defaultInstance;
+    }
+</code></pre>
+<p>这里看到是一个单例模式，而且也使用volatile关键字，主要是保证并发时候的可见性。看EventBus的构造也能发现是使用了builder模式来创建EventBus。</p>
+<h3 id="register注册">register注册</h3>
+<pre><code>public void register(Object subscriber) {
+        Class&lt;?&gt; subscriberClass = subscriber.getClass();
+        List&lt;SubscriberMethod&gt; subscriberMethods = subscriberMethodFinder.findSubscriberMethods(subscriberClass);//根据当前注册对象查找这个对象相关的订阅方法
+        synchronized (this) {
+            for (SubscriberMethod subscriberMethod : subscriberMethods) {
+                subscribe(subscriber, subscriberMethod);//循环将注册类与订阅方法创建订阅关系
+            }
+        }
+    }
+</code></pre>
+<p>这段代码其实包含一个重要的类就是：subscriberMethodFinder，订阅方法的查找类，register的时候先查找订阅方法，这个订阅方法其实就是我们在注册的类里面通过@Subscribe注解产生的方法。</p>
+<pre><code> List&lt;SubscriberMethod&gt; findSubscriberMethods(Class&lt;?&gt; subscriberClass) {
+        List&lt;SubscriberMethod&gt; subscriberMethods = METHOD_CACHE.get(subscriberClass);//先从缓存中查找
+        if (subscriberMethods != null) {
+            return subscriberMethods;//缓存中有的话直接返回
+        }
+
+        if (ignoreGeneratedIndex) {//通过getDefault默认为false
+            subscriberMethods = findUsingReflection(subscriberClass);//通过反射查找
+        } else {
+            subscriberMethods = findUsingInfo(subscriberClass);//从index中查找，这里只有通过实现EventBusBuilder的addindex方法时才会有，否则默认还是会通过反射查找。
+        }
+        if (subscriberMethods.isEmpty()) {//判断如果订阅方法为空的话将会抛出异常。
+            throw new EventBusException(&quot;Subscriber &quot; + subscriberClass
+                    + &quot; and its super classes have no public methods with the @Subscribe annotation&quot;);
+        } else {//不为空的话 添加到缓存中。
+            METHOD_CACHE.put(subscriberClass, subscriberMethods);
+            return subscriberMethods;
+        }
+    }
+</code></pre>
+<p>这个方法其实主要是判断怎么查找订阅方法，其实多数情况还是通过反射查找。这里有一个需要注意的就是如果我们注册了，如果没有通过 @Subscribe(threadMode = ThreadMode.MAIN)这种注解添加订阅方法，会抛出EventBusException异常。如下<br>
+<img src="http://xuanguofeng.com/images/evenbuserror.png" alt=""></p>
+<p>接下来主要分析从反射中查找订阅方法</p>
+<pre><code>private List&lt;SubscriberMethod&gt; findUsingReflection(Class&lt;?&gt; subscriberClass) {
+				 //代码省略主要调用 findUsingReflectionInSingleClass方法。
+    }
+		
+    private void findUsingReflectionInSingleClass(FindState findState) {
+        Method[] methods;
+        try {
+            // This is faster than getMethods, especially when subscribers are fat classes like Activities
+            methods = findState.clazz.getDeclaredMethods();
+        } catch (Throwable th) {
+            // Workaround for java.lang.NoClassDefFoundError, see https://github.com/greenrobot/EventBus/issues/149
+            methods = findState.clazz.getMethods();
+            findState.skipSuperClasses = true;
+        }
+				//前面主要是通过反射根据注册的类获取方法数组。
+        for (Method method : methods) {//循环所有方法
+            int modifiers = method.getModifiers();//获取方法的修饰符
+            if ((modifiers &amp; Modifier.PUBLIC) != 0 &amp;&amp; (modifiers &amp; MODIFIERS_IGNORE) == 0) {
+                Class&lt;?&gt;[] parameterTypes = method.getParameterTypes();//获取参数类型
+                if (parameterTypes.length == 1) {//如果一个参数的话继续，否则会报错
+                    Subscribe subscribeAnnotation = method.getAnnotation(Subscribe.class);//获取定义的注解
+                    if (subscribeAnnotation != null) {//如果能正常获取到注解
+                        Class&lt;?&gt; eventType = parameterTypes[0];
+                        if (findState.checkAdd(method, eventType)) {
+                            ThreadMode threadMode = subscribeAnnotation.threadMode();
+                            findState.subscriberMethods.add(new SubscriberMethod(method, eventType, threadMode,
+                                    subscribeAnnotation.priority(), subscribeAnnotation.sticky()));//如果检查正常的话将会创建一个SubscriberMethod添加到findState里面的订阅方法集合
+                        }
+                    }
+                } else if (strictMethodVerification &amp;&amp; method.isAnnotationPresent(Subscribe.class)) {
+                    String methodName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+                    throw new EventBusException(&quot;@Subscribe method &quot; + methodName +
+                            &quot;must have exactly 1 parameter but has &quot; + parameterTypes.length);
+                }
+            } else if (strictMethodVerification &amp;&amp; method.isAnnotationPresent(Subscribe.class)) {
+                String methodName = method.getDeclaringClass().getName() + &quot;.&quot; + method.getName();
+                throw new EventBusException(methodName +
+                        &quot; is a illegal @Subscribe method: must be public, non-static, and non-abstract&quot;);
+            }
+        }
+    }
+</code></pre>
+<p>由于strictMethodVerification如果通过getDefault()方式的话默认为false所以不会走后面的代码。SubscriberMethod这个类很明显就是对应一个订阅的方法包括一些属性。</p>
+<pre><code>public class SubscriberMethod {
+    final Method method;//方法
+    final ThreadMode threadMode;//线程类型对应POSTING、MAIN、MAIN_ORDERED、BACKGROUND、ASYNC
+    final Class&lt;?&gt; eventType;//在反射时候获取的参数类型
+    final int priority;//优先级
+    final boolean sticky;//是否是粘性事件
+    /** Used for efficient comparison */
+    String methodString;
+		//省略后面代码。。。
+</code></pre>
+<p>再回来看register里面有一个循环订阅的过程，也就是subscribe()这个方法。</p>
+<pre><code> // Must be called in synchronized block
+    private void subscribe(Object subscriber, SubscriberMethod subscriberMethod) {
+        Class&lt;?&gt; eventType = subscriberMethod.eventType;
+        Subscription newSubscription = new Subscription(subscriber, subscriberMethod);//Subscription其实就是根据注册对象和方法创建的一个订阅关系的维护类，里面重写了equals和hashCode方法。
+        CopyOnWriteArrayList&lt;Subscription&gt; subscriptions = subscriptionsByEventType.get(eventType);//subscriptionsByEventType是一个订阅者队列
+        if (subscriptions == null) {//里面没有订阅者的话创建一个队列并根据key添加subscriptions
+            subscriptions = new CopyOnWriteArrayList&lt;&gt;();
+            subscriptionsByEventType.put(eventType, subscriptions);
+        } else {
+            if (subscriptions.contains(newSubscription)) {//如果包含了抛出异常
+                throw new EventBusException(&quot;Subscriber &quot; + subscriber.getClass() + &quot; already registered to event &quot;
+                        + eventType);
+            }
+        }
+
+        int size = subscriptions.size();
+        for (int i = 0; i &lt;= size; i++) {
+            if (i == size || subscriberMethod.priority &gt; subscriptions.get(i).subscriberMethod.priority) {
+                subscriptions.add(i, newSubscription);//根据优先级将订阅关系添加到队列中
+                break;
+            }
+        }
+
+        List&lt;Class&lt;?&gt;&gt; subscribedEvents = typesBySubscriber.get(subscriber);//typesBySubscriber保存的是订阅者与订阅者的事件的map，后续通过这个解除注册和判断是否注册
+        if (subscribedEvents == null) {
+            subscribedEvents = new ArrayList&lt;&gt;();
+            typesBySubscriber.put(subscriber, subscribedEvents);
+        }
+        subscribedEvents.add(eventType);//将事件添加到事件队列中
+
+        if (subscriberMethod.sticky) {//如果是粘性事件 将会立即发送执行
+            if (eventInheritance) {
+                // Existing sticky events of all subclasses of eventType have to be considered.
+                // Note: Iterating over all events may be inefficient with lots of sticky events,
+                // thus data structure should be changed to allow a more efficient lookup
+                // (e.g. an additional map storing sub classes of super classes: Class -&gt; List&lt;Class&gt;).
+                Set&lt;Map.Entry&lt;Class&lt;?&gt;, Object&gt;&gt; entries = stickyEvents.entrySet();
+                for (Map.Entry&lt;Class&lt;?&gt;, Object&gt; entry : entries) {
+                    Class&lt;?&gt; candidateEventType = entry.getKey();
+                    if (eventType.isAssignableFrom(candidateEventType)) {
+                        Object stickyEvent = entry.getValue();
+                        checkPostStickyEventToSubscription(newSubscription, stickyEvent);
+                    }
+                }
+            } else {
+                Object stickyEvent = stickyEvents.get(eventType);
+                checkPostStickyEventToSubscription(newSubscription, stickyEvent);
+            }
+        }
+    }
+
+</code></pre>
+<p>粘性事件主要就是可以先发送，然后在注册的话也可以直接收到事件。其实整个注册流程就是将时间添加到队列中，不过这里的队列也不止一个。这里有几个比较重要的概念后面也要用的到。</p>
+<h3 id="post发送事件">post发送事件</h3>
+<pre><code>  public void post(Object event) {
+        PostingThreadState postingState = currentPostingThreadState.get();//通过ThreadLocal维护一个PostingThreadState里面有对应的queue
+        List&lt;Object&gt; eventQueue = postingState.eventQueue;
+        eventQueue.add(event);//将event事件添加到事件队列中
+
+        if (!postingState.isPosting) {//isPosting默认为false
+            postingState.isMainThread = isMainThread();//判断当前线程是否主线程并保存状态
+            postingState.isPosting = true;
+            if (postingState.canceled) {//判断状态是否被canceled
+                throw new EventBusException(&quot;Internal error. Abort state was not reset&quot;);
+            }
+            try {
+                while (!eventQueue.isEmpty()) {//循环消息队列不断调用postSingleEvent
+                    postSingleEvent(eventQueue.remove(0), postingState);//这里用的是remove也就是说事件执行一个移除一个
+                }
+            } finally {
+                postingState.isPosting = false;
+                postingState.isMainThread = false;
+            }
+        }
+    }
+</code></pre>
+<p>这个方法主要是创建对应的PostingThreadState，这是一个简单的对象，可以理解为线程发送状态然后里面有一个消息队列和一些状态值。PostingThreadState是通过ThreadLocal保存的，也就是说是和线程绑定的。下面看postSingleEvent方法：</p>
+<pre><code>private void postSingleEvent(Object event, PostingThreadState postingState) throws Error {
+        Class&lt;?&gt; eventClass = event.getClass();
+        boolean subscriptionFound = false;//保存是否能找到订阅关系的标记
+        if (eventInheritance) {//默认为true 是否支持继承关系
+            List&lt;Class&lt;?&gt;&gt; eventTypes = lookupAllEventTypes(eventClass);
+            int countTypes = eventTypes.size();
+            for (int h = 0; h &lt; countTypes; h++) {
+                Class&lt;?&gt; clazz = eventTypes.get(h);
+                subscriptionFound |= postSingleEventForEventType(event, postingState, clazz);//通过postSingleEventForEventType方法发送事件
+            }
+        } else {//如果false不查找继承关系
+            subscriptionFound = postSingleEventForEventType(event, postingState, eventClass);
+        }
+        if (!subscriptionFound) {
+            if (logNoSubscriberMessages) {
+                logger.log(Level.FINE, &quot;No subscribers registered for event &quot; + eventClass);
+            }
+            if (sendNoSubscriberEvent &amp;&amp; eventClass != NoSubscriberEvent.class &amp;&amp;
+                    eventClass != SubscriberExceptionEvent.class) {
+                post(new NoSubscriberEvent(this, event));
+            }
+        }
+    }
+
+</code></pre>
+<pre><code>    private boolean postSingleEventForEventType(Object event, PostingThreadState postingState, Class&lt;?&gt; eventClass) {
+        CopyOnWriteArrayList&lt;Subscription&gt; subscriptions;
+        synchronized (this) {
+            subscriptions = subscriptionsByEventType.get(eventClass);//subscriptionsByEventType之前在注册的时候保存的订阅者队列，在这里根据key查询到这个事件的所有订阅者
+        }
+        if (subscriptions != null &amp;&amp; !subscriptions.isEmpty()) {
+            for (Subscription subscription : subscriptions) {//迭代所有的订阅者维护postingState
+                postingState.event = event;
+                postingState.subscription = subscription;
+                boolean aborted = false;
+                try {
+                    postToSubscription(subscription, event, postingState.isMainThread);//根据subscription和事件 去进行线程分发然后调用
+                    aborted = postingState.canceled;
+                } finally {
+                    postingState.event = null;
+                    postingState.subscription = null;
+                    postingState.canceled = false;
+                }
+                if (aborted) {
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+</code></pre>
+<pre><code>private void postToSubscription(Subscription subscription, Object event, boolean isMainThread) {
+        switch (subscription.subscriberMethod.threadMode) {
+            case POSTING:
+                invokeSubscriber(subscription, event);
+                break;
+            case MAIN:
+                if (isMainThread) {
+                    invokeSubscriber(subscription, event);
+                } else {
+                    mainThreadPoster.enqueue(subscription, event);
+                }
+                break;
+            case MAIN_ORDERED:
+                if (mainThreadPoster != null) {
+                    mainThreadPoster.enqueue(subscription, event);
+                } else {
+                    // temporary: technically not correct as poster not decoupled from subscriber
+                    invokeSubscriber(subscription, event);
+                }
+                break;
+            case BACKGROUND:
+                if (isMainThread) {
+                    backgroundPoster.enqueue(subscription, event);
+                } else {
+                    invokeSubscriber(subscription, event);
+                }
+                break;
+            case ASYNC:
+                asyncPoster.enqueue(subscription, event);
+                break;
+            default:
+                throw new IllegalStateException(&quot;Unknown thread mode: &quot; + subscription.subscriberMethod.threadMode);
+        }
+    }
+</code></pre>
+<p>上面这段代码其实就是根据之前绑定的Subscription里的Method判断线程模式，然后根据不同的方式处理事件，其实这几种方式主要是通过Poster的实现类。<br>
+<img src="http://xuanguofeng.com/images/1566533005873.png" alt=""><br>
+主要是有4种方式：反射直接调用、在主线程发射事件、在单独子线程发送、异步发送。其实无论哪种方式最后都是通过invokeSubscriber()方法返回到Eventbus通过反射调用，只不过通过Handler、链表、队列和线程池等技术手段实现在在后台或者主线程执行。其实线程池在EventBusBuilder中已经在初始化的时候就创建了。</p>
+<pre><code> void invokeSubscriber(Subscription subscription, Object event) {
+        try {
+            subscription.subscriberMethod.method.invoke(subscription.subscriber, event);
+        } catch (InvocationTargetException e) {
+            handleSubscriberException(subscription, event, e.getCause());
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(&quot;Unexpected exception&quot;, e);
+        }
+    }
+</code></pre>
+<p>这就是最终通过反射调用方法。</p>
+<h3 id="解注册">解注册</h3>
+<pre><code>  /** Unregisters the given subscriber from all event classes. */
+    public synchronized void unregister(Object subscriber) {
+        List&lt;Class&lt;?&gt;&gt; subscribedTypes = typesBySubscriber.get(subscriber);
+        if (subscribedTypes != null) {
+            for (Class&lt;?&gt; eventType : subscribedTypes) {
+                unsubscribeByEventType(subscriber, eventType);
+            }
+            typesBySubscriber.remove(subscriber);
+        } else {
+            logger.log(Level.WARNING, &quot;Subscriber to unregister was not registered before: &quot; + subscriber.getClass());
+        }
+    }
+
+</code></pre>
+<p>其实解注册主要就是在之前分析的typesBySubscriber集合和subscriptionsByEventType集合根据subscriber移除掉。</p>
+<h3 id="总结">总结</h3>
+<p>其实文章中有一些细节没有写出来，不过笔者已经看过了，建议读者自己也想想有什么问题去看看，这里分析的是基本流程。</p>
+<p>EventBus感觉可以分开两个词Event Bus，而且主要还是以EventBus这类为主延伸出来的一些处理类，比如SubscriberMethodFinder、EventBusBuilder，Poster等等，然后又回到EventBus来处理相关的逻辑。</p>
+<h3 id="thanks">Thanks</h3>
+<p><a href="https://juejin.im/entry/59409f178d6d810058b1d2a5">Android 框架学习：源码分析 EventBus 3.0 如何实现事件总线</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[问题日志-Fresco库的libimagepipeline.so问题]]></title>
+        <id>http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti</id>
+        <link href="http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti">
+        </link>
+        <updated>2019-07-07T12:20:14.000Z</updated>
+        <summary type="html"><![CDATA[<p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
+<!-- more -->
+<h2 id="问题描述">问题描述</h2>
+<pre><code>java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit
+at com.facebook.soloader.SoLoader.initSoSources(SoLoader.java)
+     doLoadLibraryBySoName(SoLoader.java)
+     makeNonZipPath(SoLoader.java)
+     getNativeLoadRuntimeMethod(SoLoader.java)
+    at com.facebook.soloader.SoLoader.init(SoLoader.java)
+     loadLibrary(SoLoader.java)
+     init(SoLoader.java)
+     makePrepareFlags(SoLoader.java)
+     loadLibraryBySoName(SoLoader.java)
+     initSoLoader(SoLoader.java)
+//后面的省略了
+</code></pre>
+<h2 id="原因与解决">原因与解决</h2>
+<p>首先有一句log很重要那就是“libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit”这里的信息能看出来主要是libimagepipeline.so的so文件引起的。</p>
+<p>所以主要考虑是cpu指令集与so文件的兼容问题。其实大部分so是相互兼容的，但是查看项目发现里面同时有arm64-v8a文件夹和armeabi-v7a，所以通过解析apk发现里面的so对应的不一样。所以发现在arm64-v8a的设备上先找到了里面的so，如果有些三方库支持的so文件夹不一致就会导致crash。</p>
+<p>所以要解决的话首先要保证支持的目录里的so文件是一样的。或者可以只使用一个兼容的文件夹。</p>
+<p>参考文章：<br>
+https://developer.android.com/ndk/guides/abis<br>
+https://blog.csdn.net/u013531824/article/details/53931307<br>
+https://www.jianshu.com/p/ad95c885c2f8</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[问题日志-低版本Didn't find class "~FileProvider"]]></title>
+        <id>http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题</id>
+        <link href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题">
+        </link>
+        <updated>2019-06-20T03:58:40.000Z</updated>
+        <summary type="html"><![CDATA[<p>由于在低版本的系统中，会提示Didn't find class &quot;android.support.v4.content.FileProvider&quot;问题，所以查找了下解决方案。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>由于在低版本的系统中，会提示Didn't find class &quot;android.support.v4.content.FileProvider&quot;问题，所以查找了下解决方案。</p>
+<!-- more -->
+<h2 id="问题描述">问题描述</h2>
+<ul>
+<li>由于在项目中使用了provider，并如下配置</li>
+</ul>
+<pre><code>&lt;provider
+	android:name=&quot;android.support.v4.content.FileProvider&quot;
+	android:authorities=&quot;${applicationId}.fileprovider&quot;
+	android:exported=&quot;false&quot;
+	android:grantUriPermissions=&quot;true&quot;&gt;
+	&lt;meta-data
+	android:name=&quot;android.support.FILE_PROVIDER_PATHS&quot;
+	android:resource=&quot;@xml/file_paths&quot; /&gt;
+&lt;/provider&gt;
+
+</code></pre>
+<ul>
+<li>而且由于项目中的方法数大于65536，所以要在defaultConfig中使用如下方式进行对dex拆分打包</li>
+</ul>
+<pre><code> multiDexEnabled true
+</code></pre>
+<p>这样就可能会导致如下问题：</p>
+<pre><code>Caused by: java.lang.ClassNotFoundException: Didn't find class &quot;android.support.v4.content.FileProvider&quot; on path: DexPathList[[zip file &quot;/data/app/cn.krcom.tv.beta-1.apk&quot;],nativeLibraryDirectories=[/data/app-lib/项目的包名-1, /system/lib]]
+        at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:497)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:457)
+        at android.app.ActivityThread.installProvider(ActivityThread.java:4762)
+        at android.app.ActivityThread.installContentProviders(ActivityThread.java:4369) 
+        at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4309) 
+        at android.app.ActivityThread.access$1500(ActivityThread.java:135) 
+        at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1256) 
+        at android.os.Handler.dispatchMessage(Handler.java:102) 
+        at android.os.Looper.loop(Looper.java:136) 
+        at android.app.ActivityThread.main(ActivityThread.java:5001) 
+        at java.lang.reflect.Method.invokeNative(Native Method) 
+        at java.lang.reflect.Method.invoke(Method.java:515) 
+        at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:785) 
+        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:601) 
+        at dalvik.system.NativeStart.main(Native Method) 
+</code></pre>
+<!-- more -->
+<h2 id="原因与解决方式">原因与解决方式</h2>
+<p>于是就查找问题，其实原因在官方文档的分包方法中早已写明。也说明了原因<br>
+<a href="https://developer.android.com/studio/build/multidex.html#mdex-gradle">配置您的应用进行 Dalvik 可执行文件分包</a></p>
+<p>主要解决办法就是</p>
+<ul>
+<li>引入multidex</li>
+</ul>
+<pre><code> compile 'com.android.support:multidex:1.0.3'
+</code></pre>
+<ul>
+<li>在Application中初始化</li>
+</ul>
+<pre><code>public class MyApplication extends MultiDexApplication { ... }
+</code></pre>
+<p>或者直接调用</p>
+<pre><code>MultiDex.install(this);
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[AsyncTask源码解析]]></title>
+        <id>http://xuanguofeng.com/post/AsyncTask源码解析</id>
+        <link href="http://xuanguofeng.com/post/AsyncTask源码解析">
+        </link>
+        <updated>2019-03-15T11:19:26.000Z</updated>
+        <summary type="html"><![CDATA[<p>AsyncTask是用来在实现在子线程执行任务后切换到UI线程，常见的比如下载任务的更新，执行下载后在UI线程实时更新进度条。由于是基本的API所以还是很有必要了解源码的。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>AsyncTask是用来在实现在子线程执行任务后切换到UI线程，常见的比如下载任务的更新，执行下载后在UI线程实时更新进度条。由于是基本的API所以还是很有必要了解源码的。</p>
+<!-- more -->
+<h2 id="使用">使用</h2>
+<p>使用其实也很简单，主要是实现AsyncTask类，然后执行excute方法。其中有3个参数和4个方法是必须要掌握的。</p>
+<pre><code>  private class MyAsyncTask extends AsyncTask&lt;String, String, String&gt; {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
+</code></pre>
+<h3 id="onpreexecute">onPreExecute</h3>
+<p>这个方法是在UI线程执行，并且在后台任务开始前执行。</p>
+<h3 id="doinbackground">doInBackground</h3>
+<p>这个在线程执行，这里主要是做耗时任务。这个方法有参数和返回值，参数就是在调用execute传进来的参数，返回值就是我们经过一些列操作后返回给onProgressUpdate方法的，主要用于UI的更新。例如我下载到50%然后同志UI实时更新。</p>
+<h3 id="onprogressupdate">onProgressUpdate</h3>
+<p>从方法名看就是更新进度，这个参数就是doInBackground中返回的。</p>
+<h3 id="onpostexecute">onPostExecute</h3>
+<p>这个方法就是任务执行完成后要执行的方法。参数也是执行的结果。</p>
+<h3 id="三个参数">三个参数</h3>
+<p>掌握了这4个方法，这三个参数就很容易理解了。</p>
+<p>第一个，是传入的参数。</p>
+<p>第二个，是执行任务时进度更新的值。</p>
+<p>第三个，任务执行结束的返回值。</p>
+<h2 id="源码">源码</h2>
+<p>其实源码无非就是看内部的核心机制，和这几个方法的调用流程。最直观的就从execute方法开始。</p>
+<pre><code> @MainThread
+    public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) {
+        return executeOnExecutor(sDefaultExecutor, params);
+    }
+</code></pre>
+<p>这里直接调用了executeOnExecutor，传入了sDefaultExecutor和参数。</p>
+<pre><code> @MainThread
+    public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,
+            Params... params) {
+        if (mStatus != Status.PENDING) {
+            switch (mStatus) {
+                case RUNNING:
+                    throw new IllegalStateException(&quot;Cannot execute task:&quot;
+                            + &quot; the task is already running.&quot;);
+                case FINISHED:
+                    throw new IllegalStateException(&quot;Cannot execute task:&quot;
+                            + &quot; the task has already been executed &quot;
+                            + &quot;(a task can be executed only once)&quot;);
+            }
+        }
+
+        mStatus = Status.RUNNING;
+
+        onPreExecute();
+
+        mWorker.mParams = params;
+        exec.execute(mFuture);
+
+        return this;
+    }
+</code></pre>
+<p>先看下这个函数里面都做了什么，在分析sDefaultExecutor。executeOnExecutor这个函数是public的所以我们也可以直接通过这个函数执行任务。如果我们通过executeOnExecutor()这个方法的话就要自己创建一个Executor，因为默认的Executor是使用队列维护同时只有一个线程执行任务，多任务时会被添加到队列中，后面会讲到。</p>
+<p>首先，进来先判断状态，如果如果不是没执行过的要抛出异常，这就是为什么如果执行两次任务会报java.lang.IllegalStateException这个错的原因。</p>
+<p>其次，将状态改为正在执行。</p>
+<p>然后，执行onPreExecute()方法，这就是为什么这个方法在主线程，而且在任务前执行。</p>
+<p>再然后开始执行Executor的任务，这时候我们可以分析sDefaultExecutor了。</p>
+<p>类里可以看到</p>
+<pre><code>private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
+
+public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
+
+</code></pre>
+<p>这两个常量其实就是默认创建了一个Executor</p>
+<pre><code>
+    private static class SerialExecutor implements Executor {
+        final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();
+        Runnable mActive;
+
+        public synchronized void execute(final Runnable r) {
+            mTasks.offer(new Runnable() {
+                public void run() {
+                    try {
+                        r.run();
+                    } finally {
+                        scheduleNext();
+                    }
+                }
+            });
+            if (mActive == null) {
+                scheduleNext();
+            }
+        }
+
+        protected synchronized void scheduleNext() {
+            if ((mActive = mTasks.poll()) != null) {
+                THREAD_POOL_EXECUTOR.execute(mActive);
+            }
+        }
+    }
+</code></pre>
+<p>这个SerialExecutor里面维护了一个队列，然后通过offer()在队列的末尾加入任务，通过poll()在头部检索出任务并删除，检索后赋值给mActive。因为首次mActive为null，所以加入了判断mActive==null的时候执行scheduleNext(),后面再有任务来的话mActive就不是null了，所以是在runable中，通过finally调用了scheduleNext()，这时候就会等任务执行完成后在执行下一个任务。这就是上面说的为什么默认的SerialExecutor只能同时在一个线程执行任务。</p>
+<pre><code>    /**
+     * An {@link Executor} that can be used to execute tasks in parallel.
+     */
+    public static final Executor THREAD_POOL_EXECUTOR;
+
+    static {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+                sPoolWorkQueue, sThreadFactory);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        THREAD_POOL_EXECUTOR = threadPoolExecutor;
+    }
+</code></pre>
+<p>这个主要就是通过各种默认为的参数创建了一个线程池去执行任务。</p>
+<p>这就是主要流程，但是在这个流程中还忽略了很多内容，在我们了解了整体框架流程后，在去填充我们想知道的细节，就更容易理解了。</p>
+<p>首先看executeOnExecutor()方法中有两个很重要的内容一个是mWorker和mFuture。其实执行任务的时候传入了mFuture，而mFuture是一个mFutureTask真正执行的是mWorker。</p>
+<pre><code>     /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     */
+    public AsyncTask() {
+        this((Looper) null);
+    }
+
+    /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     *
+     * @hide
+     */
+    public AsyncTask(@Nullable Handler handler) {
+        this(handler != null ? handler.getLooper() : null);
+    }
+
+    /**
+     * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
+     *
+     * @hide
+     */
+    public AsyncTask(@Nullable Looper callbackLooper) {
+        mHandler = callbackLooper == null || callbackLooper == Looper.getMainLooper()
+            ? getMainHandler()
+            : new Handler(callbackLooper);
+
+        mWorker = new WorkerRunnable&lt;Params, Result&gt;() {
+            public Result call() throws Exception {
+                mTaskInvoked.set(true);
+                Result result = null;
+                try {
+                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                    //noinspection unchecked
+                    result = doInBackground(mParams);
+                    Binder.flushPendingCommands();
+                } catch (Throwable tr) {
+                    mCancelled.set(true);
+                    throw tr;
+                } finally {
+                    postResult(result);
+                }
+                return result;
+            }
+        };
+
+        mFuture = new FutureTask&lt;Result&gt;(mWorker) {
+            @Override
+            protected void done() {
+                try {
+                    postResultIfNotInvoked(get());
+                } catch (InterruptedException e) {
+                    android.util.Log.w(LOG_TAG, e);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(&quot;An error occurred while executing doInBackground()&quot;,
+                            e.getCause());
+                } catch (CancellationException e) {
+                    postResultIfNotInvoked(null);
+                }
+            }
+        };
+    }
+
+</code></pre>
+<p>在构造里创建了三部分内容，mHandler、mWorker、mFutur</p>
+<p>可以看到首先会创建handler因为，线程通信还是需要依靠Handler。然后mWorker中主要就是执行doInBackground()然后将result传给postResult。</p>
+<pre><code>private Result postResult(Result result) {
+        @SuppressWarnings(&quot;unchecked&quot;)
+        Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,
+                new AsyncTaskResult&lt;Result&gt;(this, result));
+        message.sendToTarget();
+        return result;
+    }
+
+  
+</code></pre>
+<p>postResult主要就是通过handler发送一个what为MESSAGE_POST_RESULT，obj为result的message。</p>
+<pre><code> private static class InternalHandler extends Handler {
+        public InternalHandler(Looper looper) {
+            super(looper);
+        }
+
+        @SuppressWarnings({&quot;unchecked&quot;, &quot;RawUseOfParameterizedType&quot;})
+        @Override
+        public void handleMessage(Message msg) {
+            AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;
+            switch (msg.what) {
+                case MESSAGE_POST_RESULT:
+                    // There is only one result
+                    result.mTask.finish(result.mData[0]);
+                    break;
+                case MESSAGE_POST_PROGRESS:
+                    result.mTask.onProgressUpdate(result.mData);
+                    break;
+            }
+        }
+    }
+    
+</code></pre>
+<p>这时候看handleMessage是怎么处理的。<br>
+这里主要是调用区分what是完成还是未完成完成的话就是调用finish方法，未完成就是onProgressUpdate方法，</p>
+<pre><code>    private void finish(Result result) {
+        if (isCancelled()) {
+            onCancelled(result);
+        } else {
+            onPostExecute(result);
+        }
+        mStatus = Status.FINISHED;
+    }
+
+</code></pre>
+<p>在看finish方法就是判断是否取消然后调用onPostExecut方法将结果传入。<br>
+hadlerMessage还处理一个就是更新进度，那这个message是在哪里发的呢？</p>
+<pre><code>   protected final void publishProgress(Progress... values) {
+        if (!isCancelled()) {
+            getHandler().obtainMessage(MESSAGE_POST_PROGRESS,
+                    new AsyncTaskResult&lt;Progress&gt;(this, values)).sendToTarget();
+        }
+    }
+</code></pre>
+<p>可以看到是通过publishProgress这个方法，所以我们如果需要更新进度的话要自己在doInBackground这个方法里调用publishProgress()方法传入进度。然后在才会在onProgressUpdate()这个方法中收到。</p>
+<h2 id="总结">总结</h2>
+<p>至此 整个流程也就清晰了，这四个方法是分别在哪里调用的在能实现异步然后更新UI的功能，其实原理很简单，就是用了一个线城池然后我们在子线程实时通过Handler发送Message到UI线程中执行进度的任务，默认通过一个队列维护任务，也可以自定义Executor来实现多线程执行任务。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Hello Gridea]]></title>
+        <id>http://xuanguofeng.com/post/hello-gridea</id>
+        <link href="http://xuanguofeng.com/post/hello-gridea">
+        </link>
+        <updated>2018-12-11T16:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！</p>
+<!-- more -->
+<p>✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+<p><a href="https://github.com/getgridea/gridea">Github</a><br>
+<a href="http://hvenotes.fehey.com/">Gridea 主页</a><br>
+<a href="http://fehey.com/">示例网站</a></p>
+<h2 id="特性">特性👇</h2>
+<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
+<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
+<p>🏷️  你可以对文章进行标签分组</p>
+<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
+<p>💻  你可以在 <strong>𝖶𝗂𝗇𝖽𝗈𝗐𝗌</strong> 或 <strong>𝖬𝖺𝖼𝖮𝖲</strong> 设备上使用此客户端</p>
+<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
+<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
+<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
+<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
+<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
+<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前🏃</p>
+<p>未来，它一定会成为你离不开的伙伴</p>
+<p>尽情发挥你的才华吧！</p>
+<p>😘 Enjoy~</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【Flutter笔记】之Widget的一些总结]]></title>
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结">
+        </link>
+        <updated>2018-09-03T08:00:49.000Z</updated>
+        <summary type="html"><![CDATA[<p>可以说flutter中是基于Widgets的，一个TextView是Widgets，一个布局也是一个Widgets。使用Widgets去组装出你想要的 UI，了解Widgets也是非常重要的。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>可以说flutter中是基于Widgets的，一个TextView是Widgets，一个布局也是一个Widgets。使用Widgets去组装出你想要的 UI，了解Widgets也是非常重要的。</p>
+<!-- more -->
+<p>Flutter默认也提供了丰富我Widgets，包括Android Material Design风格的控件，也有iOS风格的Cupertino组件库。而且所有组件的使用方式几乎是一样的，所以在写UI的时候只要对这些组件进行组装即可。</p>
+<h2 id="一些常用组件的常用用法">一些常用组件的常用用法。</h2>
+<pre><code> import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    new Center(
+      child: new Text(
+        'Hello, world!',
+        textDirection: TextDirection.ltr,
+      ),
+    ),
+  );
+}
+
+</code></pre>
+<p>这是一段hello word代码，首先 runApp 是程序的入口，接下来便是一个Widgets，Center这是一布局 Widgets,然后里面是一个Text Widgets。<br>
+在Flutter中就是这样的，可能不是所有Widgets都有通用的方法，但是可以通过包裹嵌套来实现。例如 text默认没有事件，可以通过事件Widgets进行嵌套实现。</p>
+<h2 id="statelesswidget-和-statefulwidget">StatelessWidget 和 StatefulWidget</h2>
+<p>我们写的控件基本都要继承这两个，这两个的主要区别是看页面是否需要动态刷新，建议不需要刷新时使用StatelessWidget，如果需要刷新的话可以使用StatefulWidget并通过调用setState来通知框架改变状态。</p>
+<p>里面的build函数式 widgets 的入口函数，可以在里面创建其他的widgets。框架将会一次构建这些widgets，直到最底层的  RenderObject 之下，然后计算机进行计算相关的图形并渲染出。</p>
+<h2 id="一些常用wigets">一些常用Wigets</h2>
+<p>由于Widgets的样式以及用法，之前总结了一个单独的demo，大家可以看demo，里面有展示以及代码具体实现。</p>
+<p>地址：https://github.com/xuanguofeng/flutter_widgets</p>
+<h3 id="常用widgets">常用Widgets</h3>
+<p>Flutter内置了丰富的常用的组件，包括文本、按钮、图片、行、列等组件。</p>
+<h3 id="material-design风格widgets">Material Design风格Widgets</h3>
+<p>Flutterd对Material Design的支持很丰富，也提供了市面目前比较流行的风格，比如Android的侧滑、底部的导航等，具体可以看本文地下的demo。</p>
+<h3 id="cupertino的ios风格组件">Cupertino的iOS风格组件</h3>
+<p>这里也是举了一些控件的名称，对iOS的支持也很丰富，包含常用的title样式、底部导航、iOS风格的按钮、Dialod、加载中的loading等。</p>
+<h3 id="layout-widgets">Layout Widgets</h3>
+<p>Layout的控件是比较常用的，因为好多功能要通过嵌套来实现。例如 margin、padding、事件的widgets、material design风格的布局、类似帧布局的Stack、GridView、ListView、Center、Align等。</p>
+<p>其他还有很多控件，可以参考官方文档。</p>
+<p>文档地址：http://doc.flutter-dev.cn/widgets/</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[问题日志-Flutter页面跳转无反应的问题]]></title>
+        <id>http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题</id>
+        <link href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题">
+        </link>
+        <updated>2018-07-11T13:28:21.000Z</updated>
+        <summary type="html"><![CDATA[<p>描述：在使用Flutter做页面跳转时候，官方的描述使用方法是这样的。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>描述：在使用Flutter做页面跳转时候，官方的描述使用方法是这样的。</p>
+<!-- more -->
+<pre><code>void main() {
+  runApp(new MaterialApp(
+    home: new MyAppHome(), // becomes the route named '/'
+    routes: &lt;String, WidgetBuilder&gt; {
+      '/a': (BuildContext context) =&gt; new MyPage(title: 'page A'),
+      '/b': (BuildContext context) =&gt; new MyPage(title: 'page B'),
+      '/c': (BuildContext context) =&gt; new MyPage(title: 'page C'),
+    },
+  ));
+}
+</code></pre>
+<p>接着就可以通过如下方式来操作 Route。</p>
+<pre><code>Navigator.of(context).pushNamed('/b');
+</code></pre>
+<p>看一些代码确实也是这样使用的，但是之前自己使用的时候就是无法跳转。<br>
+提示：</p>
+<pre><code>The context used to push or pop routes from the Navigator 
+must be that of a widget that is a descendant of a 
+Navigator widget.
+</code></pre>
+<h2 id="解决步骤">解决步骤</h2>
+<p>上网查询资料，此时Flutter的资料还不是很多。</p>
+<h2 id="解决方法">解决方法</h2>
+<pre><code>
+class _FWMainAppState extends State&lt;FWMainApp&gt; {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+          primaryColor: AppColors.colorPrimary, accentColor: Colors.blue),
+      home: _Home(),
+      routes: &lt;String, WidgetBuilder&gt;{
+        '/BtnSamplePage': (BuildContext context) =&gt; BtnSamplePage(),
+        '/TextSamplePage': (BuildContext context) =&gt; TextSamplePage(),
+        '/DialogSamplePage': (BuildContext context) =&gt; DialogSamplePage(),
+        '/LayoutSamplePage': (BuildContext context) =&gt; LayoutSamplePage(),
+      },
+    );
+  }
+}
+
+</code></pre>
+<p>主要看home:由于这是首页之前在home是直接创建的控件，一直提示失败。</p>
+<p>后来通过home：后面引入一个类，在类里创建想要创建的控件就解决了。</p>
+<pre><code>class _Home extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+  
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text(AppStrings.appBarTitle),
+        actions: &lt;Widget&gt;[
+          new IconButton(
+            icon: const Icon(Icons.build),
+            onPressed: () async {},
+            tooltip: 'tool',
+          )
+        ],
+      ),
+      body: _body,
+    );
+  }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【Flutter笔记】之Dart与Java的一些直观区别]]></title>
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别">
+        </link>
+        <updated>2018-07-05T11:43:39.000Z</updated>
+        <summary type="html"><![CDATA[<p>Dart 是 Flutter 的主要开发语言，Flutter 是一个来自 Google 用于移动应用开发的 SDK。其实对于Java开发人员来说Dart，还是相对好理解的，这篇笔记将记录初学Dart时，相比较Java的一些区别。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Dart 是 Flutter 的主要开发语言，Flutter 是一个来自 Google 用于移动应用开发的 SDK。其实对于Java开发人员来说Dart，还是相对好理解的，这篇笔记将记录初学Dart时，相比较Java的一些区别。</p>
+<!-- more -->
+<p>##区别</p>
+<h3 id="构造函数">构造函数</h3>
+<p>在Dart的构造中可以没有方法体。</p>
+<pre><code>//这样写很简单
+User(this.cadence, this.speed, this.gear);
+
+//也可以写成这样
+Bicycle(int cadence, int speed, int gear) {
+  this.cadence = cadence;
+  this.speed = speed;
+  this.gear = gear;
+}
+
+</code></pre>
+<h3 id="可选参数">可选参数</h3>
+<p>在Dart中可以使用可选参数、无论是构造还是普通方法。</p>
+<pre><code>Book({this.money = 100, this.size = 0, this.author = null});
+</code></pre>
+<p>调用的时候要指定参数名</p>
+<pre><code>main() {
+  print(Book(money:100 , size: 88, author:'test'));
+  print(Book(money:99,   size:100));
+  print(Rectangle());
+}
+</code></pre>
+<h3 id="关键字">关键字</h3>
+<ul>
+<li>在 Dart 中没有诸如 public、private、protected 这样的关键词。<br>
+如果一个标识符以 (_) 开头，则该标识符 在库内是私有的</li>
+<li>Dart2中，可以不使用new关键字创建，也可以使用。</li>
+</ul>
+<h3 id="变量">变量</h3>
+<ul>
+<li>Dart中变量初始值为null，即使是int类型也是null。</li>
+<li>Dart支持自识别，可以是用var定义变量，也可以直接指定具体类型。</li>
+<li>如果你以后不打算修改一个变量，使用 final 或者 const。 一个 final 变量只能赋值一次；一个 const 变量是编译时常量。</li>
+</ul>
+<h3 id="基本类型">基本类型</h3>
+<ul>
+<li>int和double是num的子类。没有float类型。</li>
+<li>Dart中所有的类都是Object的子类。</li>
+<li>String可以使用单引号或者双引号。</li>
+<li>String支持模板，使用 ${expression} 的方式来实现字符串模板的效果，如果该表达式仅仅是一个标识符，还可以去掉花括号 $variableName。</li>
+<li>字符串前加r代表原始字符串。</li>
+<li>只有true和flase是bool类型，这两个对象也是编译时常量。当Dart需要一个布尔值的时候，只有true对象才被认为true,其他都是false。</li>
+</ul>
+<h3 id="方法">方法</h3>
+<ul>
+<li>Dart是一个真正面向对象的语言，方法也是对象并且具有一种类型Function。</li>
+<li>可以使用上文说的可选方法。</li>
+<li>支持直接设置默认参数值。</li>
+<li>所有函数都返回一个值，如果没有指定返回值，则 默认把语句 return null; 作为函数的最后一个语句执行。</li>
+<li>可以把方法当做参数调用另一个方法。</li>
+</ul>
+<pre><code>printElement(element) {
+  print(element);
+}
+
+var list = [1, 2, 3];
+
+// Pass printElement as a parameter.
+list.forEach(printElement);
+</code></pre>
+<ul>
+<li>方法也可以赋值给一个变量</li>
+</ul>
+<pre><code>var loudify = (msg) =&gt; '!!! ${msg.toUpperCase()} !!!';
+assert(loudify('hello') == '!!! HELLO !!!');
+</code></pre>
+<h3 id="操作符">操作符</h3>
+<ul>
+<li>??</li>
+</ul>
+<pre><code>expr1 ?? expr2
+如果 expr1 是 non-null，返回其值； 否则执行 expr2 并返回其结果。
+</code></pre>
+<ul>
+<li>
+<p>.? 可以避免表达式左边对象为null时候抛出异常。</p>
+</li>
+<li>
+<p>级联操作符,级联操作符 (..) 可以在同一个对象上 连续调用多个函数以及访问成员变量。</p>
+</li>
+</ul>
+<pre><code>querySelector('#button') // Get an object.
+  ..text = 'Confirm'   // Use its members.
+  ..classes.add('important')
+  ..onClick.listen((e) =&gt; window.alert('Confirmed!'));
+</code></pre>
+<ul>
+<li>类型判定操作符</li>
+</ul>
+<p>as、 is、 和 is! 操作符是在运行时判定对象 类型的操作符：</p>
+<h4 id="as-类型转换">as 类型转换</h4>
+<h4 id="is-如果对象是指定的类型返回-true">is 如果对象是指定的类型返回 True</h4>
+<h4 id="is-如果对象是指定的类型返回-false">is! 如果对象是指定的类型返回 False</h4>
+<pre><code>只有当 obj 实现了 T 的接口， obj is T 才是 true。例如 obj is Object 总是 true。
+
+
+</code></pre>
+<h3 id="断言">断言</h3>
+<p>Dart中支持assert这个断言方法。如果方法结果true,继续执行，如果false则抛出异常。这个方法在正式包中将不执行。</p>
+<pre><code>// assert(条件);
+</code></pre>
+<p>##总结<br>
+Dart和Java还是很相似的，对于Java程序员也是相对容易上手的，由于现在是初学，只总结了一些常用的，当然区别远远不止这些，总结大多是Dart中有的Java中没有的东西，会不断补充。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【Flutter笔记】之Flutter的理解]]></title>
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解">
+        </link>
+        <updated>2018-07-02T09:43:39.000Z</updated>
+        <summary type="html"><![CDATA[<p>目前对Flutter的理解还是很少的，只是想作为一个笔记，在不断理解的基础上进行不断的修改与完善，查漏补缺，看看自己学之前与学之后是的理解是一个什么状态。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>目前对Flutter的理解还是很少的，只是想作为一个笔记，在不断理解的基础上进行不断的修改与完善，查漏补缺，看看自己学之前与学之后是的理解是一个什么状态。</p>
+<!-- more -->
+<h2 id="flutter介绍">Flutter介绍</h2>
+<p>Flutter 是谷歌的移动端 UI 框架，可在极短的时间内构建 Android 和 iOS 上高质量的原生级应用。 Flutter 可与现有代码一起工作, 它被世界各地的开发者和组织使用, 并且 Flutter 是免费和开源的.<br>
+这是官网的介绍，大标题是“以极短的时间构建优雅的原生级应用”，可以了解到Flutter是一个框架，通过这个框架可以使用Dart语言通过一套代码构建Android和iOS应用程序。</p>
+<p>Flutter里面同时提供了两种UI库的风格，第一种肯定是Material Design风格，还要就是Cupertino风格，也就是iOS中采用的风格。</p>
+<p>个人理解应该是Flutter封装了一套完整的UI的API，在开发时候可以直接使用，通过官网介绍了解应该也可以直接调用Android和iOS中的原生API。</p>
+<h2 id="为什么使用dart语言">为什么使用Dart语言？</h2>
+<p>个人对其他语言并没有了解那么深，这个问题只是说下自己的想法和在网上查到的一些人的见解。</p>
+<p>首先我一眼看上去，感觉Dart的格式并不友好，相比Kotlin觉得更是可读性差很多，据知乎上一位大神说和Flutter的工程师咨询，是因为Dart的团队距离他们很近，能很好的得到支持，不知道是否玩笑。用Dart代码写页面还是很容易理解的，至于与mxl相比哪种方式更好现在我还体会不好，因为还没有深度是使用Dart。</p>
+<p>Dart同时支持AOT编译和JIT编译，Dart的编译和执行不仅非常灵活，而且速度很快。还有我觉得Dart是相对容易学习的。用Flautter的时候还支持热重载，这相比Instant Run的体验要好很多的，确实提高了效率，不会因为只改了一点页面而编译好久的状况。Dart是基于单线程模型的语言，但是也有自己的机制叫isolate。之间无法直接共享内存，这也就是避免了大部分使用锁的情况。</p>
+<p>还有就是这是Google自己的语言，也是开源的，不会惹出88亿美元的的官司吧。总体感觉通过了解，还是一门很优秀的语言，而且在Google内外据说也得到很好的使用，而且随着Flutter以及新系统的推出，这门语言也有可能越来越好，不过后面情况谁也说不好，还要看Google怎么支持与推广。</p>
+<h2 id="flutter是如何渲染界面的">Flutter是如何渲染界面的？</h2>
+<p>移动设备中有GPU和CPU，一般是GPU控制将数据渲染到显示设备上的，GPU主要是通过发出VSync同步信号去帧数据来传递给显示器。</p>
+<p>FPS表示每秒传递的帧数，我们知道在理想情况下60FPS就感觉不到爱看，这意味着每个绘制时长应该在16ms以内，Android系统每隔16ms发出VSync信号，触发对UI进行渲染，如果每次渲染都成功，这样就能够达到刘畅的画面所需的60FPS。如果某个操作花费四件比较吃长 比如用了30ms，系统在得到VSync信号时就无法进行正常渲染，这样就发生了丢帧现象，就会感觉卡顿。<br>
+所以玩游戏的时候需要更好的CPU与GPU的支持。</p>
+<p>Flutter只关心向GPU提供视图数据，只关心VSync信号，然后通过Google自己的Skia渲染引擎想GPU提供数据。所以说Flutter是直接通过Skia自己进行渲染，而不是调用某些API，这也是Flutter一直宣称原生体验的原因。</p>
+<h2 id="flutter前景如何是否值得学习">Flutter前景如何，是否值得学习？</h2>
+<p>这个每个人的看法不同，个人认为前景还可以，与React Native原理不同，Flutter是通过自己渲染，可能会体验会更好。使用Dart语言，这门语言目前看来说对于有编程经验的人来说可能还是相对容易些的，而支持库目前来看也还可以，也要看Google后续的动作吧。</p>
+<p>对于公司来说如果维护一套代码来实现两个端无疑时间好事，从节约成本、到方便维护、界面统一都是很好的，但是Flutter商用应该仍有一段距离吧。</p>
+<p>如果有时间又有兴趣的话，可以搞一下的，毕竟程序员就是在不断学习的道路上。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【Flutter笔记】之环境搭建]]></title>
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之环境搭建</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建">
+        </link>
+        <updated>2018-06-28T07:10:08.000Z</updated>
+        <summary type="html"><![CDATA[<p>Flutter 是 Google 用以帮助开发者在 iOS 和 Android 两个平台开发高质量原生 UI 的移动 SDK。Flutter 兼容现有的代码，免费且开源。使用Dart语言。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Flutter 是 Google 用以帮助开发者在 iOS 和 Android 两个平台开发高质量原生 UI 的移动 SDK。Flutter 兼容现有的代码，免费且开源。使用Dart语言。</p>
+<!-- more -->
+<h2 id="基于android-studio环境搭建">基于Android Studio环境搭建</h2>
+<p>支持flutter的IDE 目前有Android Studio、 IntelliJ、Visual Studio。</p>
+<h3 id="安装-flutter-和-dart-插件">安装 Flutter 和 Dart 插件</h3>
+<p>在Android Studio中安装这两个插件。</p>
+<ul>
+<li>Flutter 插件可以提高 Flutter 在开发过程中的开发效率（运行，调试，热重载等等）。</li>
+<li>Dart 插件提提升了代码层面的开发效率（在你敲代码的同时进行代码校验，代码自动补全等等）。</li>
+</ul>
+<h3 id="安装步骤">安装步骤</h3>
+<ul>
+<li>启动 Android Studio。</li>
+<li>打开插件设置（在 macOS 上路径为 Preferences&gt;Plugins，在 Windows 和 Linux 上路径为 File&gt;Settings&gt;Plugins）。</li>
+<li>当弹出对话框提示要安装 Dart 插件的时候，点击 Yes 接受。</li>
+<li>如果弹出 Restart 需要重启编辑器的时候，点击 Yes 接受。<br>
+<img src="https://upload-images.jianshu.io/upload_images/1980287-2c1c28773b246f12.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建Flutter项目"><br>
+【注意】<br>
+第一次运行时候要选择指定的文件夹，然后点击install SDK 来安装Flutter SDK环境，可能需要下载一会。</li>
+</ul>
+<h2 id="hello-word">Hello Word</h2>
+<p>在Android Studio中创建项目的时候会有New Flutter Project选项这时候如果本地没有Flutter环境的话 会让你下载。</p>
+<p>创建后可以看到IDE的右上角有些功能按钮。<br>
+<img src="https://upload-images.jianshu.io/upload_images/1980287-f98ccb4eaaa2d27a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="项目目录结构"><br>
+可以看到这里不但有Android的目录，还有iOS的目录，运行的时候如果有iOS设备以及模拟器的话 是可以直接选择运行的。</p>
+<p>右侧闪电的标志支持热重载编译运行。</p>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/1980287-fb8c9b740ab9da93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="运行效果"></figure>
+<p>由于我是mac电脑，特意选了一个iOS模拟器，在Android Studio直接运行在iOS设备上还是很爽的。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究五]]></title>
+        <id>http://xuanguofeng.com/post/OkHttp_No.5</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.5">
+        </link>
+        <updated>2017-12-30T08:21:55.000Z</updated>
+        <summary type="html"><![CDATA[<p>前面基本介绍了OkHttp的流程以及源码，这里看最后一个重要的核心源码OkHttp中的拦截器。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>前面基本介绍了OkHttp的流程以及源码，这里看最后一个重要的核心源码OkHttp中的拦截器。</p>
+<!-- more-->
+<h2 id="拦截器机制">拦截器机制</h2>
+<p>拦截器是OkHttp中一个强大的机制，能实现网络监听，请求以及响应重写，请示失败重试等功能。</p>
+<h2 id="拦截器链">拦截器链</h2>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图"></figure>
+<h2 id="getresponsewithinterceptorchain-方法">getResponseWithInterceptorChain  方法</h2>
+<p>之前说到主要是通过这个方法来返回response那么来看看这个方法里究竟是做了什么呢</p>
+<pre><code> Response getResponseWithInterceptorChain() throws IOException {
+    // Build a full stack of interceptors.
+    List&lt;Interceptor&gt; interceptors = new ArrayList&lt;&gt;();
+    interceptors.addAll(client.interceptors());
+    interceptors.add(retryAndFollowUpInterceptor);
+    interceptors.add(new BridgeInterceptor(client.cookieJar()));
+    interceptors.add(new CacheInterceptor(client.internalCache()));
+    interceptors.add(new ConnectInterceptor(client));
+    if (!forWebSocket) {
+      interceptors.addAll(client.networkInterceptors());
+    }
+    interceptors.add(new CallServerInterceptor(forWebSocket));
+
+    Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
+        originalRequest, this, eventListener, client.connectTimeoutMillis(),
+        client.readTimeoutMillis(), client.writeTimeoutMillis());
+
+    return chain.proceed(originalRequest);
+  }
+</code></pre>
+<p>首先添加自定义配置的拦截器</p>
+<p>然后以此添加系统内置的拦截器</p>
+<p>然后创建RealInterceptorChain并把这个集合添加进去，这个就是个拦截器链</p>
+<p>通过chain.proceed(originalRequest);这个方法执行</p>
+<p>proceed这个方法也很重要 可以看一下</p>
+<pre><code> public Response proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,
+      RealConnection connection) throws IOException {
+    if (index &gt;= interceptors.size()) throw new AssertionError();
+
+    calls++;
+
+    // If we already have a stream, confirm that the incoming request will use it.
+    if (this.httpCodec != null &amp;&amp; !this.connection.supportsUrl(request.url())) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptors.get(index - 1)
+          + &quot; must retain the same host and port&quot;);
+    }
+
+    // If we already have a stream, confirm that this is the only call to chain.proceed().
+    if (this.httpCodec != null &amp;&amp; calls &gt; 1) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptors.get(index - 1)
+          + &quot; must call proceed() exactly once&quot;);
+    }
+
+    //注意处
+    // Call the next interceptor in the chain.
+    RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,
+        connection, index + 1, request, call, eventListener, connectTimeout, readTimeout,
+        writeTimeout);
+    Interceptor interceptor = interceptors.get(index);
+    Response response = interceptor.intercept(next);
+
+    // Confirm that the next interceptor made its required call to chain.proceed().
+    if (httpCodec != null &amp;&amp; index + 1 &lt; interceptors.size() &amp;&amp; next.calls != 1) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptor
+          + &quot; must call proceed() exactly once&quot;);
+    }
+
+    // Confirm that the intercepted response isn't null.
+    if (response == null) {
+      throw new NullPointerException(&quot;interceptor &quot; + interceptor + &quot; returned null&quot;);
+    }
+
+    if (response.body() == null) {
+      throw new IllegalStateException(
+          &quot;interceptor &quot; + interceptor + &quot; returned a response with no body&quot;);
+    }
+
+    return response;
+  }
+</code></pre>
+<p>这里主要看标注的注意处  这里主要通过index+1创建了下一个拦截器，也就行程了拦截器链</p>
+<p>然后通过每个拦截器中都有intercept这个方法，这个方法中返回response然后进行返回。</p>
+<p>这里有个流程是很有意思的就是在proceed()方法里会会返回一个Response 而 这个Response是通过intercep()这个方法并传入一个拦截器返回的，而在各个拦截器中又通过传入的拦截器调回去，这也是拦截器流程的核心机制。从而实现了拦截器链，只有所有的拦截器执行完毕后，一个网络请求的响应response 才会被返回。</p>
+<h2 id="内置拦截器">内置拦截器</h2>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png"></figure>
+<p>OkHttp中的内置连接器都基实现了通用的接口</p>
+<h3 id="retryandfollowupinterceptor-接口重定向拦截器">RetryAndFollowUpInterceptor 接口重定向拦截器</h3>
+<p>这个拦截器主要是根据结果判断然后进行重试的拦截器</p>
+<pre><code> @Override public Response intercept(Chain chain) throws IOException {
+    Request request = chain.request();
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Call call = realChain.call();
+    EventListener eventListener = realChain.eventListener();
+
+    streamAllocation = new StreamAllocation(client.connectionPool(), createAddress(request.url()),
+        call, eventListener, callStackTrace);
+
+    int followUpCount = 0;
+    Response priorResponse = null;
+    while (true) {
+      if (canceled) {//注意处1
+        streamAllocation.release();
+        throw new IOException(&quot;Canceled&quot;);
+      }
+
+      Response response;
+      boolean releaseConnection = true;
+      try {//注意处2
+        response = realChain.proceed(request, streamAllocation, null, null);
+        releaseConnection = false;
+      } catch (RouteException e) {
+        // The attempt to connect via a route failed. The request will not have been sent.
+        if (!recover(e.getLastConnectException(), false, request)) {
+          throw e.getLastConnectException();
+        }
+        releaseConnection = false;
+        continue;
+      } catch (IOException e) {
+        // An attempt to communicate with a server failed. The request may have been sent.
+        boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
+        if (!recover(e, requestSendStarted, request)) throw e;
+        releaseConnection = false;
+        continue;
+      } finally {
+        // We're throwing an unchecked exception. Release any resources.
+        if (releaseConnection) {
+          streamAllocation.streamFailed(null);
+          streamAllocation.release();
+        }
+      }
+
+      // Attach the prior response if it exists. Such responses never have a body.
+      if (priorResponse != null) {
+        response = response.newBuilder()
+            .priorResponse(priorResponse.newBuilder()
+                    .body(null)
+                    .build())
+            .build();
+      }
+
+      Request followUp = followUpRequest(response);
+
+      if (followUp == null) {
+        if (!forWebSocket) {
+          streamAllocation.release();
+        }
+        return response;
+      }
+
+      closeQuietly(response.body());
+
+      if (++followUpCount &gt; MAX_FOLLOW_UPS) {
+        streamAllocation.release();
+        throw new ProtocolException(&quot;Too many follow-up requests: &quot; + followUpCount);
+      }
+
+      if (followUp.body() instanceof UnrepeatableRequestBody) {
+        streamAllocation.release();
+        throw new HttpRetryException(&quot;Cannot retry streamed HTTP body&quot;, response.code());
+      }
+
+      if (!sameConnection(response, followUp.url())) {
+        streamAllocation.release();
+        streamAllocation = new StreamAllocation(client.connectionPool(),
+            createAddress(followUp.url()), call, eventListener, callStackTrace);
+      } else if (streamAllocation.codec() != null) {
+        throw new IllegalStateException(&quot;Closing the body of &quot; + response
+            + &quot; didn't close its backing stream. Bad interceptor?&quot;);
+      }
+
+      request = followUp;
+      priorResponse = response;
+    }
+  }
+</code></pre>
+<p>具体分析下流程<br>
+首先会创建一个StreamAllocation对象</p>
+<p>其实主要看while循环里面的方法，这里是一个死循环来进行尝试，首先会判断是否取消了请求，如果取消进行释放，并抛出异常，如注意处1.</p>
+<p>然后主注意处2要进行请求，然后通过catch判断各种需要重新连接的情况，如果重新连接就通过continue直接在进行一遍循环。</p>
+<p>当代码可以执行到 followUpRequest 方法就表示这个请求是成功的，但是服务器返回的状态码可能不是 200 ok 的情况，这时还需要对该请求进行检测，其主要就是通过返回码进行判断的，然后如果没问题就会返回respnse并结束循环。</p>
+<p>如果没有正常返回结果的话后面会关闭请求还会做一些异常检查，如重新连接的次数是否超过了最大次数之类的。</p>
+<h3 id="bridgeinterceptor-请求和响应转化拦截器">BridgeInterceptor 请求和响应转化拦截器</h3>
+<p>这个拦截器主要负责设置内容长度，编码方式以及一些压缩等配置，主要是添加头部信息的功能。</p>
+<pre><code> @Override public Response intercept(Chain chain) throws IOException {
+    Request userRequest = chain.request();
+    Request.Builder requestBuilder = userRequest.newBuilder();
+
+    RequestBody body = userRequest.body();
+    if (body != null) {
+      MediaType contentType = body.contentType();
+      if (contentType != null) {
+        requestBuilder.header(&quot;Content-Type&quot;, contentType.toString());
+      }
+
+      long contentLength = body.contentLength();
+      if (contentLength != -1) {
+        requestBuilder.header(&quot;Content-Length&quot;, Long.toString(contentLength));
+        requestBuilder.removeHeader(&quot;Transfer-Encoding&quot;);
+      } else {
+        requestBuilder.header(&quot;Transfer-Encoding&quot;, &quot;chunked&quot;);
+        requestBuilder.removeHeader(&quot;Content-Length&quot;);
+      }
+    }
+
+    if (userRequest.header(&quot;Host&quot;) == null) {
+      requestBuilder.header(&quot;Host&quot;, hostHeader(userRequest.url(), false));
+    }
+
+    if (userRequest.header(&quot;Connection&quot;) == null) {
+      requestBuilder.header(&quot;Connection&quot;, &quot;Keep-Alive&quot;);
+    }
+
+    // If we add an &quot;Accept-Encoding: gzip&quot; header field we're responsible for also decompressing
+    // the transfer stream.
+    boolean transparentGzip = false;
+    if (userRequest.header(&quot;Accept-Encoding&quot;) == null &amp;&amp; userRequest.header(&quot;Range&quot;) == null) {
+      transparentGzip = true;
+      requestBuilder.header(&quot;Accept-Encoding&quot;, &quot;gzip&quot;);
+    }
+
+    List&lt;Cookie&gt; cookies = cookieJar.loadForRequest(userRequest.url());
+    if (!cookies.isEmpty()) {
+      requestBuilder.header(&quot;Cookie&quot;, cookieHeader(cookies));
+    }
+
+    if (userRequest.header(&quot;User-Agent&quot;) == null) {
+      requestBuilder.header(&quot;User-Agent&quot;, Version.userAgent());
+    }
+
+    Response networkResponse = chain.proceed(requestBuilder.build());
+
+    HttpHeaders.receiveHeaders(cookieJar, userRequest.url(), networkResponse.headers());
+
+    Response.Builder responseBuilder = networkResponse.newBuilder()
+        .request(userRequest);
+
+    if (transparentGzip
+        &amp;&amp; &quot;gzip&quot;.equalsIgnoreCase(networkResponse.header(&quot;Content-Encoding&quot;))
+        &amp;&amp; HttpHeaders.hasBody(networkResponse)) {
+      GzipSource responseBody = new GzipSource(networkResponse.body().source());
+      Headers strippedHeaders = networkResponse.headers().newBuilder()
+          .removeAll(&quot;Content-Encoding&quot;)
+          .removeAll(&quot;Content-Length&quot;)
+          .build();
+      responseBuilder.headers(strippedHeaders);
+      String contentType = networkResponse.header(&quot;Content-Type&quot;);
+      responseBuilder.body(new RealResponseBody(contentType, -1L, Okio.buffer(responseBody)));
+    }
+
+    return responseBuilder.build();
+  }
+</code></pre>
+<p>这里通过注意出可以看到其中一个主要的功能就是，如果刚开始我们没有配置一些请求头信息会添加一些默认的请求头信息。</p>
+<p>这里还有一个重要功能就是 判断是否需要使用Gzip压缩功能。以及将网络请求回来的响应Response转化为永华可用的response</p>
+<h3 id="cacheinterceptor-缓存拦截器">CacheInterceptor 缓存拦截器</h3>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+   Response cacheCandidate = cache != null
+       ? cache.get(chain.request())
+       : null;
+
+   long now = System.currentTimeMillis();
+
+   CacheStrategy strategy = new CacheStrategy.Factory(now, chain.request(), cacheCandidate).get();
+   Request networkRequest = strategy.networkRequest;
+   Response cacheResponse = strategy.cacheResponse;
+
+   if (cache != null) {
+     cache.trackResponse(strategy);
+   }
+
+   if (cacheCandidate != null &amp;&amp; cacheResponse == null) {
+     closeQuietly(cacheCandidate.body()); // The cache candidate wasn't applicable. Close it.
+   }
+
+   // If we're forbidden from using the network and the cache is insufficient, fail.
+   if (networkRequest == null &amp;&amp; cacheResponse == null) {
+     return new Response.Builder()
+         .request(chain.request())
+         .protocol(Protocol.HTTP_1_1)
+         .code(504)
+         .message(&quot;Unsatisfiable Request (only-if-cached)&quot;)
+         .body(Util.EMPTY_RESPONSE)
+         .sentRequestAtMillis(-1L)
+         .receivedResponseAtMillis(System.currentTimeMillis())
+         .build();
+   }
+
+   // If we don't need the network, we're done.
+   if (networkRequest == null) {
+     return cacheResponse.newBuilder()
+         .cacheResponse(stripBody(cacheResponse))
+         .build();
+   }
+
+   Response networkResponse = null;
+   try {
+     networkResponse = chain.proceed(networkRequest);
+   } finally {
+     // If we're crashing on I/O or otherwise, don't leak the cache body.
+     if (networkResponse == null &amp;&amp; cacheCandidate != null) {
+       closeQuietly(cacheCandidate.body());
+     }
+   }
+
+   // If we have a cache response too, then we're doing a conditional get.
+   if (cacheResponse != null) {
+     if (networkResponse.code() == HTTP_NOT_MODIFIED) {
+       Response response = cacheResponse.newBuilder()
+           .headers(combine(cacheResponse.headers(), networkResponse.headers()))
+           .sentRequestAtMillis(networkResponse.sentRequestAtMillis())
+           .receivedResponseAtMillis(networkResponse.receivedResponseAtMillis())
+           .cacheResponse(stripBody(cacheResponse))
+           .networkResponse(stripBody(networkResponse))
+           .build();
+       networkResponse.body().close();
+
+       // Update the cache after combining headers but before stripping the
+       // Content-Encoding header (as performed by initContentStream()).
+       cache.trackConditionalCacheHit();
+       cache.update(cacheResponse, response);
+       return response;
+     } else {
+       closeQuietly(cacheResponse.body());
+     }
+   }
+
+   Response response = networkResponse.newBuilder()
+       .cacheResponse(stripBody(cacheResponse))
+       .networkResponse(stripBody(networkResponse))
+       .build();
+
+   if (cache != null) {
+     if (HttpHeaders.hasBody(response) &amp;&amp; CacheStrategy.isCacheable(response, networkRequest)) {
+       // Offer this request to the cache.
+       CacheRequest cacheRequest = cache.put(response);
+       return cacheWritingResponse(cacheRequest, response);
+     }
+
+     if (HttpMethod.invalidatesCache(networkRequest.method())) {
+       try {
+         cache.remove(networkRequest);
+       } catch (IOException ignored) {
+         // The cache cannot be written.
+       }
+     }
+   }
+
+   return response;
+ }
+</code></pre>
+<p>主要流程，先判断是否有缓存。然后如果缓存不可用会关闭，然后在会判断网络禁止的话和缓存都不可用的话会创建一个响应返回504</p>
+<pre><code>   // If we're forbidden from using the network and the cache is insufficient, fail.
+    if (networkRequest == null &amp;&amp; cacheResponse == null) {
+      return new Response.Builder()
+          .request(chain.request())
+          .protocol(Protocol.HTTP_1_1)
+          .code(504)
+          .message(&quot;Unsatisfiable Request (only-if-cached)&quot;)
+          .body(Util.EMPTY_RESPONSE)
+          .sentRequestAtMillis(-1L)
+          .receivedResponseAtMillis(System.currentTimeMillis())
+          .build();
+    }
+</code></pre>
+<p>如果前面的条件都不符合，会读取网络结果也就是会跳转到下一个拦截器， if (networkResponse.code() == HTTP_NOT_MODIFIED)  这里会判断如果是304的话使用缓存，还会对缓存进行比对和更新。然后并返回response。在这之前会先判断cacheResponse是否为空，如果为空则走后面的代码，会创建一个response。</p>
+<h3 id="connectinterceptor-网络连接拦截器">ConnectInterceptor 网络连接拦截器</h3>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Request request = realChain.request();
+    StreamAllocation streamAllocation = realChain.streamAllocation();
+
+    // We need the network to satisfy this request. Possibly for validating a conditional GET.
+    boolean doExtensiveHealthChecks = !request.method().equals(&quot;GET&quot;);
+    HttpCodec httpCodec = streamAllocation.newStream(client, chain, doExtensiveHealthChecks);
+    RealConnection connection = streamAllocation.connection();
+
+    return realChain.proceed(request, streamAllocation, httpCodec, connection);
+  }
+</code></pre>
+<p>这里的StreamAllocation其实是在重定向拦截器中创建，但是他传入到ConnectInterceptor中进行使用。然后会通过streamAllocation来创建httpCodec，httpCodec用来编码request和解码response。然后会通过streamAllocation.connection();来创建一个RealConnection，RealConnection主要来进行实际的网络传输。然后还是通过proceed方法传入到下一个拦截器。</p>
+<h3 id="callserverinterceptor">CallServerInterceptor</h3>
+<p>这个拦截器是拦截器链中最后一个拦截器，是真正的发起请求和处理返回响应的拦截器。</p>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+   RealInterceptorChain realChain = (RealInterceptorChain) chain;
+   HttpCodec httpCodec = realChain.httpStream();
+   StreamAllocation streamAllocation = realChain.streamAllocation();
+   RealConnection connection = (RealConnection) realChain.connection();
+   Request request = realChain.request();
+
+   long sentRequestMillis = System.currentTimeMillis();
+
+   realChain.eventListener().requestHeadersStart(realChain.call());
+   httpCodec.writeRequestHeaders(request);
+   realChain.eventListener().requestHeadersEnd(realChain.call(), request);
+
+   Response.Builder responseBuilder = null;
+   if (HttpMethod.permitsRequestBody(request.method()) &amp;&amp; request.body() != null) {
+     // If there's a &quot;Expect: 100-continue&quot; header on the request, wait for a &quot;HTTP/1.1 100
+     // Continue&quot; response before transmitting the request body. If we don't get that, return
+     // what we did get (such as a 4xx response) without ever transmitting the request body.
+     if (&quot;100-continue&quot;.equalsIgnoreCase(request.header(&quot;Expect&quot;))) {
+       httpCodec.flushRequest();
+       realChain.eventListener().responseHeadersStart(realChain.call());
+       responseBuilder = httpCodec.readResponseHeaders(true);
+     }
+
+     if (responseBuilder == null) {
+       // Write the request body if the &quot;Expect: 100-continue&quot; expectation was met.
+       realChain.eventListener().requestBodyStart(realChain.call());
+       long contentLength = request.body().contentLength();
+       CountingSink requestBodyOut =
+           new CountingSink(httpCodec.createRequestBody(request, contentLength));
+       BufferedSink bufferedRequestBody = Okio.buffer(requestBodyOut);
+
+       request.body().writeTo(bufferedRequestBody);
+       bufferedRequestBody.close();
+       realChain.eventListener()
+           .requestBodyEnd(realChain.call(), requestBodyOut.successfulCount);
+     } else if (!connection.isMultiplexed()) {
+       // If the &quot;Expect: 100-continue&quot; expectation wasn't met, prevent the HTTP/1 connection
+       // from being reused. Otherwise we're still obligated to transmit the request body to
+       // leave the connection in a consistent state.
+       streamAllocation.noNewStreams();
+     }
+   }
+
+   httpCodec.finishRequest();
+
+   if (responseBuilder == null) {
+     realChain.eventListener().responseHeadersStart(realChain.call());
+     responseBuilder = httpCodec.readResponseHeaders(false);
+   }
+
+   Response response = responseBuilder
+       .request(request)
+       .handshake(streamAllocation.connection().handshake())
+       .sentRequestAtMillis(sentRequestMillis)
+       .receivedResponseAtMillis(System.currentTimeMillis())
+       .build();
+
+   realChain.eventListener()
+       .responseHeadersEnd(realChain.call(), response);
+
+   int code = response.code();
+   if (forWebSocket &amp;&amp; code == 101) {
+     // Connection is upgrading, but we need to ensure interceptors see a non-null response body.
+     response = response.newBuilder()
+         .body(Util.EMPTY_RESPONSE)
+         .build();
+   } else {
+     response = response.newBuilder()
+         .body(httpCodec.openResponseBody(response))
+         .build();
+   }
+
+   if (&quot;close&quot;.equalsIgnoreCase(response.request().header(&quot;Connection&quot;))
+       || &quot;close&quot;.equalsIgnoreCase(response.header(&quot;Connection&quot;))) {
+     streamAllocation.noNewStreams();
+   }
+
+   if ((code == 204 || code == 205) &amp;&amp; response.body().contentLength() &gt; 0) {
+     throw new ProtocolException(
+         &quot;HTTP &quot; + code + &quot; had non-zero Content-Length: &quot; + response.body().contentLength());
+   }
+
+   return response;
+ }
+</code></pre>
+<p>流程<br>
+这里首先会获取到之前各个拦截器中的一些参数，首先会 httpCodec.writeRequestHeaders(request);通过这个httpCodec写入请求头信息，然后会写入请求的body信息，完成写入后会调用  httpCodec.finishRequest();<br>
+方法表示写入信息完成。</p>
+<p>然后会读取响应信息，会先读取响应头信息，响应如果读取或者创建完成后会 通过streamAllocation.noNewStreams();这个方法进行关闭流，还会判断如果响应码是204或者205的话抛出一个异常。</p>
+<p>其实这个拦截器链无非就是2个工作，发起请求，然后处理响应。至于中间会有一些封装请求信息判断响应信息等操作。</p>
+<h2 id="总结">总结</h2>
+<p>这里拦截器的流程基本分析完了，其实主要还是看清大体流程和设计思路，具体细节的部分没有过多深入，因为这些流程设计模式才是真正要学习的重点。从源码看来 好多地方还是很值得学习的。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究四]]></title>
+        <id>http://xuanguofeng.com/post/OkHttp_No.4</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.4">
+        </link>
+        <updated>2017-12-25T07:55:17.000Z</updated>
+        <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看OkHttp中的一个核心机制Dispatcher</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看OkHttp中的一个核心机制Dispatcher</p>
+<!-- more -->
+<h2 id="dispatcher是什么">Dispatcher是什么？</h2>
+<pre><code>/**
+ * Policy on when async requests are executed.
+ *
+ * &lt;p&gt;Each dispatcher uses an {@link ExecutorService} to run calls internally. If you supply your
+ * own executor, it should be able to run {@linkplain #getMaxRequests the configured maximum} number
+ * of calls concurrently.
+ */
+</code></pre>
+<p>这是Dispatcher的注释文档，异步请求的执行策略，其实Dispatcher主要用在异步请求中，但是同步请求也会涉及。发送同步和异步请求都会在Dispatcher中管理其状态，Dispatcher维护请求状态，并且维护一个线程池。</p>
+<pre><code> private int maxRequests = 64;
+  private int maxRequestsPerHost = 5;
+  private @Nullable Runnable idleCallback;
+
+  /** Executes calls. Created lazily. */
+  private @Nullable ExecutorService executorService;
+
+  /** Ready async calls in the order they'll be run. */
+  private final Deque&lt;AsyncCall&gt; readyAsyncCalls = new ArrayDeque&lt;&gt;();
+
+  /** Running asynchronous calls. Includes canceled calls that haven't finished yet. */
+  private final Deque&lt;AsyncCall&gt; runningAsyncCalls = new ArrayDeque&lt;&gt;();
+
+  /** Running synchronous calls. Includes canceled calls that haven't finished yet. */
+  private final Deque&lt;RealCall&gt; runningSyncCalls = new ArrayDeque&lt;&gt;();
+
+</code></pre>
+<p>首先看下这几个成员变量</p>
+<table>
+<thead>
+<tr>
+<th>成员变量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>maxRequests</td>
+<td>异步请求中最大的请求数量</td>
+</tr>
+<tr>
+<td>maxRequestsPerHost</td>
+<td>请求中支持最大的host数量</td>
+</tr>
+<tr>
+<td>executorService</td>
+<td>线程池</td>
+</tr>
+<tr>
+<td>readyAsyncCalls</td>
+<td>异步中准备请求队列</td>
+</tr>
+<tr>
+<td>runningAsyncCalls</td>
+<td>异步中正在运行的请求队列</td>
+</tr>
+<tr>
+<td>runningSyncCalls</td>
+<td>运行的同步请求队列</td>
+</tr>
+</tbody>
+</table>
+<h2 id="之前用到的几个重要方法">之前用到的几个重要方法</h2>
+<h3 id="enqueue方法">enqueue()方法</h3>
+<p>这个方法之前说过主要是进行异步请求。这里有一个</p>
+<pre><code> executorService().execute(call);
+</code></pre>
+<p>这个方法</p>
+<pre><code>  public synchronized ExecutorService executorService() {
+    if (executorService == null) {
+      executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
+          new SynchronousQueue&lt;Runnable&gt;(), Util.threadFactory(&quot;OkHttp Dispatcher&quot;, false));
+    }
+    return executorService;
+  }
+
+</code></pre>
+<p>这个方法主要是创建一个线程池。</p>
+<h3 id="finished方法">finished方法</h3>
+<pre><code>  private &lt;T&gt; void finished(Deque&lt;T&gt; calls, T call, boolean promoteCalls) {
+    int runningCallsCount;
+    Runnable idleCallback;
+    synchronized (this) {
+      if (!calls.remove(call)) throw new AssertionError(&quot;Call wasn't in-flight!&quot;);
+      if (promoteCalls) promoteCalls();
+      runningCallsCount = runningCallsCount();
+      idleCallback = this.idleCallback;
+    }
+
+    if (runningCallsCount == 0 &amp;&amp; idleCallback != null) {
+      idleCallback.run();
+    }
+  }
+</code></pre>
+<ol>
+<li>
+<p>由于有两个队列，准备的对列要想加入运行队列 可定要在运行队列删除对应的请求，!calls.remove(call)这个方法就是将执行完的异步请求，从正在执行的队列中删除。</p>
+</li>
+<li>
+<p>promoteCalls()方法主要就是将ready请求队列移到running请求队列的方法</p>
+</li>
+<li>
+<p>runningCallsCount()进行重新计算请求队列和ready队列的数量</p>
+</li>
+</ol>
+<h3 id="其他方法">其他方法</h3>
+<p>还有些其他方法，其实也比较简单就不贴源码了，如取消所有请求的方法，获取最大请求数量、设置最大请求数量等配置方法。</p>
+<h2 id="总结">总结：</h2>
+<p>其实Dispatcher的代码并不复杂，但是却在这个类里封装了关于所有的请求的管理，这要是Dispatcher的核心所在。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究三]]></title>
+        <id>http://xuanguofeng.com/post/OkHttp_No.3</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.3">
+        </link>
+        <updated>2017-12-25T06:59:42.000Z</updated>
+        <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看异步请求流程</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看异步请求流程</p>
+<!-- more -->
+<h2 id="异步请求流程">异步请求流程</h2>
+<p>1.创建OkHttpClient和Request对象</p>
+<p>2.将Request封装成Call对象</p>
+<p>3.调用Call的enqueue()发送同步请求</p>
+<p>4.在callback中处理成功和失败的请款</p>
+<h2 id="源码执行流程">源码执行流程</h2>
+<h3 id="流程分析">流程分析</h3>
+<p>同步主要通过call.enqueue方法去执行，这个方法主要在RealCall中</p>
+<pre><code>
+  @Override 
+  public void enqueue(Callback responseCallback) {
+      synchronized (this) {
+      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);
+      executed = true;
+    }
+    captureCallStackTrace();
+    eventListener.callStart(this);
+    client.dispatcher().enqueue(new AsyncCall(responseCallback));
+  }
+
+
+</code></pre>
+<p>1、其实这段代码的流程基本和同步的一样 只不过是最后要执行enqueue方法，而同步的是通过 getResponseWithInterceptorChain();直接获取result了。当然异步也是执行getResponseWithInterceptorChain();获取result。只不过在获取result之前做了一些异步操作。</p>
+<p>2、获取通过enqueue()方法并传入了一个new AsyncCall(responseCallback)进行异步操作，其实这个AsyncCall是一个Runnable。这时大概就明白了。</p>
+<p>3、先看下Dispatcher里的这个enqueue方法。这个Dispatcher是一个调度器核心类，下一节单独整理。</p>
+<pre><code>
+  synchronized void enqueue(AsyncCall call) {
+    if (runningAsyncCalls.size() &lt; maxRequests &amp;&amp; runningCallsForHost(call) &lt; maxRequestsPerHost) {
+      runningAsyncCalls.add(call);
+      executorService().execute(call);
+    } else {
+      readyAsyncCalls.add(call);
+    }
+  }
+</code></pre>
+<p>这里其实也很简，由于是异步，有一个异步运行队列，和一个准备队列。这里会进行条件判断，就是首先判断目前请求队列里的请求数量是不是小于最大的数量，最大值为64。并且call对应的host数目不应超过maxRequestsPerHost，maxRequestsPerHost的值是5。</p>
+<p>如果满足条件就添加到运行的队列中，如果不满足就添加到准备队列中。然后通过线程池实例executorService进行执行。</p>
+<h3 id="asynccall分析">AsyncCall分析</h3>
+<p>上文提到AsyncCall其实是NamedRunnable的子类 而 NamedRunnable又实现Runnable接口。</p>
+<pre><code>
+/**
+ * Runnable implementation which always sets its thread name.
+ */
+public abstract class NamedRunnable implements Runnable {
+  protected final String name;
+
+  public NamedRunnable(String format, Object... args) {
+    this.name = Util.format(format, args);
+  }
+
+  @Override public final void run() {
+    String oldName = Thread.currentThread().getName();
+    Thread.currentThread().setName(name);
+    try {
+      execute();
+    } finally {
+      Thread.currentThread().setName(oldName);
+    }
+  }
+
+  protected abstract void execute();
+}
+
+</code></pre>
+<p>这里看到其实在run方法里执行了execute这个方法，所以我们重点分析NamedRunnable实现类的的execute方法。</p>
+<pre><code>  final class AsyncCall extends NamedRunnable {
+    private final Callback responseCallback;
+
+    AsyncCall(Callback responseCallback) {
+      super(&quot;OkHttp %s&quot;, redactedUrl());
+      this.responseCallback = responseCallback;
+    }
+
+    String host() {
+      return originalRequest.url().host();
+    }
+
+    Request request() {
+      return originalRequest;
+    }
+
+    RealCall get() {
+      return RealCall.this;
+    }
+
+    @Override protected void execute() {
+      boolean signalledCallback = false;
+      try {
+        Response response = getResponseWithInterceptorChain();
+        if (retryAndFollowUpInterceptor.isCanceled()) {
+          signalledCallback = true;
+          responseCallback.onFailure(RealCall.this, new IOException(&quot;Canceled&quot;));
+        } else {
+          signalledCallback = true;
+          responseCallback.onResponse(RealCall.this, response);
+        }
+      } catch (IOException e) {
+        if (signalledCallback) {
+          // Do not signal the callback twice!
+          Platform.get().log(INFO, &quot;Callback failure for &quot; + toLoggableString(), e);
+        } else {
+          eventListener.callFailed(RealCall.this, e);
+          responseCallback.onFailure(RealCall.this, e);
+        }
+      } finally {
+        client.dispatcher().finished(this);
+      }
+    }
+  }
+
+</code></pre>
+<p>其实execute的流程和同步的也基本差不多了 最主要还是通过getResponseWithInterceptorChain（）方法返回Response，getResponseWithInterceptorChain这个方法后面会单独详细说明。<br>
+然后主要流程就是先通过国拦截器判断是否取消请求，如果取消的话执行onFailure返回，否则返回onResponse并传入response。</p>
+<p>然后就是异常处理也返回onFailure。</p>
+<p>最后要执行finished。</p>
+<h2 id="总结">总结：</h2>
+<p>其实同步和异步的主要区别在于线程池的使用，然后其他流程也是通过OkHttp中的拦截器链进行返回响应。在这里可以体会下这种设计的巧妙之处。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究二]]></title>
+        <id>http://xuanguofeng.com/post/OkHttp_No.2</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.2">
+        </link>
+        <updated>2017-12-21T07:31:48.000Z</updated>
+        <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看同步请求流程</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看同步请求流程</p>
+<!-- more-->
+<h2 id="同步请求流程">同步请求流程</h2>
+<h3 id="使用流程">使用流程</h3>
+<p>1.创建OkHttpClient和Request对象</p>
+<p>2.将Request封装成Call对象</p>
+<p>3.调用Call的execute()发送同步请求</p>
+<h3 id="源码执行流程">源码执行流程</h3>
+<p>同步主要通过call.execute方法去执行，这个方法主要在RealCall中</p>
+<pre><code>  @Override public Response execute() throws IOException {
+    synchronized (this) {
+      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);
+      executed = true;
+    } //见 解释处1
+    
+    captureCallStackTrace();
+    eventListener.callStart(this);//见解释处2
+    try {
+      client.dispatcher().executed(this);//见解释处3
+      Response result = getResponseWithInterceptorChain();
+      if (result == null) throw new IOException(&quot;Canceled&quot;);
+      return result;
+    } catch (IOException e) {
+      eventListener.callFailed(this, e);
+      throw e;
+    } finally {
+      client.dispatcher().finished(this);
+    }
+  }
+
+
+</code></pre>
+<p>这段代码的步骤</p>
+<p>1.首先通过executed判断这个方法是否被执行，执行过的话就抛出异常，没有执行的话就设置executed为true,防止下次执行，这么看来每个call只能被执行一次，如果想要一个完全一样的call,可以进行clone方法克隆。</p>
+<p>2.通过eventListener.callStart(this);方法开启了一个事件监听器，这个监听器的介绍也有，主要监控HTTP的调用的数量、大小和持续时间等，这个监听器，在异步请求方法中也会开启。</p>
+<p>3.client.dispatcher().executed(this);这句话其实是将请求添加到同步请求队列中]</p>
+<pre><code> /** Used by {@code Call#execute} to signal it is in-flight. */
+ synchronized void executed(RealCall call) {
+   runningSyncCalls.add(call);
+ }
+</code></pre>
+<p>这个 runningSyncCalls其实就是一个同步请求队列集合。dispatcher是OkHttpClient.Builder的成员，后面会单独分析。</p>
+<p>4.调用 getResponseWithInterceptorChain这个方法来获取response。这个方法可以先浏览下 后面会进行分析。</p>
+<pre><code>Response getResponseWithInterceptorChain() throws IOException {
+   // Build a full stack of interceptors.
+   List&lt;Interceptor&gt; interceptors = new ArrayList&lt;&gt;();
+   interceptors.addAll(client.interceptors());
+   interceptors.add(retryAndFollowUpInterceptor);
+   interceptors.add(new BridgeInterceptor(client.cookieJar()));
+   interceptors.add(new CacheInterceptor(client.internalCache()));
+   interceptors.add(new ConnectInterceptor(client));
+   if (!forWebSocket) {
+     interceptors.addAll(client.networkInterceptors());
+   }
+   interceptors.add(new CallServerInterceptor(forWebSocket));
+
+   Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
+       originalRequest, this, eventListener, client.connectTimeoutMillis(),
+       client.readTimeoutMillis(), client.writeTimeoutMillis());
+
+   return chain.proceed(originalRequest);
+ }
+</code></pre>
+<p>其实主要就是通过一层一层的拦截器操作，比如重试拦截器，缓存拦截器等，这也是OkHttp的核心思想之一，通过一系列拦截器可以进行各种功能的扩展和实现。后面会单独分析。</p>
+<p>5.如果result不为null将结果返回，如果有异常的话 执行监听的failed方法。最后无论如何都要通过dispatcher的finished方法通知dispatcher执行完毕。</p>
+<p>注意：同步发送请求后，就会进入阻塞状态直到收到请求，</p>
+<h2 id="总结">总结</h2>
+<p>这样，其实同步请求流程的表面源码基本已经分析完毕了，但是在这段代码后还隐藏着一些其他的机制，我们后面分析异步的时候会分析到。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android热门开源框架-Okhttp源码探究一]]></title>
+        <id>http://xuanguofeng.com/post/OkHttp_No.1</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.1">
+        </link>
+        <updated>2017-12-15T08:50:53.000Z</updated>
+        <summary type="html"><![CDATA[<p>OkHttp是目前很流行的网络请求框架。源码也设计很优秀的思想。有必要去探究一下源码。</p>
+<p>由于篇幅较长，分为五篇文章。本篇文章将讨论OkHttp的执行流程分析</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>OkHttp是目前很流行的网络请求框架。源码也设计很优秀的思想。有必要去探究一下源码。</p>
+<p>由于篇幅较长，分为五篇文章。本篇文章将讨论OkHttp的执行流程分析</p>
+<!-- more -->
+<h2 id="文章目录">文章目录</h2>
+<p>一、OkHttp执行流程分析</p>
+<p>二、同步请求流程分析</p>
+<p>三、异步请求流程分析</p>
+<p>四、任务调度核心dispatcher</p>
+<p>五、OkHttp中五大拦截器源码与功能分析</p>
+<h2 id="okhttp执行流程分析">OkHttp执行流程分析</h2>
+<h3 id="流程图">流程图</h3>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-7c800950f025a328.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="流程图.png"></figure>
+<h3 id="流程分析">流程分析</h3>
+<h4 id="1-创建okhttpclient">1、创建OkHttpClient</h4>
+<p>OkHttpClient是一个通过build模式去构建的。</p>
+<pre><code>    public Builder() {
+      dispatcher = new Dispatcher();
+      protocols = DEFAULT_PROTOCOLS;
+      connectionSpecs = DEFAULT_CONNECTION_SPECS;
+      eventListenerFactory = EventListener.factory(EventListener.NONE);
+      proxySelector = ProxySelector.getDefault();
+      cookieJar = CookieJar.NO_COOKIES;
+      socketFactory = SocketFactory.getDefault();
+      hostnameVerifier = OkHostnameVerifier.INSTANCE;
+      certificatePinner = CertificatePinner.DEFAULT;
+      proxyAuthenticator = Authenticator.NONE;
+      authenticator = Authenticator.NONE;
+      connectionPool = new ConnectionPool();
+      dns = Dns.SYSTEM;
+      followSslRedirects = true;
+      followRedirects = true;
+      retryOnConnectionFailure = true;
+      connectTimeout = 10_000;
+      readTimeout = 10_000;
+      writeTimeout = 10_000;
+      pingInterval = 0;
+    }
+</code></pre>
+<p>然后通过build的build方法构建</p>
+<pre><code>    public OkHttpClient build() {
+      return new OkHttpClient(this);
+    }
+</code></pre>
+<p>这里主要是通过build设计模式配置一些常用的参数信息，如超时时间等。</p>
+<h4 id="2-创建request">2、创建Request</h4>
+<pre><code> public Builder() {
+      this.method = &quot;GET&quot;;
+      this.headers = new Headers.Builder();
+ }
+
+ Builder(Request request) {
+      this.url = request.url;
+      this.method = request.method;
+      this.body = request.body;
+      this.tag = request.tag;
+      this.headers = request.headers.newBuilder();
+    }
+
+</code></pre>
+<p>Request也是通过build模式配置一些请求信息等，如url,请求方法，请求体，请求头等。</p>
+<h4 id="3-创建call">3、创建Call</h4>
+<pre><code>Call call = client.newCall(request);
+</code></pre>
+<p>主要是通过client.newCall然后传入一个request来进行创建。</p>
+<pre><code>@Override 
+public Call newCall(Request request) {
+    return RealCall.newRealCall(this, request, false);
+  }
+</code></pre>
+<p>这里其实是创建了一个RealCall，RealCall也是OkHttp框架主要流程的一部分，主要是链接request和Response的桥梁，通过call进行同步和异步方法的执行。在同步和异步的执行方法里会返回response。例如：</p>
+<pre><code>  @Override public Response execute() throws IOException {
+    synchronized (this) {
+      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);
+      executed = true;
+    }
+    captureCallStackTrace();
+    eventListener.callStart(this);
+    try {
+      client.dispatcher().executed(this);
+      Response result = getResponseWithInterceptorChain();
+      if (result == null) throw new IOException(&quot;Canceled&quot;);
+      return result;
+    } catch (IOException e) {
+      eventListener.callFailed(this, e);
+      throw e;
+    } finally {
+      client.dispatcher().finished(this);
+    }
+  }
+
+</code></pre>
+<h4 id="4-通过call执行同步或者异步请求获取response">4、通过Call执行同步或者异步请求，获取response</h4>
+<pre><code> Response response = call.execute();
+ System.out.println(response.body().string());
+</code></pre>
+<p>上面已经说过通过call的execute可以进行同步请求，然后获取response，这个response就是我们想要的返回的信息。</p>
+<p>也可以通过call.enqueue方法传入也一个监听器，进行异步请求。</p>
+<pre><code>call.enqueue(new Callback() {
+    @Override
+    public void onFailure(Call call, IOException e) {
+       //返回失败的情况             
+       }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+		//调用成功的情况
+                }
+            });
+</code></pre>
+<h4 id="5-完整的get请求和post请求示例">5、完整的get请求，和post请求示例</h4>
+<h5 id="get">get</h5>
+<pre><code>OkHttpClient client = new OkHttpClient();
+
+String run(String url) throws IOException {
+  Request request = new Request.Builder()
+      .url(url)
+      .build();
+
+  Response response = client.newCall(request).execute();
+  return response.body().string();
+}
+
+</code></pre>
+<h5 id="post">post</h5>
+<pre><code>public static final MediaType JSON
+    = MediaType.parse(&quot;application/json; charset=utf-8&quot;);
+
+OkHttpClient client = new OkHttpClient();
+
+String post(String url, String json) throws IOException {
+  RequestBody body = RequestBody.create(JSON, json);
+  Request request = new Request.Builder()
+      .url(url)
+      .post(body)
+      .build();
+  Response response = client.newCall(request).execute();
+  return response.body().string();
+}
+</code></pre>
+<h4 id="6-总结">6、总结</h4>
+<p>这篇只是简单分析OkHttp的使用流程，其实还有一部分核心的流程是在源码中体现的比如dispatcher调度器的使用流程，与拦截器的核心功能等，这一部分将在后面的总结中进行单独分析。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android优化-绘制优化]]></title>
+        <id>http://xuanguofeng.com/post/Android优化-绘制优化</id>
+        <link href="http://xuanguofeng.com/post/Android优化-绘制优化">
+        </link>
+        <updated>2017-12-13T13:24:56.000Z</updated>
+        <summary type="html"><![CDATA[<p><strong>Android系统显示原理</strong><br>
+Android应用程序把经过测量，绘制，布局的surface缓存数据，通过SufraceFilnger把数据渲染到显示屏幕上通过Android的刷新机制来刷新数据。也就是说应用层负责绘制，系统层负责渲染，通过进程间通信把应用层需要绘制的数据传递到系统层服务，系统层服务他通过刷新机制把数据更新到屏幕。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p><strong>Android系统显示原理</strong><br>
+Android应用程序把经过测量，绘制，布局的surface缓存数据，通过SufraceFilnger把数据渲染到显示屏幕上通过Android的刷新机制来刷新数据。也就是说应用层负责绘制，系统层负责渲染，通过进程间通信把应用层需要绘制的数据传递到系统层服务，系统层服务他通过刷新机制把数据更新到屏幕。</p>
+<!-- more -->
+<h3 id="应用层">应用层</h3>
+<p>view的绘制有三个核心步骤，通过Measure和Layout来确定当前需要绘制的View所在的大小和位置，通过绘制（Draw）到surface,递归方式获取View的大小和位置，并以深度作为优先级，层级越深，元素越多，耗时也就越长。</p>
+<h3 id="系统层">系统层</h3>
+<p>系统层主要是将要显示的数据渲染到屏幕上，CPU主要负责数据计算工作，GPU负责渲染。API不允许CPU和GPU直接通信， 所以通过中间的一个图形驱动器来连接这两部分。图形驱动维护了一个队列，cpu把 diplay list添加到队列中，GPU从这个队列取出数据并进行绘制，最终在屏幕显示出来。</p>
+<h2 id="android页面卡顿的原因">Android页面卡顿的原因</h2>
+<h3 id="界面绘制方面">界面绘制方面</h3>
+<p>主要原因是绘制的层级深、页面复杂、刷新不合理、由于这些原因导致卡顿的场景更多出现在UI和启动后的初始界面以及跳转到页面的绘制上。</p>
+<h3 id="数据处理方面">数据处理方面</h3>
+<p>原因是数据的处理量太大，一般分为三种情况<br>
+数据处理在UI线程</p>
+<p>数据处理占用CPU搞导致主线程拿不到时间片</p>
+<p>内存增加导致GC频繁</p>
+<h2 id="优化方法">优化方法</h2>
+<h3 id="布局优化">布局优化</h3>
+<h4 id="merge-viewstub">merge viewStub</h4>
+<p>https://xuanguofeng.github.io/2016/06/10/Android%E5%B8%83%E5%B1%80%E4%BC%98%E5%8C%96merge%E3%80%81ViewStub%E7%9A%84%E7%94%A8%E6%B3%95/</p>
+<h4 id="reativelayout和linearlayout">ReativeLayout和LinearLayout</h4>
+<p>ReativeLayout存在性能低的问题，原因是ReativeLayout会对子view做两次测量，如果LinearLayout中有weight属性，也需要进行两次测量，因为没有更多的依赖关系，所有仍然会比ReativeLayout效率高，但是如果LinearyLayout嵌套过多，层次过深灰增加内存消耗，甚至引起溢出等问题。在布局上RelativeLayout不如LinearLayout快。如果嵌套过多的话要选用RelativeLayout，如果优化掉两层仅仅增加一次测量，还是非常值得的。</p>
+<p>总结：</p>
+<p>尽量使用​​RelativeLayout和LinearLayout</p>
+<p>布局层级相同情况下，使用​LinearLayout</p>
+<p>LinearLayout如果会嵌套过多使用​RelativeLayout</p>
+<h3 id="避免过度绘制">避免过度绘制</h3>
+<p>过度重绘是指在屏幕上的某个像素在同一帧的时间内被绘制了多次。</p>
+<p>例如：<br>
+LIstView中把ImageView的Background设置为Transparent,只有当图像没有获取到时，才设置对应Background占位图，这样可以避免给Avatar设置背景图而导致的过度渲染。</p>
+<p>避免过度绘制的一些方法：</p>
+<p>1.移除XML中非必须的背景</p>
+<p>2.移除window默认的背景</p>
+<p>3.按需显示站位背景图片。</p>
+<p>4.自定义view优化：可以通过canvas.clipRect()来帮助系统识别那些可见的区域。​​S</p>
+<pre><code>this.getWindow().setBackgroundDrawable(null);​
+</code></pre>
+<h3 id="页面刷新">页面刷新</h3>
+<p>要合理的控制页面的刷新机制，尽量减少刷新次数和缩小刷新区域。</p>
+<h3 id="关于动画">关于动画</h3>
+<p>Android提供了3种动画机制，其中帧动画是最消耗内存的，效果也最差，所以一般不推荐使用，补间动画也会导致view重绘频繁，而且事件也不会跟随动画，所以推荐基于性能考虑推荐使用属性动画，属性动画递归的次数要明显小于补间动画，也没有补间动画事件的问题。</p>
+<h3 id="使用硬件加速">使用硬件加速</h3>
+<p>Android3.0后引入了硬件加速概念，用来提高渲染速度，并达到更顺畅的效果</p>
+<h3 id="启动优化">启动优化</h3>
+<p>启动优化主要就是在APP的启动过程中做尽量少的事情，启动主要完成三件事，UI布局、绘制和数据准备，启动速度就的优化就是要优化这个三个过程。</p>
+<h2 id="性能分析工具">性能分析工具</h2>
+<h3 id="profile-gpu-rendering">Profile GPU Rendering</h3>
+<p>这个工具在开发者选项中可以打开，主要功能：</p>
+<p>图形检测工具，能实时反映当前绘制的耗时。</p>
+<p>横轴表示时间，纵轴表示每一帧的耗时。</p>
+<p>随之时间推移，从左到右的刷新呈现。</p>
+<p>提供了一个标准的耗时。</p>
+<h3 id="traceview">TraceView</h3>
+<p>TraceView是Android SDK自带工具，用来分析函数调用过程，可以对Android的应用程序以及Framework层的代码进行性能分析。</p>
+<h3 id="hierarchy-viewer-布局优化工具">Hierarchy Viewer 布局优化工具</h3>
+<p>Hierarchy Viewer工具提供了一个可视化界面显示布局的层次结构，用来检测Layout嵌套及绘制时间，以可视化的布局角度直观获取Layout布局设计和各种属性信息，开发者在台欧式和布局UI界面可以很方便的使用。</p>
+<h3 id="过度绘制检测工具">过度绘制检测工具</h3>
+<p>开发者选项中打开 show GPU Overdraw选项<br>
+描述方式：</p>
+<p>无色：没有过度绘制，每个像素绘制了1次。</p>
+<p>蓝色：每个像素多绘制了1次。大片蓝色还是可以接受的如果整个窗口是蓝色的，可以尝试优化减少一层绘制。</p>
+<p>绿色：每个像素多绘制了2次。</p>
+<p>淡红：每个像素多绘制了3次，一般来说这个区域不超过屏幕的1/4是可以接受的。</p>
+<p>深红：每个像素多绘制4次或者更多。严重影响性能，需要优化，避免深红色区域。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[重温java基础-反射机制]]></title>
+        <id>http://xuanguofeng.com/post/重温java基础-反射机制</id>
+        <link href="http://xuanguofeng.com/post/重温java基础-反射机制">
+        </link>
+        <updated>2017-12-13T06:31:22.000Z</updated>
+        <summary type="html"><![CDATA[<p><strong>反射是什么？</strong><br>
+在运行状态中，获取一个类的所有属性和方法。这种动态获取信息以及调用对象的方法的功能。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p><strong>反射是什么？</strong><br>
+在运行状态中，获取一个类的所有属性和方法。这种动态获取信息以及调用对象的方法的功能。</p>
+<!-- more-->
+<h3 id="使用反射机制的一些框架">使用反射机制的一些框架？</h3>
+<p>Retrofit中的注解功能、EventBus，动态生成框架 Gson。</p>
+<h3 id="使用反射技术查看类信息">使用反射技术查看类信息</h3>
+<h4 id="获取class对象的三种方法">获取Class对象的三种方法</h4>
+<h5 id="使用objectgetclass方法">使用Object.getClass方法</h5>
+<p>如果我们能知道一个对象，可以通过调用这个对象的getClass方法获得一个Class对象。<br>
+例如：</p>
+<pre><code>Person person = new Person();
+Class&lt;? extends Person&gt; aClass = person.getClass();
+System.out.println(aClass.getName());
+
+</code></pre>
+<p>这时候就会打印这个对象的全包名，aClass中还有其他信息。</p>
+<h5 id="使用class方法">使用.class方法</h5>
+<pre><code>Class&lt;? extends Person&gt; aClass = Person.class;
+System.out.println(aClass.getName());
+System.out.println(int.class);
+
+</code></pre>
+<p>如果没有获取某个类的对象，无法使用getClass方法，可以直接在类名加上.class来获取，这种方式可以用于基本数据类型。</p>
+<h5 id="使用classforname方法">使用Class.forName()方法</h5>
+<p>这个方法要使用一个类的完整路径，就可以使用Class.forName(&quot;类的完整路径&quot;)来得到相应的Class。</p>
+<pre><code> try {
+        Class mclass1 = Class.forName(&quot;main.fanshe.Person&quot;);
+        System.out.println(mclass1.getName());
+     } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+     }
+</code></pre>
+<p>注意：使用Class的newInstance()方法来创建对应类的实例，需要有默认的构造器，执行newInstance()方法实际上市利用默认构造器来创建该类的实例。</p>
+<pre><code>Class mclass1 = Class.forName(&quot;main.fanshe.Person&quot;);
+Object o = mclass1.newInstance();
+</code></pre>
+<h4 id="通过反射获取成员变量">通过反射获取成员变量</h4>
+<p>常用获取成员属性的方法</p>
+<pre><code>
+Field[] declaredFields = mclass1.getDeclaredFields();//获取Class对象的所有属性
+
+Field[] fields = mclass1.getFields();//获取class对象的public属性
+
+Field ageField = mclass1.getDeclaredField(&quot;age&quot;);//获取class指定属性
+
+Field desFiedl = mclass1.getField(&quot;name&quot;);//获取class指定的public属性
+
+
+</code></pre>
+<p>如果获取到属性可以用过set方法进行修改例如：</p>
+<pre><code> Field ageField = mclass1.getDeclaredField(&quot;age&quot;);//获取class指定属性
+ ageField.setInt(o,22);
+</code></pre>
+<p>如果这个属性是用private修饰的话,这样写的话代码会报错</p>
+<pre><code>java.lang.IllegalAccessException: Class main.fanshe.Main can not access a member of class main.fanshe.Person with modifiers &quot;private&quot;
+	at sun.reflect.Reflection.ensureMemberAccess(Reflection.java:102)
+	at java.lang.reflect.AccessibleObject.slowCheckMemberAccess(AccessibleObject.java:296)
+	at java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:288)
+	at java.lang.reflect.Field.setInt(Field.java:946)
+	at main.fanshe.Main.main(Main.java:50)
+
+</code></pre>
+<p>这时我们要添加   ageField.setAccessible(true);这个方法来声明这个变量是可以访问的就没问题了，但是使用这个方法也可能会导致些其他问题，例如<br>
+在运行时虽然你通过反射修改了变量 a 的值，但其他部分可能还在使用原来的值。</p>
+<h4 id="通过反射获取成员方法">通过反射获取成员方法</h4>
+<pre><code>Method[] methods = mclass1.getDeclaredMethods();//获取class对象的所有声明方法
+Method[] allMethods = mclass1.getMethods();//获取class对象的所有public声明方法
+Method method = mclass1.getMethod(&quot;getAge&quot;);//根据方法名返回方法
+Method method2 = mclass1.getMethod(&quot;getAge&quot;,String.class);//根据带指定形参列表的public方法
+System.out.println(method.toString());
+</code></pre>
+<p>可以通过method.invoke(o);这个方法调用反射到的方法。</p>
+<h3 id="总结">总结</h3>
+<p>反射还有好多其他方法，可以通过查询API获知，例如获取构造方法等，功能貌似还是比较强大的，但是反射的一些操作可能会引起性能消耗，例如修改某个成员变量的时候，需要引发验证访问权限等额外操作等。所以使用反射的时候也许要考虑下性能方面的问题。</p>
+<p>本篇文章参考：http://blog.csdn.net/u011240877/article/details/54604212</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Android优化-内存优化]]></title>
+        <id>http://xuanguofeng.com/post/Android优化-内存优化</id>
+        <link href="http://xuanguofeng.com/post/Android优化-内存优化">
+        </link>
+        <updated>2017-12-06T06:41:46.000Z</updated>
+        <summary type="html"><![CDATA[<p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+<!-- more -->
+<h2 id="一-android内存管理机制">一、Android内存管理机制</h2>
+<h3 id="1-java对象的生命周期">1、Java对象的生命周期</h3>
+<p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+<h3 id="2-内存回收机制">2、内存回收机制</h3>
+<h4 id="内存的三个区域">内存的三个区域</h4>
+<p>内存会有三个区域，Yong Generation(年轻代)、Old Generation(年老代)、permanent Generation（持久代）。<br>
+其中年轻代里面又分为三个区，eden、S0、S1。</p>
+<p>内存的处理过程：</p>
+<p>1.对象创建后在Eden区域，</p>
+<p>2.执行GC时，如果对象仍然存货，则复制到S0区。</p>
+<p>3.当S0区满时，改区域存活对象将复制到S1区，然后S0清空，接下来S0和S1角色互换。</p>
+<p>4.当第三部达到一定次数后，存活对象将被复制到Old Generation。</p>
+<p>5.当这个对象在Old Generation区域挺溜的时间达到一定程度时，它会被移动到Old Generation，最后积累一定时间再移动到Permaent Generation区域，Permaent Generation区域也存放一些静态文件。</p>
+<h4 id="gc回收的一些算法">GC回收的一些算法</h4>
+<p>Copying算法：扫描出存活的对象，并复制到一块新的完全未使用的控件中，对应于Young Generation，就是在Eden、FromSpace或ToSpace之间copy。</p>
+<p>标记算法：扫描出存活对象，然后再回收未标记的对象，回收后对空出的空间要么合并，要么标记出来便于下次分配，以减少内存碎片带来的损耗。年老代对象存活时间较长较稳定，使用标记算法回收。</p>
+<h4 id="gc类型">GC类型</h4>
+<p>1.kGcCauseForAlloc：在分配内存时内存不够情况下引起的GC,这种情况下GC会stop World。Stop World 是由于并发GC时，其他线程都会停止。</p>
+<p>2.kGcCauseBackground：当内存达到一定阈值的时候引发GC，这个时候是一个后台GC,不会引起Stop World。</p>
+<p>3.kGcCauseExplicit：显示调用时进行的GC，如果ART打开了这个选项，在system.gc时会进行GC。</p>
+<h4 id="其他gc注意事项">其他GC注意事项</h4>
+<p>1.尽量不去显式调用 system.gc() 减少不必要的系统开销，影响应用的流畅度。</p>
+<p>2.尽量减少内存泄露，避免OOM。</p>
+<h2 id="二-android内存泄露">二、Android内存泄露</h2>
+<h3 id="1-什么是内存泄露">1、什么是内存泄露？</h3>
+<p>java对象有自己的生命周期，当这个对象不需要再使用时，应该完整地走完生命周期，但因为某些原因，对象虽然已经不再使用，仍然在内存中并没有结束整个生命周期，这就意味着这个对象已经泄露了。</p>
+<p>GC会选择一些还存活的对象作为内存遍历的根节点 GC Roots,通过对GC Roots的可达性来判断是否需要回收。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>Android系统虚拟机的垃圾回收是通过虚拟机GC机制来实现的。GC会选择一些存活的对象作为内存便利的跟节点GC Roots,通过判断GC Roots的可达性来判断是否需要回收，如上图其中 1 2 3 4直接或间接被GC Roots引用链相连，这类对象被认为还需要使用的对象，就不会被回收。5 6 7将会被回收。到那时这里如果Object4 如果不需要使用的话这时候也不会被回收，就属于内存泄露。</p>
+<h3 id="2-常见内存泄露场景以及注意事项">2、常见内存泄露场景以及注意事项</h3>
+<p>~ 资源型对象未关闭<br>
+~ 注册对象未注销<br>
+~ 类的静态变量持有大数据对象 如bitmap<br>
+~ 费静态内部类的静态实例<br>
+~ Handler临时性内存泄露<br>
+~ 容器中的对象没有清理造成的内存泄露</p>
+<h3 id="3-内存泄露分析工具">3、内存泄露分析工具</h3>
+<h4 id="leakcanary">leakcanary</h4>
+<h2 id="三-常见注意事项避免内存消耗过多">三、常见注意事项避免内存消耗过多</h2>
+<h3 id="1-autoboxing自动装箱过程">1、AutoBoxing自动装箱过程</h3>
+<pre><code> Integer num=0;   
+ for(int i=0;i&lt;100;i++){
+     num+=i;
+​​}​​
+</code></pre>
+<p>这段代码每次循环，虚拟机都必须创建一个新的整数对象，并把它加到其他整数对象前面，创建一个新的整数对象，意味着要消耗更多性能。int只有4字节，而Integer对象有16字节。</p>
+<h3 id="2-内容复用">2、内容复用</h3>
+<p>1、有效利用系统自带资源。<br>
+2、视图复用，如ViewHolder。<br>
+3、对象池。<br>
+4、Bitmap对象复用。</p>
+<h3 id="3-使用最优的数据类型">3、使用最优的数据类型</h3>
+<p>1、当对象的数目在1000以内且特别多访问而删除和插入不高的时候尽量用ArrayMap替代HashMap。<br>
+2、枚举的最大优点是安全、易读，但是内存消耗是定义常量的三倍以上。可以使用注解方式来检查安全。<br>
+3、使用IntDef和StringDef检查类型安全。<br>
+4、LruCache建议使用这个缓存机制，但是既不能分配太大，也不能分配太小。</p>
+<h3 id="4-图片的内存优化">4、图片的内存优化</h3>
+<p>设置位图规格，使用inSampleSize实现位图缩放和压缩。使用缓存机制等。</p>
+<h2 id="四-内存分析工具">四、内存分析工具</h2>
+<h3 id="1-memory-monitor">1、Memory Monitor</h3>
+<p>这个是一个我们开发过程中很常用的内存、CPU、网络的分析工具。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图"><br>
+界面很直观，左上角有运行的机型和项目包名，然后最直观的动态图，分别是CPU、Memory、NetWork。点进去可以进入的Memory。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图"><br>
+这里可以清晰的看到颜色对应区域占用的内存大小。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图"><br>
+通过这两张图 内存的大部分信息都能查阅到。我们在操作APP加载图片等操作时候能看到内存上升、和下降，如果操作APP后发现内存不会下降可能就是我们有些对象没有及时释放，也有可能导致内存泄露。<br>
+还有对应的模拟GC，查看时间段具体内存信息以及一段时间的内存追踪等工具可以使用。可以定位到具体的代码行。如下图：<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示"><br>
+这里有一个Shallow size这个属性的概念：<br>
+Shallow size就是对象本身占用内存的大小，不包含其引用的对象。常规对象（非数组）的Shallow size有其成员变量的数量和类型决定。数组的shallow size有数组元素的类型（对象类型、基本类型）和数组长度决定。</p>
+<h3 id="2-heap-viewrer">2、Heap Viewrer</h3>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面"><br>
+如果是Android Studio的话通过Tools-&gt;Android-&gt;Android Device Monitor找到这个工具。<br>
+进入后选择运行APP的包名然后点击update Heap按钮，这时候会在每次gc时展示数据信息，也可以在后面手动GC，如果在操作页面这时候可能会发现小卡顿，因为在GC时，可能导致其他线程停止工作，这时可以清晰看到表中内存信息：<br>
+头部总览视图：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heap Size</td>
+<td>堆栈分配给APP的内存大小。</td>
+</tr>
+<tr>
+<td>Allocated</td>
+<td>已分配使用的内存大小。</td>
+</tr>
+<tr>
+<td>Free</td>
+<td>空闲的内存大小。</td>
+</tr>
+<tr>
+<td>%Used</td>
+<td>Allocated/Heap Size 的使用率。</td>
+</tr>
+<tr>
+<td>#Object</td>
+<td>对象数量</td>
+</tr>
+</tbody>
+</table>
+<p>下面详情视图：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>free</td>
+<td>空闲的对象</td>
+</tr>
+<tr>
+<td>data object</td>
+<td>数据对象，Java类类型对象，是最主要的观察对象。</td>
+</tr>
+<tr>
+<td>class object</td>
+<td>java类类型的引用对象。</td>
+</tr>
+<tr>
+<td>1-byte array(byte[],boolean[])</td>
+<td>一字节的数组对象。</td>
+</tr>
+<tr>
+<td>2-byte array(short[],char[])</td>
+<td>两字节的数组对象。</td>
+</tr>
+<tr>
+<td>4-byte array(object[],int[],float[])</td>
+<td>4字节的数组对象。</td>
+</tr>
+<tr>
+<td>8-byte array(long[],double[])</td>
+<td>8字节的数组对象。</td>
+</tr>
+<tr>
+<td>non-java object</td>
+<td>非Java对象。</td>
+</tr>
+</tbody>
+</table>
+<p>每个类型的数据值对应：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Count</td>
+<td>数量</td>
+</tr>
+<tr>
+<td>Total Size</td>
+<td>总共占用的内存的大小</td>
+</tr>
+<tr>
+<td>Smallest</td>
+<td>将对象占用内存从小到大排列，排在第一个对象占用内存大小</td>
+</tr>
+<tr>
+<td>Largest</td>
+<td>将对象占用内存从小到大排列，排在最后一个对象占用的内存大小。</td>
+</tr>
+<tr>
+<td>Median</td>
+<td>将对象占用内存从小到大排列，排在总监的对象占用的内存大小。</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>平均值</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[RxJava简单使用]]></title>
+        <id>http://xuanguofeng.com/post/RxJava简单使用</id>
+        <link href="http://xuanguofeng.com/post/RxJava简单使用">
+        </link>
+        <updated>2017-10-23T09:39:19.000Z</updated>
+        <summary type="html"><![CDATA[<p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
+<!-- more -->
+<h2 id="rxjava最直观的使用总结">RxJava最直观的使用总结</h2>
+<h3 id="一-rxjava是什么">一、RxJava是什么？</h3>
+<pre><code>RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and event-based programs by using observable sequences.	
+</code></pre>
+<p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
+<h3 id="二-rxjava相关资料">二、RxJava相关资料</h3>
+<h4 id="github地址">Github地址</h4>
+<p>https://github.com/ReactiveX/RxJava</p>
+<h4 id="文档地址">文档地址</h4>
+<p>https://www.gitbook.com/book/mcxiaoke/rxdocs/details</p>
+<h4 id="优秀博文">优秀博文</h4>
+<p>http://gank.io/post/560e15be2dca930e00da1083#toc_1</p>
+<h3 id="三-观察者模式">三、观察者模式</h3>
+<p>其实观察者模式很简单。一个例子：<br>
+好多网站的文章是支持用户订阅的，如果有更新就会发邮件给用户，这个模式就可以用观察者模式来形容。</p>
+<p>如</p>
+<p>网站被看做被观察者，用户被看做观察者，然后被观察者将观察者订阅（这里有点网站订阅用户的意思，虽然字面意思是这样，但是我们理解可以按照正常思维理解，是让观察者和被观察者关联起来），当有更新的时候被观察者通知观察者。从而产生观察者中观看文章的事件。</p>
+<h3 id="四-rxjava使用">四、RxJava使用</h3>
+<h4 id="一-基本使用">一、基本使用</h4>
+<p>在RxJava中有三个基本的概念。Observable、Observer、subscribe()。<br>
+这三个概念从字面意义也基本能猜测。</p>
+<p>Observable:代表着被观察者，也就是上文中网站。</p>
+<p>Observer:代表着观察者，也就是上文中的用户。</p>
+<p>subscribe:这是一个方法，也就是订阅。</p>
+<pre><code>
+        Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+            }
+        });
+
+        Observer&lt;String&gt; observer = new Observer&lt;String&gt;() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+                Log.e(TAG, &quot;onSubscribe&quot;);
+            }
+
+            @Override
+            public void onNext(@NonNull String s) {
+                  Log.e(TAG, &quot;onNext---&gt;&quot;+s);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e(TAG, &quot;onError&quot;);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG, &quot;onComplete&quot;);
+            }
+        };
+
+
+        observable.subscribe(observer);
+</code></pre>
+<p>运行结果如下：</p>
+<pre><code>10-23 02:38:52.525 3820-3820/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 02:38:52.525 3820-3820/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+</code></pre>
+<p>大概流程就是这样 被观察者(网站)可以通过onNext()方法告诉观察者(用户)，新闻给你发过去了你看下吧，然后观察者(用户)也通过onNext方法里面的参数进行“看新闻”。</p>
+<p>这里还有另外几个方法 onSubscribe()，onNext(),onError()，onComplete()我们分别试试</p>
+<p>先看onComplete()</p>
+<pre><code>
+        Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                observableEmitter.onComplete();
+                observableEmitter.onNext(&quot;4&quot;);
+                observableEmitter.onNext(&quot;5&quot;);
+
+
+            }
+        });
+
+</code></pre>
+<p>把被观察者里的时间修改一下看下观察者里的结果</p>
+<pre><code>10-23 03:09:58.640 4281-4281/? E/MainActivity----&gt;: onSubscribe
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;2
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;3
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onComplete
+</code></pre>
+<ul>
+<li>
+<p>会发现后面的4 5事件不见了 这就是代表着如果调用了这个方法其实事件还是在继续发送，只是我们的观察者里面不接收了。</p>
+</li>
+<li>
+<p>这个流程和onError()是一样的当调用onError()的时候,onError()也是被观察者可以继续发事件，但是后面不会再接收。</p>
+</li>
+<li>
+<p>这两个事件onComplete和onError可以不发送。</p>
+</li>
+<li>
+<p>onComplete和onError这两个方法唯一并且互斥，就是不能多发，也不能同时发。</p>
+</li>
+<li>
+<p>onSubscribe这个方可以看到总是在第一个调用，即使没有任何事件发送。</p>
+</li>
+</ul>
+<p>当然也可以写成这样，就是RxJava中被广泛流传的链式调用。</p>
+<pre><code>
+        Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                observableEmitter.onComplete();
+                observableEmitter.onNext(&quot;4&quot;);
+                observableEmitter.onNext(&quot;5&quot;);
+                
+                
+            }
+        }).subscribe(new Observer&lt;String&gt;() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+                Log.e(TAG, &quot;onSubscribe&quot;);
+            }
+
+            @Override
+            public void onNext(@NonNull String s) {
+                Log.e(TAG, &quot;onNext---&gt;&quot;+s);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e(TAG, &quot;onError&quot;);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG, &quot;onComplete&quot;);
+            }
+        });
+</code></pre>
+<h4 id="二-异步">二、异步</h4>
+<p>RxJava在介绍的时候有一个关键词是异步，那么就要在考虑一个问题，RxJava如果进行不同线程的操作呢？</p>
+<p>其实上面所做的操作，都是在当前线程完成，在当前线程发送事件，在当前线程处理事件，怎么证明他们是在同一个线程呢?分别在发送和处理的事件里增加一个获取线程id的log。打印如下：</p>
+<pre><code>10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe-&gt;线程id-----&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: subscribe-&gt;线程id---&gt;1
+
+</code></pre>
+<p>无论是发送还是接收都在id为1的线程，也就是ui线程。</p>
+<pre><code>
+        Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                Log.e(TAG, &quot;subscribe-&gt;线程id---&gt;&quot; + Thread.currentThread().getId());
+
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer&lt;String&gt;() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        Log.e(TAG, &quot;onSubscribe&quot;);
+                        Log.e(TAG, &quot;onSubscribe-&gt;线程id-----&gt;&quot; + Thread.currentThread().getId());
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String s) {
+                        Log.e(TAG, &quot;onNext---&gt;&quot; + s);
+                        Log.e(TAG, &quot;onNext-&gt;线程id-----&gt;&quot; + Thread.currentThread().getId());
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable throwable) {
+                        Log.e(TAG, &quot;onError&quot;);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e(TAG, &quot;onComplete&quot;);
+                    }
+                });
+
+</code></pre>
+<p>打印结果</p>
+<pre><code>10-23 03:43:26.774 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 03:43:26.774 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe-&gt;线程id-----&gt;1
+10-23 03:43:26.775 10588-14670/com.xuanguofeng.rxjava E/MainActivity----&gt;: subscribe-&gt;线程id---&gt;248
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;2
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;3
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+</code></pre>
+<p>可以看到 发送的线程id是248，而处理事件的线程是1。仔细看下代码变化在于</p>
+<pre><code>.subscribeOn(Schedulers.newThread())
+.observeOn(AndroidSchedulers.mainThread())
+</code></pre>
+<p>链式调用了这两个方法，也很直观一个是在什么线程发送，另一个是在什么线程处理，这里新建了一个线程发送，然后在UI线程进行接收处理。</p>
+<p>RxJava中有四个线程可以让我们选择：</p>
+<ul>
+<li>Schedulers.io():IO线程，主要用于网络读写</li>
+<li>Schedulers.computation()：代表CPU计算密集型的操作, 例如需要大量计算的操作</li>
+<li>Schedulers.newThread()：这个当然是代表创建一个新的常规线程</li>
+<li>AndroidSchedulers.mainThread()：这个代表Android中的UI线程，可以在这里更新页面操作</li>
+</ul>
+]]></content>
+    </entry>
+</feed>

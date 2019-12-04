@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>【Flutter笔记】之Flutter的理解 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">【Flutter笔记】之Flutter的理解</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2018-07-02 17:43:39">2018-07-02 / 5 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>目前对Flutter的理解还是很少的，只是想作为一个笔记，在不断理解的基础上进行不断的修改与完善，查漏补缺，看看自己学之前与学之后是的理解是一个什么状态。</p>
+<!-- more -->
+<h2 id="flutter介绍">Flutter介绍</h2>
+<p>Flutter 是谷歌的移动端 UI 框架，可在极短的时间内构建 Android 和 iOS 上高质量的原生级应用。 Flutter 可与现有代码一起工作, 它被世界各地的开发者和组织使用, 并且 Flutter 是免费和开源的.<br>
+这是官网的介绍，大标题是“以极短的时间构建优雅的原生级应用”，可以了解到Flutter是一个框架，通过这个框架可以使用Dart语言通过一套代码构建Android和iOS应用程序。</p>
+<p>Flutter里面同时提供了两种UI库的风格，第一种肯定是Material Design风格，还要就是Cupertino风格，也就是iOS中采用的风格。</p>
+<p>个人理解应该是Flutter封装了一套完整的UI的API，在开发时候可以直接使用，通过官网介绍了解应该也可以直接调用Android和iOS中的原生API。</p>
+<h2 id="为什么使用dart语言">为什么使用Dart语言？</h2>
+<p>个人对其他语言并没有了解那么深，这个问题只是说下自己的想法和在网上查到的一些人的见解。</p>
+<p>首先我一眼看上去，感觉Dart的格式并不友好，相比Kotlin觉得更是可读性差很多，据知乎上一位大神说和Flutter的工程师咨询，是因为Dart的团队距离他们很近，能很好的得到支持，不知道是否玩笑。用Dart代码写页面还是很容易理解的，至于与mxl相比哪种方式更好现在我还体会不好，因为还没有深度是使用Dart。</p>
+<p>Dart同时支持AOT编译和JIT编译，Dart的编译和执行不仅非常灵活，而且速度很快。还有我觉得Dart是相对容易学习的。用Flautter的时候还支持热重载，这相比Instant Run的体验要好很多的，确实提高了效率，不会因为只改了一点页面而编译好久的状况。Dart是基于单线程模型的语言，但是也有自己的机制叫isolate。之间无法直接共享内存，这也就是避免了大部分使用锁的情况。</p>
+<p>还有就是这是Google自己的语言，也是开源的，不会惹出88亿美元的的官司吧。总体感觉通过了解，还是一门很优秀的语言，而且在Google内外据说也得到很好的使用，而且随着Flutter以及新系统的推出，这门语言也有可能越来越好，不过后面情况谁也说不好，还要看Google怎么支持与推广。</p>
+<h2 id="flutter是如何渲染界面的">Flutter是如何渲染界面的？</h2>
+<p>移动设备中有GPU和CPU，一般是GPU控制将数据渲染到显示设备上的，GPU主要是通过发出VSync同步信号去帧数据来传递给显示器。</p>
+<p>FPS表示每秒传递的帧数，我们知道在理想情况下60FPS就感觉不到爱看，这意味着每个绘制时长应该在16ms以内，Android系统每隔16ms发出VSync信号，触发对UI进行渲染，如果每次渲染都成功，这样就能够达到刘畅的画面所需的60FPS。如果某个操作花费四件比较吃长 比如用了30ms，系统在得到VSync信号时就无法进行正常渲染，这样就发生了丢帧现象，就会感觉卡顿。<br>
+所以玩游戏的时候需要更好的CPU与GPU的支持。</p>
+<p>Flutter只关心向GPU提供视图数据，只关心VSync信号，然后通过Google自己的Skia渲染引擎想GPU提供数据。所以说Flutter是直接通过Skia自己进行渲染，而不是调用某些API，这也是Flutter一直宣称原生体验的原因。</p>
+<h2 id="flutter前景如何是否值得学习">Flutter前景如何，是否值得学习？</h2>
+<p>这个每个人的看法不同，个人认为前景还可以，与React Native原理不同，Flutter是通过自己渲染，可能会体验会更好。使用Dart语言，这门语言目前看来说对于有编程经验的人来说可能还是相对容易些的，而支持库目前来看也还可以，也要看Google后续的动作吧。</p>
+<p>对于公司来说如果维护一套代码来实现两个端无疑时间好事，从节约成本、到方便维护、界面统一都是很好的，但是Flutter商用应该仍有一段距离吧。</p>
+<p>如果有时间又有兴趣的话，可以搞一下的，毕竟程序员就是在不断学习的道路上。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别">【Flutter笔记】之Dart与Java的一些直观区别</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建">【Flutter笔记】之环境搭建</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

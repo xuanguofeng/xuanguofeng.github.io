@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>工欲善其事必先利其器-android Studio技巧与插件 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">工欲善其事必先利其器-android Studio技巧与插件</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2016-08-21 22:59:20">2016-08-21 / 2 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>本章是总结Android Studio的技巧与插件，俗话说工欲善其事必先利其器，对Android Studio使用的得心应手的话，将会大大提升工作效率与开发效率。</p>
+<!-- more -->
+<h2 id="android-studio常用技巧">Android Studio常用技巧</h2>
+<h4 id="多窗口拆分开发">多窗口拆分开发</h4>
+<p>应用场景：例如开发Activity要参考xml或者需要同时编写String.xml文件的时候。可以拆分横向、纵向。<br>
+使用方式：菜单栏---&gt;window---&gt;Editor Tabs---&gt;Split Horizontally(横向)</p>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-4a6df7df3a98b684.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="拆分效果"></figure>
+<h4 id="查看一个类的的结构">查看一个类的的结构</h4>
+<p>应用场景：有时候需要查看这个类的大概结构方法等。<br>
+使用方式:快捷键 mac:commmand+F12   win:ctrl+F12</p>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-7ea6fc9292ab2c3b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="查看结构"></figure>
+<h4 id="查看一个方法被哪里调用">查看一个方法被哪里调用</h4>
+<p>快捷键：Mac: option+ f7  win: alt+f7 或者单击右键选择 find usages<br>
+场景：不解释了应该很常用</p>
+<h4 id="查看一个方法描述注释">查看一个方法描述注释</h4>
+<p>快捷键： mac:  f1</p>
+<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-1859c756b254040a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></figure>
+<h4 id="将代码添加书签">将代码添加书签</h4>
+<p>场景：经常会需要记下这个位置代码以后方便时查看。<br>
+快捷键  ：mac :f3    win : f11</p>
+<h4 id="android-studio-代码分析功能">Android Studio 代码分析功能</h4>
+<p>使用场景：google建议的代码，应该不会太差吧。<br>
+使用方式：菜单栏----&gt;Analyze----&gt;Inspect Code<br>
+会有些建议性的提示。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-04b4dc727e824d72.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Android Studio 代码分析功能"></p>
+<h4 id="代码模板">代码模板</h4>
+<p>使用场景：有些代码是经常使用到的格式，复用性很强。<br>
+例如：判空，循环，快速编写swich等。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-218fff40378e13b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="代码模板"></p>
+<p>####预览方法定义<br>
+场景：有时候想看一个方法是怎么实现的，会快速弹出一个框。<br>
+快捷键：mac: command+Y</p>
+<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-009e41f7ec11e759.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="预览方法定义"></figure>
+<p>####给断点设置条件<br>
+例如：for循环只想=5的时候打断点<br>
+单击断点右键既可以设置条件。</p>
+<p>####运行过程中快速断点<br>
+例如：app正在运行，出现bug不想重新跑项目的时候。</p>
+<figure data-type="image" tabindex="5"><img src="http://upload-images.jianshu.io/upload_images/1980287-f7fd870519b4c00b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="点击运行按钮右边第三个"></figure>
+<p>####快速查看方法详情<br>
+command+B<br>
+####查找参数定义与文档<br>
+command +P</p>
+<h2 id="android-studio常用插件">Android Studio常用插件</h2>
+<h4 id="translation-快速翻译">Translation 快速翻译</h4>
+<p>设置快捷键可以直接翻译包括log，英汉 汉英。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-cbb5b92c99b06bc7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="设置快捷键直接翻译"></p>
+<h4 id="adb-wifi">ADB WIFI</h4>
+<p>可以无线调试的一个插件</p>
+<h4 id="gsonformat">GsonFormat</h4>
+<p>快速实现bean类。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用">Material Design风格输入样式TextInputLayout使用</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结">Android沉浸式状态栏方法总结</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

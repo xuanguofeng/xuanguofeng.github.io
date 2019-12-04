@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Java常用排序算法冒泡排序与选择排序总结 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Java常用排序算法冒泡排序与选择排序总结</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-05-24 22:11:56">2017-05-24 / 3 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>排序算法有好多种，也在特殊的场景中，我们经常需要对我们的数据进行排序，这里对经典的排序做一个记录整理。</p>
+<!-- more -->
+<h2 id="一冒泡排序">一冒泡排序</h2>
+<h3 id="原理分析">原理分析</h3>
+<p>冒泡排序其实就是对一组数以类似冒泡对形式，进行从大到小或者从小到大的排序，那么什么是冒泡呢？</p>
+<p>其实也简单，比如有一组数字：3，9，6，2<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-24a5ba1594eb8c63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="第一轮比较"></p>
+<p>以上图只比较了第一轮，会冒出一个较大大，依此类推进行比较。</p>
+<p>以此比较两个数字，将较较小的数字一个一个冒上来，将相反的较大的数字往下沉，然后内层循环每一轮比较就会冒出来一个最大数字，这样有2层循环即可，外层循环完后，所有的数字就冒完了。</p>
+<h3 id="代码实现java">代码实现（java）</h3>
+<pre><code>
+public class MPTest {
+      public static void main(String[] args) {
+	    int [] numbers={3,9,6,2};
+	    int temp=0;
+		for(int i=0;i&lt;numbers.length-1;i++){
+			for(int j=0;j&lt;numbers.length-1-i;j++){／/内层循环一次冒泡出一个比较小的数上来
+				if(numbers[j]&gt;numbers[j+1]){//如果第一个数字比第二个大则交换位置
+					temp=numbers[j];
+					numbers[j]=numbers[j+1];
+					numbers[j+1]=temp;
+					}
+			}
+		}
+		for(int i=0;i&lt;numbers.length;i++){
+			System.out.println(&quot;第&quot;+i+&quot;个数字是：&quot;+numbers[i]);
+		}	
+	}
+	
+}
+
+</code></pre>
+<p>输出结果是：</p>
+<pre><code>第0个数字是：2
+第1个数字是：3
+第2个数字是：6
+第3个数字是：9
+</code></pre>
+<h2 id="二选择排序">二选择排序</h2>
+<h3 id="原理分析-2">原理分析</h3>
+<p>选择排序其实其实思路也是比较简单的，也是2层循环。<br>
+主要思路是记录一个最小值，然后内层循环如果有比它小的就跟这个最小值交换位置，这样就能确定第一位最小值，然后第二次循环也是如此，以此类推就能按照由小到大排序。</p>
+<p>还是对这几个数字进行排序：3          9         6         2</p>
+<p>第一次循环：2 9 6 3</p>
+<p>第二次循环：2 3 6 9</p>
+<h3 id="代码实现java-2">代码实现（java）</h3>
+<pre><code>
+public class XZTest {
+	public static void main(String[] args) {
+		   int[] numbers = {3, 9, 6, 2};
+	        int temp=0;
+	        for (int i = 0; i &lt; numbers.length; i++) {
+	            int min = i;
+	            for (int j = i + 1; j &lt; numbers.length; j++) {
+	                if(numbers[j]&lt; numbers[min]){
+	                   min=j;
+	                }
+	            }
+	            if(i!=min){
+	                temp=numbers[i];
+	                numbers[i]=numbers[min];
+	                numbers[min]=temp;
+	            }
+	        }
+	        for(int i=0;i&lt;numbers.length;i++){
+				System.out.println(&quot;第&quot;+i+&quot;个数字是：&quot;+numbers[i]);
+			}	
+	}
+}
+</code></pre>
+<p>输出结果是一样对：</p>
+<pre><code>第0个数字是：2
+第1个数字是：3
+第2个数字是：6
+第3个数字是：9
+</code></pre>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）">Android动画的分类与使用总结（参照官方api）</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用">Material Design风格输入样式TextInputLayout使用</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

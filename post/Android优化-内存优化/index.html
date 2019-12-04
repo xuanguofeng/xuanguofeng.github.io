@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android优化-内存优化 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android优化-内存优化</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-06 14:41:46">2017-12-06 / 8 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+<!-- more -->
+<h2 id="一-android内存管理机制">一、Android内存管理机制</h2>
+<h3 id="1-java对象的生命周期">1、Java对象的生命周期</h3>
+<p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+<h3 id="2-内存回收机制">2、内存回收机制</h3>
+<h4 id="内存的三个区域">内存的三个区域</h4>
+<p>内存会有三个区域，Yong Generation(年轻代)、Old Generation(年老代)、permanent Generation（持久代）。<br>
+其中年轻代里面又分为三个区，eden、S0、S1。</p>
+<p>内存的处理过程：</p>
+<p>1.对象创建后在Eden区域，</p>
+<p>2.执行GC时，如果对象仍然存货，则复制到S0区。</p>
+<p>3.当S0区满时，改区域存活对象将复制到S1区，然后S0清空，接下来S0和S1角色互换。</p>
+<p>4.当第三部达到一定次数后，存活对象将被复制到Old Generation。</p>
+<p>5.当这个对象在Old Generation区域挺溜的时间达到一定程度时，它会被移动到Old Generation，最后积累一定时间再移动到Permaent Generation区域，Permaent Generation区域也存放一些静态文件。</p>
+<h4 id="gc回收的一些算法">GC回收的一些算法</h4>
+<p>Copying算法：扫描出存活的对象，并复制到一块新的完全未使用的控件中，对应于Young Generation，就是在Eden、FromSpace或ToSpace之间copy。</p>
+<p>标记算法：扫描出存活对象，然后再回收未标记的对象，回收后对空出的空间要么合并，要么标记出来便于下次分配，以减少内存碎片带来的损耗。年老代对象存活时间较长较稳定，使用标记算法回收。</p>
+<h4 id="gc类型">GC类型</h4>
+<p>1.kGcCauseForAlloc：在分配内存时内存不够情况下引起的GC,这种情况下GC会stop World。Stop World 是由于并发GC时，其他线程都会停止。</p>
+<p>2.kGcCauseBackground：当内存达到一定阈值的时候引发GC，这个时候是一个后台GC,不会引起Stop World。</p>
+<p>3.kGcCauseExplicit：显示调用时进行的GC，如果ART打开了这个选项，在system.gc时会进行GC。</p>
+<h4 id="其他gc注意事项">其他GC注意事项</h4>
+<p>1.尽量不去显式调用 system.gc() 减少不必要的系统开销，影响应用的流畅度。</p>
+<p>2.尽量减少内存泄露，避免OOM。</p>
+<h2 id="二-android内存泄露">二、Android内存泄露</h2>
+<h3 id="1-什么是内存泄露">1、什么是内存泄露？</h3>
+<p>java对象有自己的生命周期，当这个对象不需要再使用时，应该完整地走完生命周期，但因为某些原因，对象虽然已经不再使用，仍然在内存中并没有结束整个生命周期，这就意味着这个对象已经泄露了。</p>
+<p>GC会选择一些还存活的对象作为内存遍历的根节点 GC Roots,通过对GC Roots的可达性来判断是否需要回收。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>Android系统虚拟机的垃圾回收是通过虚拟机GC机制来实现的。GC会选择一些存活的对象作为内存便利的跟节点GC Roots,通过判断GC Roots的可达性来判断是否需要回收，如上图其中 1 2 3 4直接或间接被GC Roots引用链相连，这类对象被认为还需要使用的对象，就不会被回收。5 6 7将会被回收。到那时这里如果Object4 如果不需要使用的话这时候也不会被回收，就属于内存泄露。</p>
+<h3 id="2-常见内存泄露场景以及注意事项">2、常见内存泄露场景以及注意事项</h3>
+<p>~ 资源型对象未关闭<br>
+~ 注册对象未注销<br>
+~ 类的静态变量持有大数据对象 如bitmap<br>
+~ 费静态内部类的静态实例<br>
+~ Handler临时性内存泄露<br>
+~ 容器中的对象没有清理造成的内存泄露</p>
+<h3 id="3-内存泄露分析工具">3、内存泄露分析工具</h3>
+<h4 id="leakcanary">leakcanary</h4>
+<h2 id="三-常见注意事项避免内存消耗过多">三、常见注意事项避免内存消耗过多</h2>
+<h3 id="1-autoboxing自动装箱过程">1、AutoBoxing自动装箱过程</h3>
+<pre><code> Integer num=0;   
+ for(int i=0;i&lt;100;i++){
+     num+=i;
+​​}​​
+</code></pre>
+<p>这段代码每次循环，虚拟机都必须创建一个新的整数对象，并把它加到其他整数对象前面，创建一个新的整数对象，意味着要消耗更多性能。int只有4字节，而Integer对象有16字节。</p>
+<h3 id="2-内容复用">2、内容复用</h3>
+<p>1、有效利用系统自带资源。<br>
+2、视图复用，如ViewHolder。<br>
+3、对象池。<br>
+4、Bitmap对象复用。</p>
+<h3 id="3-使用最优的数据类型">3、使用最优的数据类型</h3>
+<p>1、当对象的数目在1000以内且特别多访问而删除和插入不高的时候尽量用ArrayMap替代HashMap。<br>
+2、枚举的最大优点是安全、易读，但是内存消耗是定义常量的三倍以上。可以使用注解方式来检查安全。<br>
+3、使用IntDef和StringDef检查类型安全。<br>
+4、LruCache建议使用这个缓存机制，但是既不能分配太大，也不能分配太小。</p>
+<h3 id="4-图片的内存优化">4、图片的内存优化</h3>
+<p>设置位图规格，使用inSampleSize实现位图缩放和压缩。使用缓存机制等。</p>
+<h2 id="四-内存分析工具">四、内存分析工具</h2>
+<h3 id="1-memory-monitor">1、Memory Monitor</h3>
+<p>这个是一个我们开发过程中很常用的内存、CPU、网络的分析工具。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图"><br>
+界面很直观，左上角有运行的机型和项目包名，然后最直观的动态图，分别是CPU、Memory、NetWork。点进去可以进入的Memory。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图"><br>
+这里可以清晰的看到颜色对应区域占用的内存大小。<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图"><br>
+通过这两张图 内存的大部分信息都能查阅到。我们在操作APP加载图片等操作时候能看到内存上升、和下降，如果操作APP后发现内存不会下降可能就是我们有些对象没有及时释放，也有可能导致内存泄露。<br>
+还有对应的模拟GC，查看时间段具体内存信息以及一段时间的内存追踪等工具可以使用。可以定位到具体的代码行。如下图：<br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示"><br>
+这里有一个Shallow size这个属性的概念：<br>
+Shallow size就是对象本身占用内存的大小，不包含其引用的对象。常规对象（非数组）的Shallow size有其成员变量的数量和类型决定。数组的shallow size有数组元素的类型（对象类型、基本类型）和数组长度决定。</p>
+<h3 id="2-heap-viewrer">2、Heap Viewrer</h3>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面"><br>
+如果是Android Studio的话通过Tools-&gt;Android-&gt;Android Device Monitor找到这个工具。<br>
+进入后选择运行APP的包名然后点击update Heap按钮，这时候会在每次gc时展示数据信息，也可以在后面手动GC，如果在操作页面这时候可能会发现小卡顿，因为在GC时，可能导致其他线程停止工作，这时可以清晰看到表中内存信息：<br>
+头部总览视图：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heap Size</td>
+<td>堆栈分配给APP的内存大小。</td>
+</tr>
+<tr>
+<td>Allocated</td>
+<td>已分配使用的内存大小。</td>
+</tr>
+<tr>
+<td>Free</td>
+<td>空闲的内存大小。</td>
+</tr>
+<tr>
+<td>%Used</td>
+<td>Allocated/Heap Size 的使用率。</td>
+</tr>
+<tr>
+<td>#Object</td>
+<td>对象数量</td>
+</tr>
+</tbody>
+</table>
+<p>下面详情视图：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>free</td>
+<td>空闲的对象</td>
+</tr>
+<tr>
+<td>data object</td>
+<td>数据对象，Java类类型对象，是最主要的观察对象。</td>
+</tr>
+<tr>
+<td>class object</td>
+<td>java类类型的引用对象。</td>
+</tr>
+<tr>
+<td>1-byte array(byte[],boolean[])</td>
+<td>一字节的数组对象。</td>
+</tr>
+<tr>
+<td>2-byte array(short[],char[])</td>
+<td>两字节的数组对象。</td>
+</tr>
+<tr>
+<td>4-byte array(object[],int[],float[])</td>
+<td>4字节的数组对象。</td>
+</tr>
+<tr>
+<td>8-byte array(long[],double[])</td>
+<td>8字节的数组对象。</td>
+</tr>
+<tr>
+<td>non-java object</td>
+<td>非Java对象。</td>
+</tr>
+</tbody>
+</table>
+<p>每个类型的数据值对应：</p>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Count</td>
+<td>数量</td>
+</tr>
+<tr>
+<td>Total Size</td>
+<td>总共占用的内存的大小</td>
+</tr>
+<tr>
+<td>Smallest</td>
+<td>将对象占用内存从小到大排列，排在第一个对象占用内存大小</td>
+</tr>
+<tr>
+<td>Largest</td>
+<td>将对象占用内存从小到大排列，排在最后一个对象占用的内存大小。</td>
+</tr>
+<tr>
+<td>Median</td>
+<td>将对象占用内存从小到大排列，排在总监的对象占用的内存大小。</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>平均值</td>
+</tr>
+</tbody>
+</table>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/重温java基础-反射机制">重温java基础-反射机制</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/RxJava简单使用">RxJava简单使用</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

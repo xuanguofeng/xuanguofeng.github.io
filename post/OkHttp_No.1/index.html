@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android热门开源框架-Okhttp源码探究一 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android热门开源框架-Okhttp源码探究一</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-15 16:50:53">2017-12-15 / 4 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>OkHttp是目前很流行的网络请求框架。源码也设计很优秀的思想。有必要去探究一下源码。</p>
+<p>由于篇幅较长，分为五篇文章。本篇文章将讨论OkHttp的执行流程分析</p>
+<!-- more -->
+<h2 id="文章目录">文章目录</h2>
+<p>一、OkHttp执行流程分析</p>
+<p>二、同步请求流程分析</p>
+<p>三、异步请求流程分析</p>
+<p>四、任务调度核心dispatcher</p>
+<p>五、OkHttp中五大拦截器源码与功能分析</p>
+<h2 id="okhttp执行流程分析">OkHttp执行流程分析</h2>
+<h3 id="流程图">流程图</h3>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-7c800950f025a328.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="流程图.png"></figure>
+<h3 id="流程分析">流程分析</h3>
+<h4 id="1-创建okhttpclient">1、创建OkHttpClient</h4>
+<p>OkHttpClient是一个通过build模式去构建的。</p>
+<pre><code>    public Builder() {
+      dispatcher = new Dispatcher();
+      protocols = DEFAULT_PROTOCOLS;
+      connectionSpecs = DEFAULT_CONNECTION_SPECS;
+      eventListenerFactory = EventListener.factory(EventListener.NONE);
+      proxySelector = ProxySelector.getDefault();
+      cookieJar = CookieJar.NO_COOKIES;
+      socketFactory = SocketFactory.getDefault();
+      hostnameVerifier = OkHostnameVerifier.INSTANCE;
+      certificatePinner = CertificatePinner.DEFAULT;
+      proxyAuthenticator = Authenticator.NONE;
+      authenticator = Authenticator.NONE;
+      connectionPool = new ConnectionPool();
+      dns = Dns.SYSTEM;
+      followSslRedirects = true;
+      followRedirects = true;
+      retryOnConnectionFailure = true;
+      connectTimeout = 10_000;
+      readTimeout = 10_000;
+      writeTimeout = 10_000;
+      pingInterval = 0;
+    }
+</code></pre>
+<p>然后通过build的build方法构建</p>
+<pre><code>    public OkHttpClient build() {
+      return new OkHttpClient(this);
+    }
+</code></pre>
+<p>这里主要是通过build设计模式配置一些常用的参数信息，如超时时间等。</p>
+<h4 id="2-创建request">2、创建Request</h4>
+<pre><code> public Builder() {
+      this.method = &quot;GET&quot;;
+      this.headers = new Headers.Builder();
+ }
+
+ Builder(Request request) {
+      this.url = request.url;
+      this.method = request.method;
+      this.body = request.body;
+      this.tag = request.tag;
+      this.headers = request.headers.newBuilder();
+    }
+
+</code></pre>
+<p>Request也是通过build模式配置一些请求信息等，如url,请求方法，请求体，请求头等。</p>
+<h4 id="3-创建call">3、创建Call</h4>
+<pre><code>Call call = client.newCall(request);
+</code></pre>
+<p>主要是通过client.newCall然后传入一个request来进行创建。</p>
+<pre><code>@Override 
+public Call newCall(Request request) {
+    return RealCall.newRealCall(this, request, false);
+  }
+</code></pre>
+<p>这里其实是创建了一个RealCall，RealCall也是OkHttp框架主要流程的一部分，主要是链接request和Response的桥梁，通过call进行同步和异步方法的执行。在同步和异步的执行方法里会返回response。例如：</p>
+<pre><code>  @Override public Response execute() throws IOException {
+    synchronized (this) {
+      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);
+      executed = true;
+    }
+    captureCallStackTrace();
+    eventListener.callStart(this);
+    try {
+      client.dispatcher().executed(this);
+      Response result = getResponseWithInterceptorChain();
+      if (result == null) throw new IOException(&quot;Canceled&quot;);
+      return result;
+    } catch (IOException e) {
+      eventListener.callFailed(this, e);
+      throw e;
+    } finally {
+      client.dispatcher().finished(this);
+    }
+  }
+
+</code></pre>
+<h4 id="4-通过call执行同步或者异步请求获取response">4、通过Call执行同步或者异步请求，获取response</h4>
+<pre><code> Response response = call.execute();
+ System.out.println(response.body().string());
+</code></pre>
+<p>上面已经说过通过call的execute可以进行同步请求，然后获取response，这个response就是我们想要的返回的信息。</p>
+<p>也可以通过call.enqueue方法传入也一个监听器，进行异步请求。</p>
+<pre><code>call.enqueue(new Callback() {
+    @Override
+    public void onFailure(Call call, IOException e) {
+       //返回失败的情况             
+       }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+		//调用成功的情况
+                }
+            });
+</code></pre>
+<h4 id="5-完整的get请求和post请求示例">5、完整的get请求，和post请求示例</h4>
+<h5 id="get">get</h5>
+<pre><code>OkHttpClient client = new OkHttpClient();
+
+String run(String url) throws IOException {
+  Request request = new Request.Builder()
+      .url(url)
+      .build();
+
+  Response response = client.newCall(request).execute();
+  return response.body().string();
+}
+
+</code></pre>
+<h5 id="post">post</h5>
+<pre><code>public static final MediaType JSON
+    = MediaType.parse(&quot;application/json; charset=utf-8&quot;);
+
+OkHttpClient client = new OkHttpClient();
+
+String post(String url, String json) throws IOException {
+  RequestBody body = RequestBody.create(JSON, json);
+  Request request = new Request.Builder()
+      .url(url)
+      .post(body)
+      .build();
+  Response response = client.newCall(request).execute();
+  return response.body().string();
+}
+</code></pre>
+<h4 id="6-总结">6、总结</h4>
+<p>这篇只是简单分析OkHttp的使用流程，其实还有一部分核心的流程是在源码中体现的比如dispatcher调度器的使用流程，与拦截器的核心功能等，这一部分将在后面的总结中进行单独分析。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/OkHttp_No.2">Android热门开源框架-OkHttp源码探究二</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android优化-绘制优化">Android优化-绘制优化</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>RxJava简单使用 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">RxJava简单使用</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-10-23 17:39:19">2017-10-23 / 9 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
+<!-- more -->
+<h2 id="rxjava最直观的使用总结">RxJava最直观的使用总结</h2>
+<h3 id="一-rxjava是什么">一、RxJava是什么？</h3>
+<pre><code>RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and event-based programs by using observable sequences.	
+</code></pre>
+<p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
+<h3 id="二-rxjava相关资料">二、RxJava相关资料</h3>
+<h4 id="github地址">Github地址</h4>
+<p>https://github.com/ReactiveX/RxJava</p>
+<h4 id="文档地址">文档地址</h4>
+<p>https://www.gitbook.com/book/mcxiaoke/rxdocs/details</p>
+<h4 id="优秀博文">优秀博文</h4>
+<p>http://gank.io/post/560e15be2dca930e00da1083#toc_1</p>
+<h3 id="三-观察者模式">三、观察者模式</h3>
+<p>其实观察者模式很简单。一个例子：<br>
+好多网站的文章是支持用户订阅的，如果有更新就会发邮件给用户，这个模式就可以用观察者模式来形容。</p>
+<p>如</p>
+<p>网站被看做被观察者，用户被看做观察者，然后被观察者将观察者订阅（这里有点网站订阅用户的意思，虽然字面意思是这样，但是我们理解可以按照正常思维理解，是让观察者和被观察者关联起来），当有更新的时候被观察者通知观察者。从而产生观察者中观看文章的事件。</p>
+<h3 id="四-rxjava使用">四、RxJava使用</h3>
+<h4 id="一-基本使用">一、基本使用</h4>
+<p>在RxJava中有三个基本的概念。Observable、Observer、subscribe()。<br>
+这三个概念从字面意义也基本能猜测。</p>
+<p>Observable:代表着被观察者，也就是上文中网站。</p>
+<p>Observer:代表着观察者，也就是上文中的用户。</p>
+<p>subscribe:这是一个方法，也就是订阅。</p>
+<pre><code>
+        Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+            }
+        });
+
+        Observer&lt;String&gt; observer = new Observer&lt;String&gt;() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+                Log.e(TAG, &quot;onSubscribe&quot;);
+            }
+
+            @Override
+            public void onNext(@NonNull String s) {
+                  Log.e(TAG, &quot;onNext---&gt;&quot;+s);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e(TAG, &quot;onError&quot;);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG, &quot;onComplete&quot;);
+            }
+        };
+
+
+        observable.subscribe(observer);
+</code></pre>
+<p>运行结果如下：</p>
+<pre><code>10-23 02:38:52.525 3820-3820/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 02:38:52.525 3820-3820/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+</code></pre>
+<p>大概流程就是这样 被观察者(网站)可以通过onNext()方法告诉观察者(用户)，新闻给你发过去了你看下吧，然后观察者(用户)也通过onNext方法里面的参数进行“看新闻”。</p>
+<p>这里还有另外几个方法 onSubscribe()，onNext(),onError()，onComplete()我们分别试试</p>
+<p>先看onComplete()</p>
+<pre><code>
+        Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                observableEmitter.onComplete();
+                observableEmitter.onNext(&quot;4&quot;);
+                observableEmitter.onNext(&quot;5&quot;);
+
+
+            }
+        });
+
+</code></pre>
+<p>把被观察者里的时间修改一下看下观察者里的结果</p>
+<pre><code>10-23 03:09:58.640 4281-4281/? E/MainActivity----&gt;: onSubscribe
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;2
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onNext---&gt;3
+10-23 03:09:58.641 4281-4281/? E/MainActivity----&gt;: onComplete
+</code></pre>
+<ul>
+<li>
+<p>会发现后面的4 5事件不见了 这就是代表着如果调用了这个方法其实事件还是在继续发送，只是我们的观察者里面不接收了。</p>
+</li>
+<li>
+<p>这个流程和onError()是一样的当调用onError()的时候,onError()也是被观察者可以继续发事件，但是后面不会再接收。</p>
+</li>
+<li>
+<p>这两个事件onComplete和onError可以不发送。</p>
+</li>
+<li>
+<p>onComplete和onError这两个方法唯一并且互斥，就是不能多发，也不能同时发。</p>
+</li>
+<li>
+<p>onSubscribe这个方可以看到总是在第一个调用，即使没有任何事件发送。</p>
+</li>
+</ul>
+<p>当然也可以写成这样，就是RxJava中被广泛流传的链式调用。</p>
+<pre><code>
+        Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                observableEmitter.onComplete();
+                observableEmitter.onNext(&quot;4&quot;);
+                observableEmitter.onNext(&quot;5&quot;);
+                
+                
+            }
+        }).subscribe(new Observer&lt;String&gt;() {
+            @Override
+            public void onSubscribe(@NonNull Disposable disposable) {
+                Log.e(TAG, &quot;onSubscribe&quot;);
+            }
+
+            @Override
+            public void onNext(@NonNull String s) {
+                Log.e(TAG, &quot;onNext---&gt;&quot;+s);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e(TAG, &quot;onError&quot;);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG, &quot;onComplete&quot;);
+            }
+        });
+</code></pre>
+<h4 id="二-异步">二、异步</h4>
+<p>RxJava在介绍的时候有一个关键词是异步，那么就要在考虑一个问题，RxJava如果进行不同线程的操作呢？</p>
+<p>其实上面所做的操作，都是在当前线程完成，在当前线程发送事件，在当前线程处理事件，怎么证明他们是在同一个线程呢?分别在发送和处理的事件里增加一个获取线程id的log。打印如下：</p>
+<pre><code>10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe-&gt;线程id-----&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:40:02.965 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: subscribe-&gt;线程id---&gt;1
+
+</code></pre>
+<p>无论是发送还是接收都在id为1的线程，也就是ui线程。</p>
+<pre><code>
+        Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter&lt;String&gt; observableEmitter) throws Exception {
+                observableEmitter.onNext(&quot;1&quot;);
+                observableEmitter.onNext(&quot;2&quot;);
+                observableEmitter.onNext(&quot;3&quot;);
+                Log.e(TAG, &quot;subscribe-&gt;线程id---&gt;&quot; + Thread.currentThread().getId());
+
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer&lt;String&gt;() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable disposable) {
+                        Log.e(TAG, &quot;onSubscribe&quot;);
+                        Log.e(TAG, &quot;onSubscribe-&gt;线程id-----&gt;&quot; + Thread.currentThread().getId());
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String s) {
+                        Log.e(TAG, &quot;onNext---&gt;&quot; + s);
+                        Log.e(TAG, &quot;onNext-&gt;线程id-----&gt;&quot; + Thread.currentThread().getId());
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable throwable) {
+                        Log.e(TAG, &quot;onError&quot;);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e(TAG, &quot;onComplete&quot;);
+                    }
+                });
+
+</code></pre>
+<p>打印结果</p>
+<pre><code>10-23 03:43:26.774 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe
+10-23 03:43:26.774 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onSubscribe-&gt;线程id-----&gt;1
+10-23 03:43:26.775 10588-14670/com.xuanguofeng.rxjava E/MainActivity----&gt;: subscribe-&gt;线程id---&gt;248
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;2
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext---&gt;3
+10-23 03:43:26.846 10588-10588/com.xuanguofeng.rxjava E/MainActivity----&gt;: onNext-&gt;线程id-----&gt;1
+</code></pre>
+<p>可以看到 发送的线程id是248，而处理事件的线程是1。仔细看下代码变化在于</p>
+<pre><code>.subscribeOn(Schedulers.newThread())
+.observeOn(AndroidSchedulers.mainThread())
+</code></pre>
+<p>链式调用了这两个方法，也很直观一个是在什么线程发送，另一个是在什么线程处理，这里新建了一个线程发送，然后在UI线程进行接收处理。</p>
+<p>RxJava中有四个线程可以让我们选择：</p>
+<ul>
+<li>Schedulers.io():IO线程，主要用于网络读写</li>
+<li>Schedulers.computation()：代表CPU计算密集型的操作, 例如需要大量计算的操作</li>
+<li>Schedulers.newThread()：这个当然是代表创建一个新的常规线程</li>
+<li>AndroidSchedulers.mainThread()：这个代表Android中的UI线程，可以在这里更新页面操作</li>
+</ul>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android优化-内存优化">Android优化-内存优化</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）">Android动画的分类与使用总结（参照官方api）</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

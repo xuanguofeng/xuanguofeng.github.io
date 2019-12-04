@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
+        <meta charset="utf-8">
+        <title>Android热门开源框架-OkHttp源码探究五 | 开飞机的老舒克</title>
+        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
+        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+         <script >hljs.initHighlightingOnLoad();</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-143754165-1');
+</script>
+
+    </head>
+    <body>
+              <header class="header mdui-m-b-5">      
+            <div class="container  ">
+                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
+                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
+           
+            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
+                   
+                            <li><a href="/">首页</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/archives">目录</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/tags">标签</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                            <li><a href="/post/about">关于</a>
+                                <span class="nav-style top"></span>
+                                <span class="nav-style bottom"></span>
+                                <span class="nav-style left"></span>
+                                <span class="nav-style right"></span>
+                                </li>
+                    
+                  </nav>
+                </div>
+        </header>
+        <div class="mdui-container ">
+                <div class="mdui-row">
+                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
+                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
+                                    <div class="post-title  mdui-m-b-1">Android热门开源框架-OkHttp源码探究五</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-30 16:21:55">2017-12-30 / 16 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>前面基本介绍了OkHttp的流程以及源码，这里看最后一个重要的核心源码OkHttp中的拦截器。</p>
+<!-- more-->
+<h2 id="拦截器机制">拦截器机制</h2>
+<p>拦截器是OkHttp中一个强大的机制，能实现网络监听，请求以及响应重写，请示失败重试等功能。</p>
+<h2 id="拦截器链">拦截器链</h2>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图"></figure>
+<h2 id="getresponsewithinterceptorchain-方法">getResponseWithInterceptorChain  方法</h2>
+<p>之前说到主要是通过这个方法来返回response那么来看看这个方法里究竟是做了什么呢</p>
+<pre><code> Response getResponseWithInterceptorChain() throws IOException {
+    // Build a full stack of interceptors.
+    List&lt;Interceptor&gt; interceptors = new ArrayList&lt;&gt;();
+    interceptors.addAll(client.interceptors());
+    interceptors.add(retryAndFollowUpInterceptor);
+    interceptors.add(new BridgeInterceptor(client.cookieJar()));
+    interceptors.add(new CacheInterceptor(client.internalCache()));
+    interceptors.add(new ConnectInterceptor(client));
+    if (!forWebSocket) {
+      interceptors.addAll(client.networkInterceptors());
+    }
+    interceptors.add(new CallServerInterceptor(forWebSocket));
+
+    Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
+        originalRequest, this, eventListener, client.connectTimeoutMillis(),
+        client.readTimeoutMillis(), client.writeTimeoutMillis());
+
+    return chain.proceed(originalRequest);
+  }
+</code></pre>
+<p>首先添加自定义配置的拦截器</p>
+<p>然后以此添加系统内置的拦截器</p>
+<p>然后创建RealInterceptorChain并把这个集合添加进去，这个就是个拦截器链</p>
+<p>通过chain.proceed(originalRequest);这个方法执行</p>
+<p>proceed这个方法也很重要 可以看一下</p>
+<pre><code> public Response proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,
+      RealConnection connection) throws IOException {
+    if (index &gt;= interceptors.size()) throw new AssertionError();
+
+    calls++;
+
+    // If we already have a stream, confirm that the incoming request will use it.
+    if (this.httpCodec != null &amp;&amp; !this.connection.supportsUrl(request.url())) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptors.get(index - 1)
+          + &quot; must retain the same host and port&quot;);
+    }
+
+    // If we already have a stream, confirm that this is the only call to chain.proceed().
+    if (this.httpCodec != null &amp;&amp; calls &gt; 1) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptors.get(index - 1)
+          + &quot; must call proceed() exactly once&quot;);
+    }
+
+    //注意处
+    // Call the next interceptor in the chain.
+    RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,
+        connection, index + 1, request, call, eventListener, connectTimeout, readTimeout,
+        writeTimeout);
+    Interceptor interceptor = interceptors.get(index);
+    Response response = interceptor.intercept(next);
+
+    // Confirm that the next interceptor made its required call to chain.proceed().
+    if (httpCodec != null &amp;&amp; index + 1 &lt; interceptors.size() &amp;&amp; next.calls != 1) {
+      throw new IllegalStateException(&quot;network interceptor &quot; + interceptor
+          + &quot; must call proceed() exactly once&quot;);
+    }
+
+    // Confirm that the intercepted response isn't null.
+    if (response == null) {
+      throw new NullPointerException(&quot;interceptor &quot; + interceptor + &quot; returned null&quot;);
+    }
+
+    if (response.body() == null) {
+      throw new IllegalStateException(
+          &quot;interceptor &quot; + interceptor + &quot; returned a response with no body&quot;);
+    }
+
+    return response;
+  }
+</code></pre>
+<p>这里主要看标注的注意处  这里主要通过index+1创建了下一个拦截器，也就行程了拦截器链</p>
+<p>然后通过每个拦截器中都有intercept这个方法，这个方法中返回response然后进行返回。</p>
+<p>这里有个流程是很有意思的就是在proceed()方法里会会返回一个Response 而 这个Response是通过intercep()这个方法并传入一个拦截器返回的，而在各个拦截器中又通过传入的拦截器调回去，这也是拦截器流程的核心机制。从而实现了拦截器链，只有所有的拦截器执行完毕后，一个网络请求的响应response 才会被返回。</p>
+<h2 id="内置拦截器">内置拦截器</h2>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png"></figure>
+<p>OkHttp中的内置连接器都基实现了通用的接口</p>
+<h3 id="retryandfollowupinterceptor-接口重定向拦截器">RetryAndFollowUpInterceptor 接口重定向拦截器</h3>
+<p>这个拦截器主要是根据结果判断然后进行重试的拦截器</p>
+<pre><code> @Override public Response intercept(Chain chain) throws IOException {
+    Request request = chain.request();
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Call call = realChain.call();
+    EventListener eventListener = realChain.eventListener();
+
+    streamAllocation = new StreamAllocation(client.connectionPool(), createAddress(request.url()),
+        call, eventListener, callStackTrace);
+
+    int followUpCount = 0;
+    Response priorResponse = null;
+    while (true) {
+      if (canceled) {//注意处1
+        streamAllocation.release();
+        throw new IOException(&quot;Canceled&quot;);
+      }
+
+      Response response;
+      boolean releaseConnection = true;
+      try {//注意处2
+        response = realChain.proceed(request, streamAllocation, null, null);
+        releaseConnection = false;
+      } catch (RouteException e) {
+        // The attempt to connect via a route failed. The request will not have been sent.
+        if (!recover(e.getLastConnectException(), false, request)) {
+          throw e.getLastConnectException();
+        }
+        releaseConnection = false;
+        continue;
+      } catch (IOException e) {
+        // An attempt to communicate with a server failed. The request may have been sent.
+        boolean requestSendStarted = !(e instanceof ConnectionShutdownException);
+        if (!recover(e, requestSendStarted, request)) throw e;
+        releaseConnection = false;
+        continue;
+      } finally {
+        // We're throwing an unchecked exception. Release any resources.
+        if (releaseConnection) {
+          streamAllocation.streamFailed(null);
+          streamAllocation.release();
+        }
+      }
+
+      // Attach the prior response if it exists. Such responses never have a body.
+      if (priorResponse != null) {
+        response = response.newBuilder()
+            .priorResponse(priorResponse.newBuilder()
+                    .body(null)
+                    .build())
+            .build();
+      }
+
+      Request followUp = followUpRequest(response);
+
+      if (followUp == null) {
+        if (!forWebSocket) {
+          streamAllocation.release();
+        }
+        return response;
+      }
+
+      closeQuietly(response.body());
+
+      if (++followUpCount &gt; MAX_FOLLOW_UPS) {
+        streamAllocation.release();
+        throw new ProtocolException(&quot;Too many follow-up requests: &quot; + followUpCount);
+      }
+
+      if (followUp.body() instanceof UnrepeatableRequestBody) {
+        streamAllocation.release();
+        throw new HttpRetryException(&quot;Cannot retry streamed HTTP body&quot;, response.code());
+      }
+
+      if (!sameConnection(response, followUp.url())) {
+        streamAllocation.release();
+        streamAllocation = new StreamAllocation(client.connectionPool(),
+            createAddress(followUp.url()), call, eventListener, callStackTrace);
+      } else if (streamAllocation.codec() != null) {
+        throw new IllegalStateException(&quot;Closing the body of &quot; + response
+            + &quot; didn't close its backing stream. Bad interceptor?&quot;);
+      }
+
+      request = followUp;
+      priorResponse = response;
+    }
+  }
+</code></pre>
+<p>具体分析下流程<br>
+首先会创建一个StreamAllocation对象</p>
+<p>其实主要看while循环里面的方法，这里是一个死循环来进行尝试，首先会判断是否取消了请求，如果取消进行释放，并抛出异常，如注意处1.</p>
+<p>然后主注意处2要进行请求，然后通过catch判断各种需要重新连接的情况，如果重新连接就通过continue直接在进行一遍循环。</p>
+<p>当代码可以执行到 followUpRequest 方法就表示这个请求是成功的，但是服务器返回的状态码可能不是 200 ok 的情况，这时还需要对该请求进行检测，其主要就是通过返回码进行判断的，然后如果没问题就会返回respnse并结束循环。</p>
+<p>如果没有正常返回结果的话后面会关闭请求还会做一些异常检查，如重新连接的次数是否超过了最大次数之类的。</p>
+<h3 id="bridgeinterceptor-请求和响应转化拦截器">BridgeInterceptor 请求和响应转化拦截器</h3>
+<p>这个拦截器主要负责设置内容长度，编码方式以及一些压缩等配置，主要是添加头部信息的功能。</p>
+<pre><code> @Override public Response intercept(Chain chain) throws IOException {
+    Request userRequest = chain.request();
+    Request.Builder requestBuilder = userRequest.newBuilder();
+
+    RequestBody body = userRequest.body();
+    if (body != null) {
+      MediaType contentType = body.contentType();
+      if (contentType != null) {
+        requestBuilder.header(&quot;Content-Type&quot;, contentType.toString());
+      }
+
+      long contentLength = body.contentLength();
+      if (contentLength != -1) {
+        requestBuilder.header(&quot;Content-Length&quot;, Long.toString(contentLength));
+        requestBuilder.removeHeader(&quot;Transfer-Encoding&quot;);
+      } else {
+        requestBuilder.header(&quot;Transfer-Encoding&quot;, &quot;chunked&quot;);
+        requestBuilder.removeHeader(&quot;Content-Length&quot;);
+      }
+    }
+
+    if (userRequest.header(&quot;Host&quot;) == null) {
+      requestBuilder.header(&quot;Host&quot;, hostHeader(userRequest.url(), false));
+    }
+
+    if (userRequest.header(&quot;Connection&quot;) == null) {
+      requestBuilder.header(&quot;Connection&quot;, &quot;Keep-Alive&quot;);
+    }
+
+    // If we add an &quot;Accept-Encoding: gzip&quot; header field we're responsible for also decompressing
+    // the transfer stream.
+    boolean transparentGzip = false;
+    if (userRequest.header(&quot;Accept-Encoding&quot;) == null &amp;&amp; userRequest.header(&quot;Range&quot;) == null) {
+      transparentGzip = true;
+      requestBuilder.header(&quot;Accept-Encoding&quot;, &quot;gzip&quot;);
+    }
+
+    List&lt;Cookie&gt; cookies = cookieJar.loadForRequest(userRequest.url());
+    if (!cookies.isEmpty()) {
+      requestBuilder.header(&quot;Cookie&quot;, cookieHeader(cookies));
+    }
+
+    if (userRequest.header(&quot;User-Agent&quot;) == null) {
+      requestBuilder.header(&quot;User-Agent&quot;, Version.userAgent());
+    }
+
+    Response networkResponse = chain.proceed(requestBuilder.build());
+
+    HttpHeaders.receiveHeaders(cookieJar, userRequest.url(), networkResponse.headers());
+
+    Response.Builder responseBuilder = networkResponse.newBuilder()
+        .request(userRequest);
+
+    if (transparentGzip
+        &amp;&amp; &quot;gzip&quot;.equalsIgnoreCase(networkResponse.header(&quot;Content-Encoding&quot;))
+        &amp;&amp; HttpHeaders.hasBody(networkResponse)) {
+      GzipSource responseBody = new GzipSource(networkResponse.body().source());
+      Headers strippedHeaders = networkResponse.headers().newBuilder()
+          .removeAll(&quot;Content-Encoding&quot;)
+          .removeAll(&quot;Content-Length&quot;)
+          .build();
+      responseBuilder.headers(strippedHeaders);
+      String contentType = networkResponse.header(&quot;Content-Type&quot;);
+      responseBuilder.body(new RealResponseBody(contentType, -1L, Okio.buffer(responseBody)));
+    }
+
+    return responseBuilder.build();
+  }
+</code></pre>
+<p>这里通过注意出可以看到其中一个主要的功能就是，如果刚开始我们没有配置一些请求头信息会添加一些默认的请求头信息。</p>
+<p>这里还有一个重要功能就是 判断是否需要使用Gzip压缩功能。以及将网络请求回来的响应Response转化为永华可用的response</p>
+<h3 id="cacheinterceptor-缓存拦截器">CacheInterceptor 缓存拦截器</h3>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+   Response cacheCandidate = cache != null
+       ? cache.get(chain.request())
+       : null;
+
+   long now = System.currentTimeMillis();
+
+   CacheStrategy strategy = new CacheStrategy.Factory(now, chain.request(), cacheCandidate).get();
+   Request networkRequest = strategy.networkRequest;
+   Response cacheResponse = strategy.cacheResponse;
+
+   if (cache != null) {
+     cache.trackResponse(strategy);
+   }
+
+   if (cacheCandidate != null &amp;&amp; cacheResponse == null) {
+     closeQuietly(cacheCandidate.body()); // The cache candidate wasn't applicable. Close it.
+   }
+
+   // If we're forbidden from using the network and the cache is insufficient, fail.
+   if (networkRequest == null &amp;&amp; cacheResponse == null) {
+     return new Response.Builder()
+         .request(chain.request())
+         .protocol(Protocol.HTTP_1_1)
+         .code(504)
+         .message(&quot;Unsatisfiable Request (only-if-cached)&quot;)
+         .body(Util.EMPTY_RESPONSE)
+         .sentRequestAtMillis(-1L)
+         .receivedResponseAtMillis(System.currentTimeMillis())
+         .build();
+   }
+
+   // If we don't need the network, we're done.
+   if (networkRequest == null) {
+     return cacheResponse.newBuilder()
+         .cacheResponse(stripBody(cacheResponse))
+         .build();
+   }
+
+   Response networkResponse = null;
+   try {
+     networkResponse = chain.proceed(networkRequest);
+   } finally {
+     // If we're crashing on I/O or otherwise, don't leak the cache body.
+     if (networkResponse == null &amp;&amp; cacheCandidate != null) {
+       closeQuietly(cacheCandidate.body());
+     }
+   }
+
+   // If we have a cache response too, then we're doing a conditional get.
+   if (cacheResponse != null) {
+     if (networkResponse.code() == HTTP_NOT_MODIFIED) {
+       Response response = cacheResponse.newBuilder()
+           .headers(combine(cacheResponse.headers(), networkResponse.headers()))
+           .sentRequestAtMillis(networkResponse.sentRequestAtMillis())
+           .receivedResponseAtMillis(networkResponse.receivedResponseAtMillis())
+           .cacheResponse(stripBody(cacheResponse))
+           .networkResponse(stripBody(networkResponse))
+           .build();
+       networkResponse.body().close();
+
+       // Update the cache after combining headers but before stripping the
+       // Content-Encoding header (as performed by initContentStream()).
+       cache.trackConditionalCacheHit();
+       cache.update(cacheResponse, response);
+       return response;
+     } else {
+       closeQuietly(cacheResponse.body());
+     }
+   }
+
+   Response response = networkResponse.newBuilder()
+       .cacheResponse(stripBody(cacheResponse))
+       .networkResponse(stripBody(networkResponse))
+       .build();
+
+   if (cache != null) {
+     if (HttpHeaders.hasBody(response) &amp;&amp; CacheStrategy.isCacheable(response, networkRequest)) {
+       // Offer this request to the cache.
+       CacheRequest cacheRequest = cache.put(response);
+       return cacheWritingResponse(cacheRequest, response);
+     }
+
+     if (HttpMethod.invalidatesCache(networkRequest.method())) {
+       try {
+         cache.remove(networkRequest);
+       } catch (IOException ignored) {
+         // The cache cannot be written.
+       }
+     }
+   }
+
+   return response;
+ }
+</code></pre>
+<p>主要流程，先判断是否有缓存。然后如果缓存不可用会关闭，然后在会判断网络禁止的话和缓存都不可用的话会创建一个响应返回504</p>
+<pre><code>   // If we're forbidden from using the network and the cache is insufficient, fail.
+    if (networkRequest == null &amp;&amp; cacheResponse == null) {
+      return new Response.Builder()
+          .request(chain.request())
+          .protocol(Protocol.HTTP_1_1)
+          .code(504)
+          .message(&quot;Unsatisfiable Request (only-if-cached)&quot;)
+          .body(Util.EMPTY_RESPONSE)
+          .sentRequestAtMillis(-1L)
+          .receivedResponseAtMillis(System.currentTimeMillis())
+          .build();
+    }
+</code></pre>
+<p>如果前面的条件都不符合，会读取网络结果也就是会跳转到下一个拦截器， if (networkResponse.code() == HTTP_NOT_MODIFIED)  这里会判断如果是304的话使用缓存，还会对缓存进行比对和更新。然后并返回response。在这之前会先判断cacheResponse是否为空，如果为空则走后面的代码，会创建一个response。</p>
+<h3 id="connectinterceptor-网络连接拦截器">ConnectInterceptor 网络连接拦截器</h3>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+    RealInterceptorChain realChain = (RealInterceptorChain) chain;
+    Request request = realChain.request();
+    StreamAllocation streamAllocation = realChain.streamAllocation();
+
+    // We need the network to satisfy this request. Possibly for validating a conditional GET.
+    boolean doExtensiveHealthChecks = !request.method().equals(&quot;GET&quot;);
+    HttpCodec httpCodec = streamAllocation.newStream(client, chain, doExtensiveHealthChecks);
+    RealConnection connection = streamAllocation.connection();
+
+    return realChain.proceed(request, streamAllocation, httpCodec, connection);
+  }
+</code></pre>
+<p>这里的StreamAllocation其实是在重定向拦截器中创建，但是他传入到ConnectInterceptor中进行使用。然后会通过streamAllocation来创建httpCodec，httpCodec用来编码request和解码response。然后会通过streamAllocation.connection();来创建一个RealConnection，RealConnection主要来进行实际的网络传输。然后还是通过proceed方法传入到下一个拦截器。</p>
+<h3 id="callserverinterceptor">CallServerInterceptor</h3>
+<p>这个拦截器是拦截器链中最后一个拦截器，是真正的发起请求和处理返回响应的拦截器。</p>
+<pre><code>@Override public Response intercept(Chain chain) throws IOException {
+   RealInterceptorChain realChain = (RealInterceptorChain) chain;
+   HttpCodec httpCodec = realChain.httpStream();
+   StreamAllocation streamAllocation = realChain.streamAllocation();
+   RealConnection connection = (RealConnection) realChain.connection();
+   Request request = realChain.request();
+
+   long sentRequestMillis = System.currentTimeMillis();
+
+   realChain.eventListener().requestHeadersStart(realChain.call());
+   httpCodec.writeRequestHeaders(request);
+   realChain.eventListener().requestHeadersEnd(realChain.call(), request);
+
+   Response.Builder responseBuilder = null;
+   if (HttpMethod.permitsRequestBody(request.method()) &amp;&amp; request.body() != null) {
+     // If there's a &quot;Expect: 100-continue&quot; header on the request, wait for a &quot;HTTP/1.1 100
+     // Continue&quot; response before transmitting the request body. If we don't get that, return
+     // what we did get (such as a 4xx response) without ever transmitting the request body.
+     if (&quot;100-continue&quot;.equalsIgnoreCase(request.header(&quot;Expect&quot;))) {
+       httpCodec.flushRequest();
+       realChain.eventListener().responseHeadersStart(realChain.call());
+       responseBuilder = httpCodec.readResponseHeaders(true);
+     }
+
+     if (responseBuilder == null) {
+       // Write the request body if the &quot;Expect: 100-continue&quot; expectation was met.
+       realChain.eventListener().requestBodyStart(realChain.call());
+       long contentLength = request.body().contentLength();
+       CountingSink requestBodyOut =
+           new CountingSink(httpCodec.createRequestBody(request, contentLength));
+       BufferedSink bufferedRequestBody = Okio.buffer(requestBodyOut);
+
+       request.body().writeTo(bufferedRequestBody);
+       bufferedRequestBody.close();
+       realChain.eventListener()
+           .requestBodyEnd(realChain.call(), requestBodyOut.successfulCount);
+     } else if (!connection.isMultiplexed()) {
+       // If the &quot;Expect: 100-continue&quot; expectation wasn't met, prevent the HTTP/1 connection
+       // from being reused. Otherwise we're still obligated to transmit the request body to
+       // leave the connection in a consistent state.
+       streamAllocation.noNewStreams();
+     }
+   }
+
+   httpCodec.finishRequest();
+
+   if (responseBuilder == null) {
+     realChain.eventListener().responseHeadersStart(realChain.call());
+     responseBuilder = httpCodec.readResponseHeaders(false);
+   }
+
+   Response response = responseBuilder
+       .request(request)
+       .handshake(streamAllocation.connection().handshake())
+       .sentRequestAtMillis(sentRequestMillis)
+       .receivedResponseAtMillis(System.currentTimeMillis())
+       .build();
+
+   realChain.eventListener()
+       .responseHeadersEnd(realChain.call(), response);
+
+   int code = response.code();
+   if (forWebSocket &amp;&amp; code == 101) {
+     // Connection is upgrading, but we need to ensure interceptors see a non-null response body.
+     response = response.newBuilder()
+         .body(Util.EMPTY_RESPONSE)
+         .build();
+   } else {
+     response = response.newBuilder()
+         .body(httpCodec.openResponseBody(response))
+         .build();
+   }
+
+   if (&quot;close&quot;.equalsIgnoreCase(response.request().header(&quot;Connection&quot;))
+       || &quot;close&quot;.equalsIgnoreCase(response.header(&quot;Connection&quot;))) {
+     streamAllocation.noNewStreams();
+   }
+
+   if ((code == 204 || code == 205) &amp;&amp; response.body().contentLength() &gt; 0) {
+     throw new ProtocolException(
+         &quot;HTTP &quot; + code + &quot; had non-zero Content-Length: &quot; + response.body().contentLength());
+   }
+
+   return response;
+ }
+</code></pre>
+<p>流程<br>
+这里首先会获取到之前各个拦截器中的一些参数，首先会 httpCodec.writeRequestHeaders(request);通过这个httpCodec写入请求头信息，然后会写入请求的body信息，完成写入后会调用  httpCodec.finishRequest();<br>
+方法表示写入信息完成。</p>
+<p>然后会读取响应信息，会先读取响应头信息，响应如果读取或者创建完成后会 通过streamAllocation.noNewStreams();这个方法进行关闭流，还会判断如果响应码是204或者205的话抛出一个异常。</p>
+<p>其实这个拦截器链无非就是2个工作，发起请求，然后处理响应。至于中间会有一些封装请求信息判断响应信息等操作。</p>
+<h2 id="总结">总结</h2>
+<p>这里拦截器的流程基本分析完了，其实主要还是看清大体流程和设计思路，具体细节的部分没有过多深入，因为这些流程设计模式才是真正要学习的重点。从源码看来 好多地方还是很值得学习的。</p>
+</div>
+                                    <div class="mdui-divider mdui-m-b-2"></div>
+                                    <div class="mdui-row-xs-2 post-fenye">
+                                       
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建">【Flutter笔记】之环境搭建</a></div></div>
+                                        
+
+                                        
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/OkHttp_No.4">Android热门开源框架-OkHttp源码探究四</a></div> </div>
+                                       
+                                      </div>
+                                   
+                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
+                                    
+                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
+ <div class="comment"></div>
+
+<script>
+      new Valine({
+            el: '.comment',
+
+            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+
+
+            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+
+
+            placeholder: '一起交流下吧！',
+            
+            path: window.location.pathname,
+            pageSize: 30,
+            avatar:'mm', 
+       })
+    </script> 
+<script>
+    if(window.location.hash){
+        var checkExist = setInterval(function() {
+           if ($(window.location.hash).length) {
+              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
+              clearInterval(checkExist);
+           }
+        }, 100);
+    }
+</script>
+                                </article>
+
+                                    
+                        </div>
+                      </div>
+    
+                
+
+              </div>
+                    <footer class="footer mdui-m-t-5 mdui-text-center">
+               <nav class="social-links">
+                      <ul>
+                      
+                      	
+                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
+                          
+                           
+                      	
+                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
+                          
+                           
+                      
+                           
+                      
+                           
+                      	
+                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
+                          
+                           
+                      
+                           
+                      </ul>
+                    </nav>
+                    <div class="copyright">
+                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                  </div>
+                  
+              </footer>
+    </body>
+</html>

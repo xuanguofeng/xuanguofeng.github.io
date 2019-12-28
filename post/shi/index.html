@@ -3,7 +3,7 @@
         <head>
         <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
         <meta charset="utf-8">
-        <title>问题日志-RecyclerView在notify时焦点丢失 | 开飞机的老舒克</title>
+        <title>杀死一只知更鸟读书感悟 | 开飞机的老舒克</title>
         <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
         <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
         <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
@@ -71,29 +71,24 @@
                 <div class="mdui-row">
                         <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
                                 <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">问题日志-RecyclerView在notify时焦点丢失</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-09-01 21:43:22">2019-09-01 / 1 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>在进行TV开发的时候经常需要处理焦点问题。最近发现在RecyclerView列表中如果需要更新数据的时候，也就是调用notifyDataSetChanged的时候，会导致焦点丢失。</p>
+                                    <div class="post-title  mdui-m-b-1">杀死一只知更鸟读书感悟</div>
+                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-12-18 19:46:28">2019-12-18 / 6 min read</div>
+                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>最近在闲暇时间读了美国作家哈珀·李的成名作《杀死一只知更鸟》，这是一本越读越能感受到很棒的作品。这个故事讲的是一些关于种族歧视的，故事发生的时期虽然已经距离南北战争很久了，但那时候仍然有一部分人把黑人称为&quot;黑鬼&quot;。其实我在本书更多读到的是关于教养、涵养与勇敢，我最喜欢文中女主人公的父亲-阿迪克斯，在他身上有着优秀的品质与勇敢，对于孩子的影响也很大，这才是真正体会到父母是孩子最好的老师。</p>
 <!-- more -->
-<h2 id="解决办法">解决办法</h2>
-<pre><code> @Override
-    public long getItemId(int position) {
-        return position;
-    }
-</code></pre>
-<p>在adapter中重写getItemId方法。</p>
-<pre><code>mListAdapter.setHasStableIds(true);
-</code></pre>
-<p>然后调用adapter的setHasStableIds方法传入true，就能解决。</p>
+<p>小说主要是通过一个5岁的小女孩叙述的，这个小女孩叫斯库特，我觉得写的很好的地方就在于很多地方很巧妙，也留给读者思考的空间，是一个小女孩对当时事物的看法，有时候真的很感叹5岁的时候可以有这些稀奇古怪的想法，好像自己在5岁的时候什么都不会想。故事讲述的是一名作为律师的父亲，在接受了为一名黑人辩护的案件中不断经历身边的人的一些不好的看法，甚至孩子也因此受到同学的冷眼相对，但是父亲始终表现的很绅士，并且勇敢淡然的面对。</p>
+<p>关于父亲的涵养，我觉得一个人如果是很有涵养是会影响身边的家人的。小说中的斯库特还有一个哥哥，她们家里还有一个黑人家庭保姆名叫卡波妮，在她们家里的相处的非常融洽，她们一家人完全信任卡波妮，卡波妮也完全觉得自己是家里的一份子，悉心照料，把家里的一切搭理好之余，在两个孩子的教育上也都能有正确的引导。例如文中写到，小女孩叫同学去家里吃饭，在家里吃饭前和这个同学打了一架，然后当这个同学吃了一罐糖浆后，开始抱怨同学，然后卡波妮把斯库特叫到厨房并对她说：“有些人不像我们这样吃饭，可是你不能在饭桌上给人家当面指出来。那孩子是你的客人，就算他要吃桌布，你也要随他便。”然后斯库特说：“他不是客人，他只是一个坎宁安家的人”，然后卡波妮生气的打断到“你给我闭嘴！不管他是谁，只要踏进这家门，就是你的客人。别再让我逮到你又对人家说三道四，好像你有多高贵似的！你们家人也许比坎宁安家的人要好，可是你这样羞辱人家，就是一钱不值！”。所以我觉得孩子能明事理，是离不开身边的教育与影响的，在后面还有两个段落让我很深刻，一个是在卡波妮给她穿了一件干净整洁的衣服的时候，她在做事的时候小心翼翼的怕弄脏了衣服，因为那样卡波妮就会重新在洗烫一遍，而且那时候卡波妮已经够忙了。还有一段是在父亲做了黑人的辩护律师后，斯库特到学校被同学嘲笑，她本想好好修理一顿同学，但是让她不这么做的原因是因为父亲告诉了她不允许因为这件事和别人打架，她答应了，她怕违背答应父亲的话而让父亲伤心。而且我认为阿迪克斯是一个真正的君子，在遇到事情不但沉着冷静，还有勇敢与温情，对任何人或事都很温暖，例如晚上快回到家的时候会提前熄灭汽车的发动机来把车溜回去，就是怕打扰家人。</p>
+<p>关于教养以及对孩子的教育上，阿迪克斯也是一个很好的榜样，在孩子去调皮的对邻居做出恶作剧的时候，会告诉孩子要如何尊重别人。还有文中最后父亲不想为了让孩子逃避责任而隐瞒真相所说的话：“你也有孩子，只不过我年龄比你大。等我的孩子长大成人之后，如果我还活着，也已经是个老家伙了，可现在我——如果他们不信任我，也就不会信任任何人。杰姆和斯库特知道当时发生了什么。如果他们听见我在镇上讲的是另一个故事——赫克，那样我就会永远失去他们啊。我绝对不能家里一套外面一套。”有多少家长教育孩子的话连自己都做不到。还有文中当哥哥杰姆因为法庭的不公平判决而对斯库特发火的时候，父亲对女儿说：“杰姆在努力忘掉一些事情，可实际上只是暂时放在一边。等过一段时间，他就会重新思考这一切，把事情想个明白。等他可以灵境思考问题的时候，就会恢复自己原来的样子”。我觉得这段话充分体现了父亲是理解孩子当时的心情，而在遇到这种事情的时候父亲的态度不是逃避也不是欺骗自己，而且自己去努力，然后把努力的结果告诉孩子们，在有希望的时候就告诉孩子们有希望，在不需要担心的时候就告诉孩子还不是该担心的时候。</p>
+<p>最后我要说的是关于勇敢，我认为文中的阿迪克斯，是不想接这个辩护黑人的案子的，但是在他接了之后，并了解的真想之后，在当时周围的部分人都对他冷言冷语的情况下，他依然义无反顾的去维护黑人，去维护正义，并在接受到不公平的判决与威胁之后依然要上诉，我觉得无论是舆论、威胁还是其他因素下都需要很大的勇气来面对，而且她知道他这么做会带来的可能是失败与别人的议论，或者是更大的风波。正是因为父亲的勇敢，所以孩子们也是勇敢的，在父亲面临危险的时候勇敢的冲出去维护自己的父亲，在父亲忙的时候不让父亲担心来自己面对该面对的事。</p>
+<p>其实文中还有很多人物和值得我们深思的地方，本文是想给自己做一个读书笔记与感悟。</p>
 </div>
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/shi">杀死一只知更鸟读书感悟</a></div></div>
+                                        <div class="mdui-col"> </div>
                                         
 
                                         
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi">EventBus源码分析</a></div> </div>
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/recyclerview">问题日志-RecyclerView在notify时焦点丢失</a></div> </div>
                                        
                                       </div>
                                    

@@ -2,18 +2,18 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://xuanguofeng.com</id>
     <title>开飞机的老舒克</title>
-    <updated>2019-12-28T07:10:40.796Z</updated>
+    <updated>2020-03-30T07:22:04.442Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://xuanguofeng.com"/>
     <link rel="self" href="http://xuanguofeng.com/atom.xml"/>
     <subtitle>Follow your heart</subtitle>
     <logo>http://xuanguofeng.com/images/avatar.png</logo>
     <icon>http://xuanguofeng.com/favicon.ico</icon>
-    <rights>All rights reserved 2019, 开飞机的老舒克</rights>
+    <rights>All rights reserved 2020, 开飞机的老舒克</rights>
     <entry>
         <title type="html"><![CDATA[杀死一只知更鸟读书感悟]]></title>
-        <id>http://xuanguofeng.com/post/ssyzzgn</id>
-        <link href="http://xuanguofeng.com/post/ssyzzgn">
+        <id>http://xuanguofeng.com/post/ssyzzgn/</id>
+        <link href="http://xuanguofeng.com/post/ssyzzgn/">
         </link>
         <updated>2019-12-18T11:46:28.000Z</updated>
         <summary type="html"><![CDATA[<p>最近在闲暇时间读了美国作家哈珀·李的成名作《杀死一只知更鸟》，这是一本越读越能感受到很棒的作品。这个故事讲的是一些关于种族歧视的，故事发生的时期虽然已经距离南北战争很久了，但那时候仍然有一部分人把黑人称为&quot;黑鬼&quot;。其实我在本书更多读到的是关于教养、涵养与勇敢，我最喜欢文中女主人公的父亲-阿迪克斯，在他身上有着优秀的品质与勇敢，对于孩子的影响也很大，这才是真正体会到父母是孩子最好的老师。</p>
@@ -29,8 +29,8 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[问题日志-RecyclerView在notify时焦点丢失]]></title>
-        <id>http://xuanguofeng.com/post/recyclerview</id>
-        <link href="http://xuanguofeng.com/post/recyclerview">
+        <id>http://xuanguofeng.com/post/recyclerview/</id>
+        <link href="http://xuanguofeng.com/post/recyclerview/">
         </link>
         <updated>2019-09-01T13:43:22.000Z</updated>
         <summary type="html"><![CDATA[<p>在进行TV开发的时候经常需要处理焦点问题。最近发现在RecyclerView列表中如果需要更新数据的时候，也就是调用notifyDataSetChanged的时候，会导致焦点丢失。</p>
@@ -51,15 +51,15 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[EventBus源码分析]]></title>
-        <id>http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi</id>
-        <link href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi">
+        <id>http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi/</id>
+        <link href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi/">
         </link>
         <updated>2019-07-21T09:50:50.000Z</updated>
         <summary type="html"><![CDATA[<p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
 ]]></summary>
         <content type="html"><![CDATA[<p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
 <!-- more -->
-<figure data-type="image" tabindex="1"><img src="http://xuanguofeng.com/images/EventBus-Publish-Subscribe.png" alt=""></figure>
+<figure data-type="image" tabindex="1"><img src="http://xuanguofeng.com/images/EventBus-Publish-Subscribe.png" alt="" loading="lazy"></figure>
 <p>这是来自官网的一段介绍。</p>
 <h2 id="使用">使用</h2>
 <p>其实使用很简单，大概就是四个步骤。</p>
@@ -138,7 +138,7 @@
     }
 </code></pre>
 <p>这个方法其实主要是判断怎么查找订阅方法，其实多数情况还是通过反射查找。这里有一个需要注意的就是如果我们注册了，如果没有通过 @Subscribe(threadMode = ThreadMode.MAIN)这种注解添加订阅方法，会抛出EventBusException异常。如下<br>
-<img src="http://xuanguofeng.com/images/evenbuserror.png" alt=""></p>
+<img src="http://xuanguofeng.com/images/evenbuserror.png" alt="" loading="lazy"></p>
 <p>接下来主要分析从反射中查找订阅方法</p>
 <pre><code>private List&lt;SubscriberMethod&gt; findUsingReflection(Class&lt;?&gt; subscriberClass) {
 				 //代码省略主要调用 findUsingReflectionInSingleClass方法。
@@ -360,7 +360,7 @@
     }
 </code></pre>
 <p>上面这段代码其实就是根据之前绑定的Subscription里的Method判断线程模式，然后根据不同的方式处理事件，其实这几种方式主要是通过Poster的实现类。<br>
-<img src="http://xuanguofeng.com/images/1566533005873.png" alt=""><br>
+<img src="http://xuanguofeng.com/images/1566533005873.png" alt="" loading="lazy"><br>
 主要是有4种方式：反射直接调用、在主线程发射事件、在单独子线程发送、异步发送。其实无论哪种方式最后都是通过invokeSubscriber()方法返回到Eventbus通过反射调用，只不过通过Handler、链表、队列和线程池等技术手段实现在在后台或者主线程执行。其实线程池在EventBusBuilder中已经在初始化的时候就创建了。</p>
 <pre><code> void invokeSubscriber(Subscription subscription, Object event) {
         try {
@@ -398,8 +398,8 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[问题日志-Fresco库的libimagepipeline.so问题]]></title>
-        <id>http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti</id>
-        <link href="http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti">
+        <id>http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti/</id>
+        <link href="http://xuanguofeng.com/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti/">
         </link>
         <updated>2019-07-07T12:20:14.000Z</updated>
         <summary type="html"><![CDATA[<p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
@@ -432,8 +432,8 @@ https://www.jianshu.com/p/ad95c885c2f8</p>
     </entry>
     <entry>
         <title type="html"><![CDATA[问题日志-低版本Didn't find class "~FileProvider"]]></title>
-        <id>http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题</id>
-        <link href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题">
+        <id>http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题/</id>
+        <link href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题/">
         </link>
         <updated>2019-06-20T03:58:40.000Z</updated>
         <summary type="html"><![CDATA[<p>由于在低版本的系统中，会提示Didn't find class &quot;android.support.v4.content.FileProvider&quot;问题，所以查找了下解决方案。</p>
@@ -502,8 +502,8 @@ https://www.jianshu.com/p/ad95c885c2f8</p>
     </entry>
     <entry>
         <title type="html"><![CDATA[AsyncTask源码解析]]></title>
-        <id>http://xuanguofeng.com/post/AsyncTask源码解析</id>
-        <link href="http://xuanguofeng.com/post/AsyncTask源码解析">
+        <id>http://xuanguofeng.com/post/AsyncTask源码解析/</id>
+        <link href="http://xuanguofeng.com/post/AsyncTask源码解析/">
         </link>
         <updated>2019-03-15T11:19:26.000Z</updated>
         <summary type="html"><![CDATA[<p>AsyncTask是用来在实现在子线程执行任务后切换到UI线程，常见的比如下载任务的更新，执行下载后在UI线程实时更新进度条。由于是基本的API所以还是很有必要了解源码的。</p>
@@ -763,8 +763,8 @@ hadlerMessage还处理一个就是更新进度，那这个message是在哪里发
     </entry>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
-        <id>http://xuanguofeng.com/post/hello-gridea</id>
-        <link href="http://xuanguofeng.com/post/hello-gridea">
+        <id>http://xuanguofeng.com/post/hello-gridea/</id>
+        <link href="http://xuanguofeng.com/post/hello-gridea/">
         </link>
         <updated>2018-12-11T16:00:00.000Z</updated>
         <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！</p>
@@ -794,8 +794,8 @@ hadlerMessage还处理一个就是更新进度，那这个message是在哪里发
     </entry>
     <entry>
         <title type="html"><![CDATA[【Flutter笔记】之Widget的一些总结]]></title>
-        <id>http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结</id>
-        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结">
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结/</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Widget的一些总结/">
         </link>
         <updated>2018-09-03T08:00:49.000Z</updated>
         <summary type="html"><![CDATA[<p>可以说flutter中是基于Widgets的，一个TextView是Widgets，一个布局也是一个Widgets。使用Widgets去组装出你想要的 UI，了解Widgets也是非常重要的。</p>
@@ -840,8 +840,8 @@ void main() {
     </entry>
     <entry>
         <title type="html"><![CDATA[问题日志-Flutter页面跳转无反应的问题]]></title>
-        <id>http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题</id>
-        <link href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题">
+        <id>http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题/</id>
+        <link href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题/">
         </link>
         <updated>2018-07-11T13:28:21.000Z</updated>
         <summary type="html"><![CDATA[<p>描述：在使用Flutter做页面跳转时候，官方的描述使用方法是这样的。</p>
@@ -917,8 +917,8 @@ class _FWMainAppState extends State&lt;FWMainApp&gt; {
     </entry>
     <entry>
         <title type="html"><![CDATA[【Flutter笔记】之Dart与Java的一些直观区别]]></title>
-        <id>http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别</id>
-        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别">
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别/</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别/">
         </link>
         <updated>2018-07-05T11:43:39.000Z</updated>
         <summary type="html"><![CDATA[<p>Dart 是 Flutter 的主要开发语言，Flutter 是一个来自 Google 用于移动应用开发的 SDK。其实对于Java开发人员来说Dart，还是相对好理解的，这篇笔记将记录初学Dart时，相比较Java的一些区别。</p>
@@ -1035,8 +1035,8 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
     </entry>
     <entry>
         <title type="html"><![CDATA[【Flutter笔记】之Flutter的理解]]></title>
-        <id>http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解</id>
-        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解">
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解/</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解/">
         </link>
         <updated>2018-07-02T09:43:39.000Z</updated>
         <summary type="html"><![CDATA[<p>目前对Flutter的理解还是很少的，只是想作为一个笔记，在不断理解的基础上进行不断的修改与完善，查漏补缺，看看自己学之前与学之后是的理解是一个什么状态。</p>
@@ -1066,8 +1066,8 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
     </entry>
     <entry>
         <title type="html"><![CDATA[【Flutter笔记】之环境搭建]]></title>
-        <id>http://xuanguofeng.com/post/【Flutter笔记】之环境搭建</id>
-        <link href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建">
+        <id>http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/</id>
+        <link href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/">
         </link>
         <updated>2018-06-28T07:10:08.000Z</updated>
         <summary type="html"><![CDATA[<p>Flutter 是 Google 用以帮助开发者在 iOS 和 Android 两个平台开发高质量原生 UI 的移动 SDK。Flutter 兼容现有的代码，免费且开源。使用Dart语言。</p>
@@ -1088,24 +1088,24 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
 <li>打开插件设置（在 macOS 上路径为 Preferences&gt;Plugins，在 Windows 和 Linux 上路径为 File&gt;Settings&gt;Plugins）。</li>
 <li>当弹出对话框提示要安装 Dart 插件的时候，点击 Yes 接受。</li>
 <li>如果弹出 Restart 需要重启编辑器的时候，点击 Yes 接受。<br>
-<img src="https://upload-images.jianshu.io/upload_images/1980287-2c1c28773b246f12.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建Flutter项目"><br>
+<img src="https://upload-images.jianshu.io/upload_images/1980287-2c1c28773b246f12.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建Flutter项目" loading="lazy"><br>
 【注意】<br>
 第一次运行时候要选择指定的文件夹，然后点击install SDK 来安装Flutter SDK环境，可能需要下载一会。</li>
 </ul>
 <h2 id="hello-word">Hello Word</h2>
 <p>在Android Studio中创建项目的时候会有New Flutter Project选项这时候如果本地没有Flutter环境的话 会让你下载。</p>
 <p>创建后可以看到IDE的右上角有些功能按钮。<br>
-<img src="https://upload-images.jianshu.io/upload_images/1980287-f98ccb4eaaa2d27a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="项目目录结构"><br>
+<img src="https://upload-images.jianshu.io/upload_images/1980287-f98ccb4eaaa2d27a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="项目目录结构" loading="lazy"><br>
 可以看到这里不但有Android的目录，还有iOS的目录，运行的时候如果有iOS设备以及模拟器的话 是可以直接选择运行的。</p>
 <p>右侧闪电的标志支持热重载编译运行。</p>
-<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/1980287-fb8c9b740ab9da93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="运行效果"></figure>
+<figure data-type="image" tabindex="1"><img src="https://upload-images.jianshu.io/upload_images/1980287-fb8c9b740ab9da93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="运行效果" loading="lazy"></figure>
 <p>由于我是mac电脑，特意选了一个iOS模拟器，在Android Studio直接运行在iOS设备上还是很爽的。</p>
 ]]></content>
     </entry>
     <entry>
         <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究五]]></title>
-        <id>http://xuanguofeng.com/post/OkHttp_No.5</id>
-        <link href="http://xuanguofeng.com/post/OkHttp_No.5">
+        <id>http://xuanguofeng.com/post/OkHttp_No.5/</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.5/">
         </link>
         <updated>2017-12-30T08:21:55.000Z</updated>
         <summary type="html"><![CDATA[<p>前面基本介绍了OkHttp的流程以及源码，这里看最后一个重要的核心源码OkHttp中的拦截器。</p>
@@ -1115,7 +1115,7 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
 <h2 id="拦截器机制">拦截器机制</h2>
 <p>拦截器是OkHttp中一个强大的机制，能实现网络监听，请求以及响应重写，请示失败重试等功能。</p>
 <h2 id="拦截器链">拦截器链</h2>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图"></figure>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图" loading="lazy"></figure>
 <h2 id="getresponsewithinterceptorchain-方法">getResponseWithInterceptorChain  方法</h2>
 <p>之前说到主要是通过这个方法来返回response那么来看看这个方法里究竟是做了什么呢</p>
 <pre><code> Response getResponseWithInterceptorChain() throws IOException {
@@ -1192,7 +1192,7 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
 <p>然后通过每个拦截器中都有intercept这个方法，这个方法中返回response然后进行返回。</p>
 <p>这里有个流程是很有意思的就是在proceed()方法里会会返回一个Response 而 这个Response是通过intercep()这个方法并传入一个拦截器返回的，而在各个拦截器中又通过传入的拦截器调回去，这也是拦截器流程的核心机制。从而实现了拦截器链，只有所有的拦截器执行完毕后，一个网络请求的响应response 才会被返回。</p>
 <h2 id="内置拦截器">内置拦截器</h2>
-<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png"></figure>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png" loading="lazy"></figure>
 <p>OkHttp中的内置连接器都基实现了通用的接口</p>
 <h3 id="retryandfollowupinterceptor-接口重定向拦截器">RetryAndFollowUpInterceptor 接口重定向拦截器</h3>
 <p>这个拦截器主要是根据结果判断然后进行重试的拦截器</p>
@@ -1587,8 +1587,8 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
     </entry>
     <entry>
         <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究四]]></title>
-        <id>http://xuanguofeng.com/post/OkHttp_No.4</id>
-        <link href="http://xuanguofeng.com/post/OkHttp_No.4">
+        <id>http://xuanguofeng.com/post/OkHttp_No.4/</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.4/">
         </link>
         <updated>2017-12-25T07:55:17.000Z</updated>
         <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看OkHttp中的一个核心机制Dispatcher</p>
@@ -1708,8 +1708,8 @@ Dart和Java还是很相似的，对于Java程序员也是相对容易上手的�
     </entry>
     <entry>
         <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究三]]></title>
-        <id>http://xuanguofeng.com/post/OkHttp_No.3</id>
-        <link href="http://xuanguofeng.com/post/OkHttp_No.3">
+        <id>http://xuanguofeng.com/post/OkHttp_No.3/</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.3/">
         </link>
         <updated>2017-12-25T06:59:42.000Z</updated>
         <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看异步请求流程</p>
@@ -1837,8 +1837,8 @@ public abstract class NamedRunnable implements Runnable {
     </entry>
     <entry>
         <title type="html"><![CDATA[Android热门开源框架-OkHttp源码探究二]]></title>
-        <id>http://xuanguofeng.com/post/OkHttp_No.2</id>
-        <link href="http://xuanguofeng.com/post/OkHttp_No.2">
+        <id>http://xuanguofeng.com/post/OkHttp_No.2/</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.2/">
         </link>
         <updated>2017-12-21T07:31:48.000Z</updated>
         <summary type="html"><![CDATA[<p>本篇继续探究OkHttp，这次主要看同步请求流程</p>
@@ -1915,8 +1915,8 @@ public abstract class NamedRunnable implements Runnable {
     </entry>
     <entry>
         <title type="html"><![CDATA[Android热门开源框架-Okhttp源码探究一]]></title>
-        <id>http://xuanguofeng.com/post/OkHttp_No.1</id>
-        <link href="http://xuanguofeng.com/post/OkHttp_No.1">
+        <id>http://xuanguofeng.com/post/OkHttp_No.1/</id>
+        <link href="http://xuanguofeng.com/post/OkHttp_No.1/">
         </link>
         <updated>2017-12-15T08:50:53.000Z</updated>
         <summary type="html"><![CDATA[<p>OkHttp是目前很流行的网络请求框架。源码也设计很优秀的思想。有必要去探究一下源码。</p>
@@ -1933,7 +1933,7 @@ public abstract class NamedRunnable implements Runnable {
 <p>五、OkHttp中五大拦截器源码与功能分析</p>
 <h2 id="okhttp执行流程分析">OkHttp执行流程分析</h2>
 <h3 id="流程图">流程图</h3>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-7c800950f025a328.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="流程图.png"></figure>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-7c800950f025a328.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="流程图.png" loading="lazy"></figure>
 <h3 id="流程分析">流程分析</h3>
 <h4 id="1-创建okhttpclient">1、创建OkHttpClient</h4>
 <p>OkHttpClient是一个通过build模式去构建的。</p>
@@ -2067,8 +2067,8 @@ String post(String url, String json) throws IOException {
     </entry>
     <entry>
         <title type="html"><![CDATA[Android优化-绘制优化]]></title>
-        <id>http://xuanguofeng.com/post/Android优化-绘制优化</id>
-        <link href="http://xuanguofeng.com/post/Android优化-绘制优化">
+        <id>http://xuanguofeng.com/post/Android优化-绘制优化/</id>
+        <link href="http://xuanguofeng.com/post/Android优化-绘制优化/">
         </link>
         <updated>2017-12-13T13:24:56.000Z</updated>
         <summary type="html"><![CDATA[<p><strong>Android系统显示原理</strong><br>
@@ -2141,8 +2141,8 @@ LIstView中把ImageView的Background设置为Transparent,只有当图像没有�
     </entry>
     <entry>
         <title type="html"><![CDATA[重温java基础-反射机制]]></title>
-        <id>http://xuanguofeng.com/post/重温java基础-反射机制</id>
-        <link href="http://xuanguofeng.com/post/重温java基础-反射机制">
+        <id>http://xuanguofeng.com/post/重温java基础-反射机制/</id>
+        <link href="http://xuanguofeng.com/post/重温java基础-反射机制/">
         </link>
         <updated>2017-12-13T06:31:22.000Z</updated>
         <summary type="html"><![CDATA[<p><strong>反射是什么？</strong><br>
@@ -2227,8 +2227,8 @@ System.out.println(method.toString());
     </entry>
     <entry>
         <title type="html"><![CDATA[Android优化-内存优化]]></title>
-        <id>http://xuanguofeng.com/post/Android优化-内存优化</id>
-        <link href="http://xuanguofeng.com/post/Android优化-内存优化">
+        <id>http://xuanguofeng.com/post/Android优化-内存优化/</id>
+        <link href="http://xuanguofeng.com/post/Android优化-内存优化/">
         </link>
         <updated>2017-12-06T06:41:46.000Z</updated>
         <summary type="html"><![CDATA[<p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
@@ -2262,7 +2262,7 @@ System.out.println(method.toString());
 <h3 id="1-什么是内存泄露">1、什么是内存泄露？</h3>
 <p>java对象有自己的生命周期，当这个对象不需要再使用时，应该完整地走完生命周期，但因为某些原因，对象虽然已经不再使用，仍然在内存中并没有结束整个生命周期，这就意味着这个对象已经泄露了。</p>
 <p>GC会选择一些还存活的对象作为内存遍历的根节点 GC Roots,通过对GC Roots的可达性来判断是否需要回收。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" loading="lazy"></p>
 <p>Android系统虚拟机的垃圾回收是通过虚拟机GC机制来实现的。GC会选择一些存活的对象作为内存便利的跟节点GC Roots,通过判断GC Roots的可达性来判断是否需要回收，如上图其中 1 2 3 4直接或间接被GC Roots引用链相连，这类对象被认为还需要使用的对象，就不会被回收。5 6 7将会被回收。到那时这里如果Object4 如果不需要使用的话这时候也不会被回收，就属于内存泄露。</p>
 <h3 id="2-常见内存泄露场景以及注意事项">2、常见内存泄露场景以及注意事项</h3>
 <p>~ 资源型对象未关闭<br>
@@ -2296,18 +2296,18 @@ System.out.println(method.toString());
 <h2 id="四-内存分析工具">四、内存分析工具</h2>
 <h3 id="1-memory-monitor">1、Memory Monitor</h3>
 <p>这个是一个我们开发过程中很常用的内存、CPU、网络的分析工具。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图" loading="lazy"><br>
 界面很直观，左上角有运行的机型和项目包名，然后最直观的动态图，分别是CPU、Memory、NetWork。点进去可以进入的Memory。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图" loading="lazy"><br>
 这里可以清晰的看到颜色对应区域占用的内存大小。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图" loading="lazy"><br>
 通过这两张图 内存的大部分信息都能查阅到。我们在操作APP加载图片等操作时候能看到内存上升、和下降，如果操作APP后发现内存不会下降可能就是我们有些对象没有及时释放，也有可能导致内存泄露。<br>
 还有对应的模拟GC，查看时间段具体内存信息以及一段时间的内存追踪等工具可以使用。可以定位到具体的代码行。如下图：<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示" loading="lazy"><br>
 这里有一个Shallow size这个属性的概念：<br>
 Shallow size就是对象本身占用内存的大小，不包含其引用的对象。常规对象（非数组）的Shallow size有其成员变量的数量和类型决定。数组的shallow size有数组元素的类型（对象类型、基本类型）和数组长度决定。</p>
 <h3 id="2-heap-viewrer">2、Heap Viewrer</h3>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面"><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面" loading="lazy"><br>
 如果是Android Studio的话通过Tools-&gt;Android-&gt;Android Device Monitor找到这个工具。<br>
 进入后选择运行APP的包名然后点击update Heap按钮，这时候会在每次gc时展示数据信息，也可以在后面手动GC，如果在操作页面这时候可能会发现小卡顿，因为在GC时，可能导致其他线程停止工作，这时可以清晰看到表中内存信息：<br>
 头部总览视图：</p>

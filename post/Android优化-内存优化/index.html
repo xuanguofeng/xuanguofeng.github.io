@@ -102,7 +102,7 @@
 <h3 id="1-什么是内存泄露">1、什么是内存泄露？</h3>
 <p>java对象有自己的生命周期，当这个对象不需要再使用时，应该完整地走完生命周期，但因为某些原因，对象虽然已经不再使用，仍然在内存中并没有结束整个生命周期，这就意味着这个对象已经泄露了。</p>
 <p>GC会选择一些还存活的对象作为内存遍历的根节点 GC Roots,通过对GC Roots的可达性来判断是否需要回收。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8efb0dcbc6134876.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" loading="lazy"></p>
 <p>Android系统虚拟机的垃圾回收是通过虚拟机GC机制来实现的。GC会选择一些存活的对象作为内存便利的跟节点GC Roots,通过判断GC Roots的可达性来判断是否需要回收，如上图其中 1 2 3 4直接或间接被GC Roots引用链相连，这类对象被认为还需要使用的对象，就不会被回收。5 6 7将会被回收。到那时这里如果Object4 如果不需要使用的话这时候也不会被回收，就属于内存泄露。</p>
 <h3 id="2-常见内存泄露场景以及注意事项">2、常见内存泄露场景以及注意事项</h3>
 <p>~ 资源型对象未关闭<br>
@@ -136,18 +136,18 @@
 <h2 id="四-内存分析工具">四、内存分析工具</h2>
 <h3 id="1-memory-monitor">1、Memory Monitor</h3>
 <p>这个是一个我们开发过程中很常用的内存、CPU、网络的分析工具。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-b2d61b505b13594b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor界面视图" loading="lazy"><br>
 界面很直观，左上角有运行的机型和项目包名，然后最直观的动态图，分别是CPU、Memory、NetWork。点进去可以进入的Memory。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-a3955ca0cdf72b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory局部视图" loading="lazy"><br>
 这里可以清晰的看到颜色对应区域占用的内存大小。<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-8be4a25bacfbb6eb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Memory Monitor的Memory整体视图" loading="lazy"><br>
 通过这两张图 内存的大部分信息都能查阅到。我们在操作APP加载图片等操作时候能看到内存上升、和下降，如果操作APP后发现内存不会下降可能就是我们有些对象没有及时释放，也有可能导致内存泄露。<br>
 还有对应的模拟GC，查看时间段具体内存信息以及一段时间的内存追踪等工具可以使用。可以定位到具体的代码行。如下图：<br>
-<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示"><br>
+<img src="http://upload-images.jianshu.io/upload_images/1980287-4d3438bf2d4f6b55.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="具体类详细内存信息展示" loading="lazy"><br>
 这里有一个Shallow size这个属性的概念：<br>
 Shallow size就是对象本身占用内存的大小，不包含其引用的对象。常规对象（非数组）的Shallow size有其成员变量的数量和类型决定。数组的shallow size有数组元素的类型（对象类型、基本类型）和数组长度决定。</p>
 <h3 id="2-heap-viewrer">2、Heap Viewrer</h3>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面"><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-2141af984975a2a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Heap Viewrer工具视图界面" loading="lazy"><br>
 如果是Android Studio的话通过Tools-&gt;Android-&gt;Android Device Monitor找到这个工具。<br>
 进入后选择运行APP的包名然后点击update Heap按钮，这时候会在每次gc时展示数据信息，也可以在后面手动GC，如果在操作页面这时候可能会发现小卡顿，因为在GC时，可能导致其他线程停止工作，这时可以清晰看到表中内存信息：<br>
 头部总览视图：</p>
@@ -263,11 +263,11 @@ Shallow size就是对象本身占用内存的大小，不包含其引用的对�
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/重温java基础-反射机制">重温java基础-反射机制</a></div></div>
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/重温java基础-反射机制/">重温java基础-反射机制</a></div></div>
                                         
 
                                         
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/RxJava简单使用">RxJava简单使用</a></div> </div>
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/RxJava简单使用/">RxJava简单使用</a></div> </div>
                                        
                                       </div>
                                    

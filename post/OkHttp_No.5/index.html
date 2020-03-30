@@ -78,7 +78,7 @@
 <h2 id="拦截器机制">拦截器机制</h2>
 <p>拦截器是OkHttp中一个强大的机制，能实现网络监听，请求以及响应重写，请示失败重试等功能。</p>
 <h2 id="拦截器链">拦截器链</h2>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图"></figure>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-577aecbf9dea4152.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="连接器练流程图" loading="lazy"></figure>
 <h2 id="getresponsewithinterceptorchain-方法">getResponseWithInterceptorChain  方法</h2>
 <p>之前说到主要是通过这个方法来返回response那么来看看这个方法里究竟是做了什么呢</p>
 <pre><code> Response getResponseWithInterceptorChain() throws IOException {
@@ -155,7 +155,7 @@
 <p>然后通过每个拦截器中都有intercept这个方法，这个方法中返回response然后进行返回。</p>
 <p>这里有个流程是很有意思的就是在proceed()方法里会会返回一个Response 而 这个Response是通过intercep()这个方法并传入一个拦截器返回的，而在各个拦截器中又通过传入的拦截器调回去，这也是拦截器流程的核心机制。从而实现了拦截器链，只有所有的拦截器执行完毕后，一个网络请求的响应response 才会被返回。</p>
 <h2 id="内置拦截器">内置拦截器</h2>
-<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png"></figure>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-73b7d59f185d741e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="屏幕快照 2018-01-02 下午5.48.12.png" loading="lazy"></figure>
 <p>OkHttp中的内置连接器都基实现了通用的接口</p>
 <h3 id="retryandfollowupinterceptor-接口重定向拦截器">RetryAndFollowUpInterceptor 接口重定向拦截器</h3>
 <p>这个拦截器主要是根据结果判断然后进行重试的拦截器</p>
@@ -550,11 +550,11 @@
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建">【Flutter笔记】之环境搭建</a></div></div>
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/">【Flutter笔记】之环境搭建</a></div></div>
                                         
 
                                         
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/OkHttp_No.4">Android热门开源框架-OkHttp源码探究四</a></div> </div>
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/OkHttp_No.4/">Android热门开源框架-OkHttp源码探究四</a></div> </div>
                                        
                                       </div>
                                    

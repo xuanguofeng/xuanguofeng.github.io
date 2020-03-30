@@ -79,25 +79,25 @@
 <h4 id="性能方面优化">性能方面优化</h4>
 <h5 id="尽量避免多层次的嵌套因为布局可以无限制的进行嵌套-所以写起来难免有些肆无忌惮但是布局结构尽量要避免多层次的嵌套来减少开销-数量应最多不要超过10层">尽量避免多层次的嵌套，因为布局可以无限制的进行嵌套。所以写起来难免有些肆无忌惮，但是布局结构尽量要避免多层次的嵌套来减少开销。数量应最多不要超过10层。</h5>
 <h5 id="使用merge标签">使用merge标签</h5>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9d63be5c2ef60d2a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="使用merge标签"><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9d63be5c2ef60d2a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="使用merge标签" loading="lazy"><br>
 如图，使用merge标签可以减少多余的层次结构，多用于一个布局需要包含另一个布局的时候，或者这一个布局用到的重复样式比较多。在加载merge标签的时候，不会加载父控件，只会加载merge标签中的子view。merge标签结合include一起使用可以灵活的、可复用性强的创建布局。</p>
 <h5 id="避免过多的view填充每个view都要花费一些资源和时间为了更快速加载应尽量减少view的加载-如果布局包含的view个数超过80填充布局花费的时间将成为一个显著的问题">避免过多的view，填充每个view都要花费一些资源和时间，为了更快速加载，应尽量减少view的加载。如果布局包含的view个数超过80，填充布局花费的时间将成为一个显著的问题。</h5>
 <h5 id="使用viewstub">使用ViewStub</h5>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-8c9ac95754333995.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></figure>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-95ff463987b56343.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-8c9ac95754333995.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" loading="lazy"></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-95ff463987b56343.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" loading="lazy"><br>
 ViewStub有一个比较大的优点就是当你用到这个布局的时候才会去加载，例如我们在布局里写了ViewStub并引用一个我们写好的布局。这时候我们可以在我们的activity中使用的时候，必须先设置visible。 这样这个布局才会被加载显示。否则是不会显示的。为了防止都findViewById 方法，我们可以调用inflate()方法，这个方法会返回一个view，我们可以直接对这个view进行操作。</p>
 <h4 id="代码可视性的优化">代码可视性的优化。</h4>
 <h5 id="写布局的时候可以尽量在父控件中做操作这样会影响到每个子view-例如我们经常写距离左边距这个时候一个在父母局中写一次而不是在每个子控件中都写一遍">写布局的时候，可以尽量在父控件中做操作，这样会影响到每个子view。例如，我们经常写距离左边距，这个时候一个在父母局中写一次，而不是在每个子控件中都写一遍。</h5>
 <h5 id="写线性布局的时候可以使用权重这样也会对屏幕适配起作用">写线性布局的时候可以使用权重，这样也会对屏幕适配起作用。</h5>
 <h5 id="android-studio中可以直接对多次重用的空间进行属性抽取">Android studio中可以直接对多次重用的空间进行属性抽取。</h5>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-1efd1f18e746f493.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-1efd1f18e746f493.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="" loading="lazy"><br>
 如图，抽取的属性将会在style中，我们在布局文件中就可以直接引用。多次需要用到这个属性的时候我们可以直接用一行代码引用即可。</p>
 <h5 id="使用include标签来引用比较复杂或者抽象的布局文件">使用include标签，来引用比较复杂，或者抽象的布局文件。</h5>
 </div>
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android拍照或从系统相册获取图片">Android拍照或从系统相册获取图片</a></div></div>
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android拍照或从系统相册获取图片/">Android拍照或从系统相册获取图片</a></div></div>
                                         
 
                                         

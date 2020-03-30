@@ -91,13 +91,13 @@
 Reuse your own or other developers' C or C++ libraries.</p>
 <h3 id="在androidstudio中配置ndk环境">在AndroidStudio中配置NDK环境</h3>
 <h5 id="1下载">1.下载</h5>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-5311cfa4fa066af6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="配置NDK环境"><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-5311cfa4fa066af6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="配置NDK环境" loading="lazy"><br>
 也可以直接在官方网站下载zip不过需要科学上网哦！<br>
 官网地址：https://developer.android.com/ndk/downloads/index.html</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9152a43f3f69efd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="local.properties文件"><br>
+<p><img src="http://upload-images.jianshu.io/upload_images/1980287-9152a43f3f69efd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="local.properties文件" loading="lazy"><br>
 local.properties文件中出现ndk.dir则配置成功。</p>
 <h5 id="2配置gradleproperties文件添加androidusedeprecatedndktrue">2.配置<strong><strong>gradle.properties</strong></strong>文件，添加android.useDeprecatedNdk=true</h5>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-3c8f54e5cb359909.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gradle.properties文件"></figure>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-3c8f54e5cb359909.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gradle.properties文件" loading="lazy"></figure>
 <p>这样NDK环境就搭建ok了。</p>
 <h3 id="java-cc代码编写以及so的生成与使用">Java、C/C++代码编写以及so的生成与使用</h3>
 <h5 id="1创建对应的java类">1.创建对应的java类</h5>
@@ -114,14 +114,14 @@ public class JniUtil {
 }
 </code></pre>
 <h5 id="2对项目进行编译">2.对项目进行编译</h5>
-<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-f4220d1920901bb9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="编译项目"></figure>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-f4220d1920901bb9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="编译项目" loading="lazy"></figure>
 <p>编译后对项目会在文件夹下出现class文件</p>
-<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-1b7531f95a6b8abb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></figure>
+<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-1b7531f95a6b8abb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" loading="lazy"></figure>
 <h5 id="2生成h文件">2.生成.h文件</h5>
 <p>打开Android Studio的Terminal也可以在对应目录的命令窗口中，切换到项目的app/src/main目录下，执行命令：</p>
 <pre><code>javah -d jni -classpath 编译后的class文件的绝对路径
 </code></pre>
-<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-ab9dcb13a7b43d67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成对应的.h文件"></figure>
+<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-ab9dcb13a7b43d67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成对应的.h文件" loading="lazy"></figure>
 <p>.h文件会在app目录下的jni文件夹中，如果在不同的目录下执行命令会在不同的目录中生成jni文件夹</p>
 <h5 id="3编写ccpp文件">3.编写.c/.cpp文件</h5>
 <p>.c/.cpp文件的文件名要与之前在java类中定义的System.loadLibrary(&quot;jniutil&quot;);中的“jniutil”一致。<br>
@@ -188,7 +188,7 @@ return env-&gt;NewStringUTF(APK_SIGN_ERROR);
 RELEASE_SIGN是定一个了一个key的变量，这个key固定在so里面 是通过keystore文件生成的后面会讲解方法。原因是如果直接单纯的返回密钥，拿到so一样不是那么安全，只有通过对应的签名文件验证通过后才会返回具体的密钥。这里返回的ack变量则是要返回给java的密钥。</p>
 <p>说明：由于本次不怎么懂c所以只是通过查询资料简单的对密钥进行打乱拼接。读者可自行优化c算法。如有建议或者纠正欢迎留言。</p>
 <h5 id="4在app目录下的buildgradle文件中添加如下代码">4.在app目录下的build.gradle文件中添加如下代码</h5>
-<figure data-type="image" tabindex="5"><img src="http://upload-images.jianshu.io/upload_images/1980287-f43f84343b3f91fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="build.gradle配置"></figure>
+<figure data-type="image" tabindex="5"><img src="http://upload-images.jianshu.io/upload_images/1980287-f43f84343b3f91fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="build.gradle配置" loading="lazy"></figure>
 <pre><code>ndk {    
 moduleName &quot;jniutil&quot;    
 abiFilters 'armeabi', 'x86', 'armeabi-v7a'
@@ -224,7 +224,7 @@ protected void onCreate(Bundle savedInstanceState) {
 <p><strong>代码说明</strong>：<br>
 sign.toCharsString()这个方法就是获取keystore中的值来和so库中的进行比较。开发时候debug的和正式发布的keystore值是不一样的所以要注意更换。</p>
 <p>这时候点击运行项目如果签名一致就会打印密钥，如果不一致就会打印签名错误。</p>
-<figure data-type="image" tabindex="6"><img src="http://upload-images.jianshu.io/upload_images/1980287-b8e0c019ec079baa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成so文件"></figure>
+<figure data-type="image" tabindex="6"><img src="http://upload-images.jianshu.io/upload_images/1980287-b8e0c019ec079baa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="生成so文件" loading="lazy"></figure>
 <h5 id="6so的使用">6.so的使用</h5>
 <p>在main文件夹下创建jniLibs有的项目会放在libs中，但是需要在gradle中配置目录，其实是一样的，复制我们之前生成的so文件。复制对应的JniUtil类注意，包名要与之前创建的so时的包名一致。之前的jni文件下的.h和c/c++源文件以及gradle里面配置的ndk信息也都不需要了。</p>
 <p>当然 关于ndk，jni，so的相关知识可能还有很多推荐几篇文章给大家参考。<br>
@@ -235,11 +235,11 @@ jni讲解：http://www.jianshu.com/p/aba734d5b5cd</p>
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结">Android沉浸式状态栏方法总结</a></div></div>
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结/">Android沉浸式状态栏方法总结</a></div></div>
                                         
 
                                         
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画共享元素(例列表图片放大到详情图片动画)">Android动画共享元素(例列表图片放大到详情图片动画)</a></div> </div>
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画共享元素(例列表图片放大到详情图片动画)/">Android动画共享元素(例列表图片放大到详情图片动画)</a></div> </div>
                                        
                                       </div>
                                    

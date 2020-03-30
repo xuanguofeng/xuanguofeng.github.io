@@ -81,7 +81,7 @@
 <!-- more -->
 <h3 id="第一种实现方式">第一种实现方式</h3>
 <p>其实主要实现的就是顶部状态栏和toolbar的颜色一致达到效果。</p>
-<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-ff091ef2f0b352cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></figure>
+<figure data-type="image" tabindex="1"><img src="http://upload-images.jianshu.io/upload_images/1980287-ff091ef2f0b352cc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png" loading="lazy"></figure>
 <pre><code>
 &lt;resources&gt;
 
@@ -97,7 +97,7 @@
 
 </code></pre>
 <p>其中  colorPrimaryDark这个参数就是设置状态栏的颜色，设置状态栏和toolbar或者自定义的标题栏颜色一致的话会显示</p>
-<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-8c3af1dae2d1daa2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="状态效果"></figure>
+<figure data-type="image" tabindex="2"><img src="http://upload-images.jianshu.io/upload_images/1980287-8c3af1dae2d1daa2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="状态效果" loading="lazy"></figure>
 <h3 id="第二种实现方式">第二种实现方式</h3>
 <p>第二种实现方式是把主题布局往上移动，把布局从屏幕的左上角开始计算。所以这种方式需要注意，把顶部状态栏的高度要计算在出来。</p>
 <pre><code> if (Build.VERSION.SDK_INT &gt;= 21) {
@@ -111,11 +111,11 @@
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 </code></pre>
-<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-78210b823bf97265.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="布局往上移动的方式"></figure>
+<figure data-type="image" tabindex="3"><img src="http://upload-images.jianshu.io/upload_images/1980287-78210b823bf97265.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="布局往上移动的方式" loading="lazy"></figure>
 <h3 id="第三种实现方式">第三种实现方式</h3>
 <p>第三种表面看来是全屏的方式，然后可以通过滑动顶部来实现状态栏的弹出，然后会自动隐藏掉。这种模式也是真正意义的沉浸式状态栏。</p>
 <p>git效果：http://note.youdao.com/share/?id=fdc645c84ad9cd4e4ba0841b116a703c&amp;type=note#/</p>
-<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-f3e47747e72eb0b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="自动隐藏顶部状态栏"></figure>
+<figure data-type="image" tabindex="4"><img src="http://upload-images.jianshu.io/upload_images/1980287-f3e47747e72eb0b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="自动隐藏顶部状态栏" loading="lazy"></figure>
 <p>实现方式：在Activity中实现如下方法</p>
 <pre><code> @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -136,11 +136,11 @@
                                     <div class="mdui-divider mdui-m-b-2"></div>
                                     <div class="mdui-row-xs-2 post-fenye">
                                        
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/工欲善其事必先利其器-android Studio技巧与插件">工欲善其事必先利其器-android Studio技巧与插件</a></div></div>
+                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/工欲善其事必先利其器-android Studio技巧与插件/">工欲善其事必先利其器-android Studio技巧与插件</a></div></div>
                                         
 
                                         
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android中创建so库存储密钥，NDK环境搭建与jni介绍">Android中创建so库存储密钥，NDK环境搭建与jni介绍</a></div> </div>
+                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android中创建so库存储密钥，NDK环境搭建与jni介绍/">Android中创建so库存储密钥，NDK环境搭建与jni介绍</a></div> </div>
                                        
                                       </div>
                                    

@@ -1,79 +1,157 @@
 <!DOCTYPE html>
-<html>
-        <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>Material Design风格输入样式TextInputLayout使用 | 开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+  <meta charset="UTF-8" />
+<title>Material Design风格输入样式TextInputLayout使用 - 开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
-                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">Material Design风格输入样式TextInputLayout使用</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-04-21 16:21:23">2017-04-21 / 3 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>TextInputLayout</strong>是Google基于Material Design风格出现的一个文本输入布局。主要特点在样式上，官方第一句介绍是当输入的文本显示或者隐藏的时候，EditText显示浮动标签的布局。</p>
+<body>
+  <div class="layout theme-dark">
+    <div class="layout-header">
+
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+    <div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+    <div class="layout-content">
+      <div class="layout-content-main">
+        <div class="container">
+          <div class="row justify-content-lg-center">
+            <div class="col-12 col-lg-9">
+              <div class="layout-post">
+                <div class="layout-post-body">
+                  <div class="row">
+
+                    <div class="col-12 col-lg-10">
+                      <div class="layout-post-main m-right m-md-right">
+                        <div class="layout-post-header">
+                          <h1 class="layout-post-title">Material Design风格输入样式TextInputLayout使用</h1>
+                          <div class="layout-post-meta">
+                            <div class="item">
+                               <a href="http://xuanguofeng.com/tag/-R-LG5h47/" class="post--keyword"
+                                data-title="Material Design" data-type="post_tag" data-term-id="39">Material Design</a>
+                              
+                            </div>
+                            <div class="item">
+                              <span>2017-04-21</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="layout-post-content">
+                          <div class="layout-post-item">
+                            
+                            <p><strong>TextInputLayout</strong>是Google基于Material Design风格出现的一个文本输入布局。主要特点在样式上，官方第一句介绍是当输入的文本显示或者隐藏的时候，EditText显示浮动标签的布局。</p>
 <!-- more -->
 <h3 id="先看看样式">先看看样式</h3>
 <p>样式其实是有动画效果的<br>
@@ -195,105 +273,173 @@ app:passwordToggleTint=&quot;@color/colorAccent&quot;
 </table>
 <h3 id="总结">总结</h3>
 <p>google继Android5.0后出了一系列Material Design风格的控件，也引起了部分web端与Android端的的Material Design风格化。个人认为这也是一个比较好的设计语言。如果利用的好，将会对APP的交互很有利。</p>
-</div>
-                                    <div class="mdui-divider mdui-m-b-2"></div>
-                                    <div class="mdui-row-xs-2 post-fenye">
-                                       
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结/">Java常用排序算法冒泡排序与选择排序总结</a></div></div>
-                                        
 
-                                        
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用/">Material Design风格输入样式TextInputLayout使用</a></div> </div>
-                                       
-                                      </div>
-                                   
-                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-                                    
-                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
- <div class="comment"></div>
+                          </div>
+                        </div>
+                        <div class="layout-post-social">
+                          <div class="item reader">
+                            <div id="/post/Design风格文本输入样式TextInputLayout的使用 (xuanguoengdeMBP 的冲突副本 2020-03-17)/" class="leancloud-visitors view"
+                              data-flag-title="Material Design风格输入样式TextInputLayout使用">
+                              <span class="post-meta-item-text">阅读 </span>
+                              <span class="leancloud-visitors-count"></span>
+                            </div>
+                          </div>
+                        </div>
 
-<script>
-      new Valine({
-            el: '.comment',
+                        <div class="layout-post-navigation">
+                          <div class="navigation-list">
+                            
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结/" class="title">
+                                      <h4>Java常用排序算法冒泡排序与选择排序总结</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p>排序算法有好多种，也在特殊的场景中，我们经常需要对我们的数据进行排序，这里对经典的排序做一个记录整理。</p>
 
-            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>上一篇</span></div>
+                                  <div class="item">2017-05-24</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用/" class="title">
+                                      <h4>Material Design风格输入样式TextInputLayout使用</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p><strong>TextInputLayout</strong>是Google基于Material Design风格出现的一个文本输入布局。主要特点在样式上，官方第一句介绍是当输入的文本显示或者隐藏的时候，EditText显示浮动标签的布局。</p>
 
-            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>下一篇</span></div>
+                                  <div class="item">2017-04-21</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            
+                          </div>
+                        </div>
 
-            placeholder: '一起交流下吧！',
-            
-            path: window.location.pathname,
-            pageSize: 30,
-            avatar:'mm', 
-       })
-    </script> 
-<script>
-    if(window.location.hash){
-        var checkExist = setInterval(function() {
-           if ($(window.location.hash).length) {
-              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
-              clearInterval(checkExist);
-           }
-        }, 100);
-    }
-</script>
-                                </article>
+                        <div class="layout-comments"></div>
+                        
+                      </div>
+                    </div>
 
-                                    
+                    <div class="col-12 col-lg-2 d-none d-lg-block">
+                      <div class="layout-post-sidebar">
+                        <div class="layout-sidebar-item">
+                          <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E5%85%88%E7%9C%8B%E7%9C%8B%E6%A0%B7%E5%BC%8F">先看看样式</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">使用方法</a>
+<ul>
+<li><a href="#%E5%BC%95%E5%85%A5%E5%8C%85%E7%8E%AF%E5%A2%83">引入包环境</a></li>
+<li><a href="#%E5%9C%A8%E5%B8%83%E5%B1%80%E4%B8%AD%E5%8A%A0%E5%85%A5%E4%BB%A3%E7%A0%81">在布局中加入代码</a></li>
+</ul>
+</li>
+<li><a href="#%E6%A0%B7%E5%BC%8F%E4%BF%AE%E6%94%B9">样式修改</a></li>
+<li><a href="#%E8%AE%A1%E6%95%B0%E5%99%A8%E5%8A%9F%E8%83%BD">计数器功能</a>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8">使用</a></li>
+</ul>
+</li>
+<li><a href="#%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA%E5%8A%9F%E8%83%BD">错误提示功能</a></li>
+<li><a href="#%E5%AF%86%E7%A0%81%E5%8F%AF%E8%A7%86%E5%8A%9F%E8%83%BD">密码可视功能</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
                         </div>
                       </div>
-    
-                
-
-              </div>
-                    <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                    </div>
                   </div>
-                  
-              </footer>
-    </body>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-totop d-none"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+
+    	<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+
+  </div>
+</body>
+
 </html>

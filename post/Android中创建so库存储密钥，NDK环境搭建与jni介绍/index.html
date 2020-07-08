@@ -1,79 +1,157 @@
 <!DOCTYPE html>
-<html>
-        <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>Android中创建so库存储密钥，NDK环境搭建与jni介绍 | 开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+  <meta charset="UTF-8" />
+<title>Android中创建so库存储密钥，NDK环境搭建与jni介绍 - 开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
-                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">Android中创建so库存储密钥，NDK环境搭建与jni介绍</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2016-06-25 22:51:51">2016-06-25 / 7 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p><strong>介绍</strong></p>
+<body>
+  <div class="layout theme-dark">
+    <div class="layout-header">
+
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+    <div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+    <div class="layout-content">
+      <div class="layout-content-main">
+        <div class="container">
+          <div class="row justify-content-lg-center">
+            <div class="col-12 col-lg-9">
+              <div class="layout-post">
+                <div class="layout-post-body">
+                  <div class="row">
+
+                    <div class="col-12 col-lg-10">
+                      <div class="layout-post-main m-right m-md-right">
+                        <div class="layout-post-header">
+                          <h1 class="layout-post-title">Android中创建so库存储密钥，NDK环境搭建与jni介绍</h1>
+                          <div class="layout-post-meta">
+                            <div class="item">
+                               <a href="http://xuanguofeng.com/tag/ndk/" class="post--keyword"
+                                data-title="NDK" data-type="post_tag" data-term-id="39">NDK</a>
+                              
+                            </div>
+                            <div class="item">
+                              <span>2016-06-25</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="layout-post-content">
+                          <div class="layout-post-item">
+                            
+                            <p><strong>介绍</strong></p>
 <ul>
 <li>
 <p>so库介绍：Android开发中经常会见到jinLibs文件夹下的so库文件，就算用第三方的sdk也会经常看到so库，so库是一个用c/c++语言些的函数库。Android中可以用过使用jni的方式来调取so库。在某些方面so函数库可能会更高效更安全。</p>
@@ -231,105 +309,183 @@ sign.toCharsString()这个方法就是获取keystore中的值来和so库中的�
 jni讲解：http://www.jianshu.com/p/aba734d5b5cd</p>
 <p>NDK下载：https://developer.android.com/ndk/downloads/index.html</p>
 <p>google官方NDK介绍：https://developer.android.google.cn/ndk/guides/index.html</p>
-</div>
-                                    <div class="mdui-divider mdui-m-b-2"></div>
-                                    <div class="mdui-row-xs-2 post-fenye">
-                                       
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结/">Android沉浸式状态栏方法总结</a></div></div>
-                                        
 
-                                        
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画共享元素(例列表图片放大到详情图片动画)/">Android动画共享元素(例列表图片放大到详情图片动画)</a></div> </div>
-                                       
-                                      </div>
-                                   
-                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-                                    
-                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
- <div class="comment"></div>
+                          </div>
+                        </div>
+                        <div class="layout-post-social">
+                          <div class="item reader">
+                            <div id="/post/Android中创建so库存储密钥，NDK环境搭建与jni介绍/" class="leancloud-visitors view"
+                              data-flag-title="Android中创建so库存储密钥，NDK环境搭建与jni介绍">
+                              <span class="post-meta-item-text">阅读 </span>
+                              <span class="leancloud-visitors-count"></span>
+                            </div>
+                          </div>
+                        </div>
 
-<script>
-      new Valine({
-            el: '.comment',
+                        <div class="layout-post-navigation">
+                          <div class="navigation-list">
+                            
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Android沉浸式状态栏方法总结/" class="title">
+                                      <h4>Android沉浸式状态栏方法总结</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p><strong>为什么用沉浸式状态栏？</strong><br>
+也不知道从什么时候开始大部分的App已经全部向沉浸式状态栏靠拢，这种效果应该是想让最顶部的状态栏和项目的标题栏过渡比较融和吧。<br>
+不过沉浸式状态栏这种叫法可能不太妥当。</p>
+<p>本篇文章参考郭霖的博客。<br>
+郭霖博客地址：<a href="http://blog.csdn.net/guolin_blog/article/details/51763825">Android状态栏微技巧，带你真正理解沉浸式模式</a></p>
 
-            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>上一篇</span></div>
+                                  <div class="item">2016-07-21</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Android动画共享元素(例列表图片放大到详情图片动画)/" class="title">
+                                      <h4>Android动画共享元素(例列表图片放大到详情图片动画)</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <h4 id="什么是共享元素">什么是共享元素</h4>
+<p>简单来说共享元素就是两个Activity中都拥有此元素，在第二个Activity中进行强调而展示一些的动画效果。例如圆按钮的漂移动画。图片的放大动画。</p>
+<h4 id="为什么使用共享元素">为什么使用共享元素</h4>
+<p>主要是因为在Android5.0以后google推出了 Material Design的设计风格，在Adnroid 5.0之后的api中也添加了很多关于这个风格的主题以及控件，也更推崇两个控件之间的自然的转场动画。使页面更加自然，炫丽。</p>
 
-            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>下一篇</span></div>
+                                  <div class="item">2016-06-20</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            
+                          </div>
+                        </div>
 
-            placeholder: '一起交流下吧！',
-            
-            path: window.location.pathname,
-            pageSize: 30,
-            avatar:'mm', 
-       })
-    </script> 
-<script>
-    if(window.location.hash){
-        var checkExist = setInterval(function() {
-           if ($(window.location.hash).length) {
-              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
-              clearInterval(checkExist);
-           }
-        }, 100);
-    }
-</script>
-                                </article>
+                        <div class="layout-comments"></div>
+                        
+                      </div>
+                    </div>
 
-                                    
+                    <div class="col-12 col-lg-2 d-none d-lg-block">
+                      <div class="layout-post-sidebar">
+                        <div class="layout-sidebar-item">
+                          <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E5%9C%A8androidstudio%E4%B8%AD%E9%85%8D%E7%BD%AEndk%E7%8E%AF%E5%A2%83">在AndroidStudio中配置NDK环境</a><br>
+*
+<ul>
+<li><a href="#1%E4%B8%8B%E8%BD%BD">1.下载</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AEgradleproperties%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0androidusedeprecatedndktrue">2.配置<strong><strong>gradle.properties</strong></strong>文件，添加android.useDeprecatedNdk=true</a></li>
+</ul>
+</li>
+<li><a href="#java-cc%E4%BB%A3%E7%A0%81%E7%BC%96%E5%86%99%E4%BB%A5%E5%8F%8Aso%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8">Java、C/C++代码编写以及so的生成与使用</a><br>
+*
+<ul>
+<li><a href="#1%E5%88%9B%E5%BB%BA%E5%AF%B9%E5%BA%94%E7%9A%84java%E7%B1%BB">1.创建对应的java类</a></li>
+<li><a href="#2%E5%AF%B9%E9%A1%B9%E7%9B%AE%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%AF%91">2.对项目进行编译</a></li>
+<li><a href="#2%E7%94%9F%E6%88%90h%E6%96%87%E4%BB%B6">2.生成.h文件</a></li>
+<li><a href="#3%E7%BC%96%E5%86%99ccpp%E6%96%87%E4%BB%B6">3.编写.c/.cpp文件</a></li>
+<li><a href="#4%E5%9C%A8app%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84buildgradle%E6%96%87%E4%BB%B6%E4%B8%AD%E6%B7%BB%E5%8A%A0%E5%A6%82%E4%B8%8B%E4%BB%A3%E7%A0%81">4.在app目录下的build.gradle文件中添加如下代码</a></li>
+<li><a href="#5%E5%9C%A8activity%E8%B0%83%E7%94%A8%E5%BA%93%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95">5.在activity调用库中的方法。</a></li>
+<li><a href="#6so%E7%9A%84%E4%BD%BF%E7%94%A8">6.so的使用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
                         </div>
                       </div>
-    
-                
-
-              </div>
-                    <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                    </div>
                   </div>
-                  
-              </footer>
-    </body>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-totop d-none"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+
+    	<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+
+  </div>
+</body>
+
 </html>

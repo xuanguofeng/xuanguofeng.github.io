@@ -1,260 +1,388 @@
 <!DOCTYPE html>
-<html>
-            <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+	<meta charset="UTF-8" />
+<title>开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-10 mdui-col-offset-md-1 mdui-m-t-1">
-                            <div class="mdui-row-md-2 mdui-row-xs-1">
-                                
-                                
+<body>
+	<div class="layout theme-dark">
+		<div class="layout-header">
 
-                    
-                              
-                               
-                                <article class="animated fadeIn" style="animation-delay:1s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2018-07-11</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题/">问题日志-Flutter页面跳转无反应的问题</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>描述：在使用Flutter做页面跳转时候，官方的描述使用方法是这样的。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.3s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2018-07-05</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别/">【Flutter笔记】之Dart与Java的一些直观区别</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>Dart 是 Flutter 的主要开发语言，Flutter 是一个来自 Google 用于移动应用开发的 SDK。其实对于Java开发人员来说Dart，还是相对好理解的，这篇笔记将记录初学Dart时，相比较Java的一些区别。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.6s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2018-07-02</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解/">【Flutter笔记】之Flutter的理解</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>目前对Flutter的理解还是很少的，只是想作为一个笔记，在不断理解的基础上进行不断的修改与完善，查漏补缺，看看自己学之前与学之后是的理解是一个什么状态。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.9s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2018-06-28</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/">【Flutter笔记】之环境搭建</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>Flutter 是 Google 用以帮助开发者在 iOS 和 Android 两个平台开发高质量原生 UI 的移动 SDK。Flutter 兼容现有的代码，免费且开源。使用Dart语言。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                
-                               
-                                
-                               
-                                
-                               
-                                
-                                
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
 
-                    
-                              
-                               
-                                
-                               
-                                
-                               
-                                
-                               
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.2s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-30</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/OkHttp_No.5/">Android热门开源框架-OkHttp源码探究五</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>前面基本介绍了OkHttp的流程以及源码，这里看最后一个重要的核心源码OkHttp中的拦截器。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.5s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-25</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/OkHttp_No.4/">Android热门开源框架-OkHttp源码探究四</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>本篇继续探究OkHttp，这次主要看OkHttp中的一个核心机制Dispatcher</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.8s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-25</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/OkHttp_No.3/">Android热门开源框架-OkHttp源码探究三</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>本篇继续探究OkHttp，这次主要看异步请求流程</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:3.1s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-21</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/OkHttp_No.2/">Android热门开源框架-OkHttp源码探究二</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>本篇继续探究OkHttp，这次主要看同步请求流程</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                                
-                              </div>
-                                                            <nav class="mdui-m-t-5">
-                                
-                                <div class="index-yema mdui-float-left"><a href="http://xuanguofeng.com/archives/">上一页</a></div>
-                                 
-                                
-                                <div class="index-yema mdui-float-right"><a href="http://xuanguofeng.com/archives/page/3/">下一页</a></div>
-                                 
-                                </nav>     
-                                    
-                        </div>
-                      </div>
-    
-                
+					<div class="navbar">
 
-              </div>
-                     <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
-                  </div>
-                  
-              </footer>
-    </body>
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+		<div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+		<div class="layout-content">
+			<div class="layout-content-main">
+				<div class="container">
+					<div class="row justify-content-lg-center">
+						<div class="col-12 col-lg-9">
+							<div class="layout-archive">
+								
+								
+
+								<div class="card">
+									<div class="card-header">
+										<div class="header-content">
+											<div class="title">2018</div>
+										</div>
+
+									</div>
+									<div class="card-body">
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/问题日志-Flutter页面跳转无反应的问题/">问题日志-Flutter页面跳转无反应的问题</a>
+													<div class="time">2018-07-11</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/【Flutter笔记】之Dart与Java的一些直观区别/">【Flutter笔记】之Dart与Java的一些直观区别</a>
+													<div class="time">2018-07-05</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/【Flutter笔记】之Flutter的理解/">【Flutter笔记】之Flutter的理解</a>
+													<div class="time">2018-07-02</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/【Flutter笔记】之环境搭建/">【Flutter笔记】之环境搭建</a>
+													<div class="time">2018-06-28</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+									</div>
+								</div>
+								
+
+								<div class="card">
+									<div class="card-header">
+										<div class="header-content">
+											<div class="title">2017</div>
+										</div>
+
+									</div>
+									<div class="card-body">
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/OkHttp_No.5/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/OkHttp_No.5/">Android热门开源框架-OkHttp源码探究五</a>
+													<div class="time">2017-12-30</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/OkHttp_No.4/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/OkHttp_No.4/">Android热门开源框架-OkHttp源码探究四</a>
+													<div class="time">2017-12-25</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/OkHttp_No.3/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/OkHttp_No.3/">Android热门开源框架-OkHttp源码探究三</a>
+													<div class="time">2017-12-25</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/OkHttp_No.2/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/OkHttp_No.2/">Android热门开源框架-OkHttp源码探究二</a>
+													<div class="time">2017-12-21</div>
+												</div>
+											</div>
+										</div>
+										
+										
+									</div>
+								</div>
+								
+							</div>
+
+							<div class="layout-paginator">
+								<div class="paginator row">
+									<div class="col-6">
+										
+										<a href="http://xuanguofeng.com/archives/" class="btn btn-paginator width-100">上一页</a>
+										
+									</div>
+									<div class="col-6">
+										
+										<a href="http://xuanguofeng.com/archives/page/3/" class="btn btn-paginator width-100">下一页</a>
+										
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+			<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+	</div>
+</body>
+
 </html>

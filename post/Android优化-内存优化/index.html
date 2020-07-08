@@ -1,79 +1,157 @@
 <!DOCTYPE html>
-<html>
-        <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>Android优化-内存优化 | 开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+  <meta charset="UTF-8" />
+<title>Android优化-内存优化 - 开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
-                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">Android优化-内存优化</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-12-06 14:41:46">2017-12-06 / 8 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
+<body>
+  <div class="layout theme-dark">
+    <div class="layout-header">
+
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+    <div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+    <div class="layout-content">
+      <div class="layout-content-main">
+        <div class="container">
+          <div class="row justify-content-lg-center">
+            <div class="col-12 col-lg-9">
+              <div class="layout-post">
+                <div class="layout-post-body">
+                  <div class="row">
+
+                    <div class="col-12 col-lg-10">
+                      <div class="layout-post-main m-right m-md-right">
+                        <div class="layout-post-header">
+                          <h1 class="layout-post-title">Android优化-内存优化</h1>
+                          <div class="layout-post-meta">
+                            <div class="item">
+                               <a href="http://xuanguofeng.com/tag/android/" class="post--keyword"
+                                data-title="Android" data-type="post_tag" data-term-id="39">Android</a>
+                              
+                            </div>
+                            <div class="item">
+                              <span>2017-12-06</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="layout-post-content">
+                          <div class="layout-post-item">
+                            
+                            <p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
 <!-- more -->
 <h2 id="一-android内存管理机制">一、Android内存管理机制</h2>
 <h3 id="1-java对象的生命周期">1、Java对象的生命周期</h3>
@@ -259,105 +337,193 @@ Shallow size就是对象本身占用内存的大小，不包含其引用的对�
 </tr>
 </tbody>
 </table>
-</div>
-                                    <div class="mdui-divider mdui-m-b-2"></div>
-                                    <div class="mdui-row-xs-2 post-fenye">
-                                       
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/重温java基础-反射机制/">重温java基础-反射机制</a></div></div>
-                                        
 
-                                        
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/RxJava简单使用/">RxJava简单使用</a></div> </div>
-                                       
-                                      </div>
-                                   
-                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-                                    
-                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
- <div class="comment"></div>
+                          </div>
+                        </div>
+                        <div class="layout-post-social">
+                          <div class="item reader">
+                            <div id="/post/Android优化-内存优化/" class="leancloud-visitors view"
+                              data-flag-title="Android优化-内存优化">
+                              <span class="post-meta-item-text">阅读 </span>
+                              <span class="leancloud-visitors-count"></span>
+                            </div>
+                          </div>
+                        </div>
 
-<script>
-      new Valine({
-            el: '.comment',
+                        <div class="layout-post-navigation">
+                          <div class="navigation-list">
+                            
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/重温java基础-反射机制/" class="title">
+                                      <h4>重温java基础-反射机制</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p><strong>反射是什么？</strong><br>
+在运行状态中，获取一个类的所有属性和方法。这种动态获取信息以及调用对象的方法的功能。</p>
 
-            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>上一篇</span></div>
+                                  <div class="item">2017-12-13</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/RxJava简单使用/" class="title">
+                                      <h4>RxJava简单使用</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
 
-            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>下一篇</span></div>
+                                  <div class="item">2017-10-23</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            
+                          </div>
+                        </div>
 
-            placeholder: '一起交流下吧！',
-            
-            path: window.location.pathname,
-            pageSize: 30,
-            avatar:'mm', 
-       })
-    </script> 
-<script>
-    if(window.location.hash){
-        var checkExist = setInterval(function() {
-           if ($(window.location.hash).length) {
-              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
-              clearInterval(checkExist);
-           }
-        }, 100);
-    }
-</script>
-                                </article>
+                        <div class="layout-comments"></div>
+                        
+                      </div>
+                    </div>
 
-                                    
+                    <div class="col-12 col-lg-2 d-none d-lg-block">
+                      <div class="layout-post-sidebar">
+                        <div class="layout-sidebar-item">
+                          <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%B8%80-android%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6">一、Android内存管理机制</a>
+<ul>
+<li><a href="#1-java%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">1、Java对象的生命周期</a></li>
+<li><a href="#2-%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6">2、内存回收机制</a>
+<ul>
+<li><a href="#%E5%86%85%E5%AD%98%E7%9A%84%E4%B8%89%E4%B8%AA%E5%8C%BA%E5%9F%9F">内存的三个区域</a></li>
+<li><a href="#gc%E5%9B%9E%E6%94%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AE%97%E6%B3%95">GC回收的一些算法</a></li>
+<li><a href="#gc%E7%B1%BB%E5%9E%8B">GC类型</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96gc%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">其他GC注意事项</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-android%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2">二、Android内存泄露</a>
+<ul>
+<li><a href="#1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2">1、什么是内存泄露？</a></li>
+<li><a href="#2-%E5%B8%B8%E8%A7%81%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%9C%BA%E6%99%AF%E4%BB%A5%E5%8F%8A%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">2、常见内存泄露场景以及注意事项</a></li>
+<li><a href="#3-%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7">3、内存泄露分析工具</a>
+<ul>
+<li><a href="#leakcanary">leakcanary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E5%B8%B8%E8%A7%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E9%81%BF%E5%85%8D%E5%86%85%E5%AD%98%E6%B6%88%E8%80%97%E8%BF%87%E5%A4%9A">三、常见注意事项避免内存消耗过多</a>
+<ul>
+<li><a href="#1-autoboxing%E8%87%AA%E5%8A%A8%E8%A3%85%E7%AE%B1%E8%BF%87%E7%A8%8B">1、AutoBoxing自动装箱过程</a></li>
+<li><a href="#2-%E5%86%85%E5%AE%B9%E5%A4%8D%E7%94%A8">2、内容复用</a></li>
+<li><a href="#3-%E4%BD%BF%E7%94%A8%E6%9C%80%E4%BC%98%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B">3、使用最优的数据类型</a></li>
+<li><a href="#4-%E5%9B%BE%E7%89%87%E7%9A%84%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96">4、图片的内存优化</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9B-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7">四、内存分析工具</a>
+<ul>
+<li><a href="#1-memory-monitor">1、Memory Monitor</a></li>
+<li><a href="#2-heap-viewrer">2、Heap Viewrer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
                         </div>
                       </div>
-    
-                
-
-              </div>
-                    <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                    </div>
                   </div>
-                  
-              </footer>
-    </body>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-totop d-none"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+
+    	<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+
+  </div>
+</body>
+
 </html>

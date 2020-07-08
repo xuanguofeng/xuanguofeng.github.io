@@ -1,79 +1,157 @@
 <!DOCTYPE html>
-<html>
-        <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>问题日志-Fresco库的libimagepipeline.so问题 | 开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+  <meta charset="UTF-8" />
+<title>问题日志-Fresco库的libimagepipeline.so问题 - 开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
-                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">问题日志-Fresco库的libimagepipeline.so问题</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2019-07-07 20:20:14">2019-07-07 / 2 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
+<body>
+  <div class="layout theme-dark">
+    <div class="layout-header">
+
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+    <div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+    <div class="layout-content">
+      <div class="layout-content-main">
+        <div class="container">
+          <div class="row justify-content-lg-center">
+            <div class="col-12 col-lg-9">
+              <div class="layout-post">
+                <div class="layout-post-body">
+                  <div class="row">
+
+                    <div class="col-12 col-lg-10">
+                      <div class="layout-post-main m-right m-md-right">
+                        <div class="layout-post-header">
+                          <h1 class="layout-post-title">问题日志-Fresco库的libimagepipeline.so问题</h1>
+                          <div class="layout-post-meta">
+                            <div class="item">
+                               <a href="http://xuanguofeng.com/tag/wen-ti-ri-zhi/" class="post--keyword"
+                                data-title="问题日志" data-type="post_tag" data-term-id="39">问题日志</a>
+                              
+                            </div>
+                            <div class="item">
+                              <span>2019-07-07</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="layout-post-content">
+                          <div class="layout-post-item">
+                            
+                            <p>使用了Fresco的图片库会发现在部分机型上会报java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit错误。</p>
 <!-- more -->
 <h2 id="问题描述">问题描述</h2>
 <pre><code>java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libimagepipeline.so caused by: dlopen failed: &quot;/data/data/cn.krcom.tv/lib-main/libimagepipeline.so&quot; is 64-bit instead of 32-bit
@@ -97,105 +175,161 @@ at com.facebook.soloader.SoLoader.initSoSources(SoLoader.java)
 https://developer.android.com/ndk/guides/abis<br>
 https://blog.csdn.net/u013531824/article/details/53931307<br>
 https://www.jianshu.com/p/ad95c885c2f8</p>
-</div>
-                                    <div class="mdui-divider mdui-m-b-2"></div>
-                                    <div class="mdui-row-xs-2 post-fenye">
-                                       
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi/">EventBus源码分析</a></div></div>
-                                        
 
-                                        
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题/">问题日志-低版本Didn&#39;t find class &#34;~FileProvider&#34;</a></div> </div>
-                                       
-                                      </div>
-                                   
-                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-                                    
-                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
- <div class="comment"></div>
+                          </div>
+                        </div>
+                        <div class="layout-post-social">
+                          <div class="item reader">
+                            <div id="/post/wen-ti-ri-zhi-fresco-ku-de-libimagepipelineso-wen-ti/" class="leancloud-visitors view"
+                              data-flag-title="问题日志-Fresco库的libimagepipeline.so问题">
+                              <span class="post-meta-item-text">阅读 </span>
+                              <span class="leancloud-visitors-count"></span>
+                            </div>
+                          </div>
+                        </div>
 
-<script>
-      new Valine({
-            el: '.comment',
+                        <div class="layout-post-navigation">
+                          <div class="navigation-list">
+                            
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-8 col-md-9">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi/" class="title">
+                                      <h4>EventBus源码分析</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner d-none d-sm-block">
+                                    <div class="abstract">
+                                      <p>EventBus is an open-source library for Android and Java using the publisher/subscriber pattern for loose coupling. EventBus enables central communication to decoupled classes with just a few lines of code – simplifying the code, removing dependencies, and speeding up app development.</p>
 
-            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>上一篇</span></div>
+                                  <div class="item">2019-07-21</div>
+                                </div>
+                              </div>
+                              <div class="card-thumb col-4 col-md-3">
+                                <div class="thumb">
+                                  <a href="http://xuanguofeng.com/post/eventbus-yuan-ma-fen-xi/"
+                                    style="background-image: url('http://xuanguofeng.com/post-images/eventbus-yuan-ma-fen-xi.jpg');"></a>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/【问题日志】低版本dex拆分问题/" class="title">
+                                      <h4>问题日志-低版本Didn&#39;t find class &#34;~FileProvider&#34;</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p>由于在低版本的系统中，会提示Didn't find class &quot;android.support.v4.content.FileProvider&quot;问题，所以查找了下解决方案。</p>
 
-            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>下一篇</span></div>
+                                  <div class="item">2019-06-20</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            
+                          </div>
+                        </div>
 
-            placeholder: '一起交流下吧！',
-            
-            path: window.location.pathname,
-            pageSize: 30,
-            avatar:'mm', 
-       })
-    </script> 
-<script>
-    if(window.location.hash){
-        var checkExist = setInterval(function() {
-           if ($(window.location.hash).length) {
-              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
-              clearInterval(checkExist);
-           }
-        }, 100);
-    }
-</script>
-                                </article>
+                        <div class="layout-comments"></div>
+                        
+                      </div>
+                    </div>
 
-                                    
+                    <div class="col-12 col-lg-2 d-none d-lg-block">
+                      <div class="layout-post-sidebar">
+                        <div class="layout-sidebar-item">
+                          <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0">问题描述</a></li>
+<li><a href="#%E5%8E%9F%E5%9B%A0%E4%B8%8E%E8%A7%A3%E5%86%B3">原因与解决</a></li>
+</ul>
+</li>
+</ul>
+
                         </div>
                       </div>
-    
-                
-
-              </div>
-                    <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                    </div>
                   </div>
-                  
-              </footer>
-    </body>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-totop d-none"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+
+    	<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+
+  </div>
+</body>
+
 </html>

@@ -1,79 +1,157 @@
 <!DOCTYPE html>
-<html>
-        <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>RxJava简单使用 | 开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+  <meta charset="UTF-8" />
+<title>RxJava简单使用 - 开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-8 mdui-col-offset-md-2 ">
-                                <article class="mdui-p-a-2 post animated fadeIn" style="animation-delay: 0.8s;animation-duration: 2s">
-                                    <div class="post-title  mdui-m-b-1">RxJava简单使用</div>
-                                    <div class="mdui-typo-body-2 mdui-m-b-2" datetime="2017-10-23 17:39:19">2017-10-23 / 9 min read</div>
-                                    <div class="mdui-m-b-2 mdui-typo post-neirong"><p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
+<body>
+  <div class="layout theme-dark">
+    <div class="layout-header">
+
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+    <div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+    <div class="layout-content">
+      <div class="layout-content-main">
+        <div class="container">
+          <div class="row justify-content-lg-center">
+            <div class="col-12 col-lg-9">
+              <div class="layout-post">
+                <div class="layout-post-body">
+                  <div class="row">
+
+                    <div class="col-12 col-lg-10">
+                      <div class="layout-post-main m-right m-md-right">
+                        <div class="layout-post-header">
+                          <h1 class="layout-post-title">RxJava简单使用</h1>
+                          <div class="layout-post-meta">
+                            <div class="item">
+                               <a href="http://xuanguofeng.com/tag/kai-yuan-kuang-jia/" class="post--keyword"
+                                data-title="开源框架" data-type="post_tag" data-term-id="39">开源框架</a>
+                              
+                            </div>
+                            <div class="item">
+                              <span>2017-10-23</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="layout-post-content">
+                          <div class="layout-post-item">
+                            
+                            <p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
 其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
 <!-- more -->
 <h2 id="rxjava最直观的使用总结">RxJava最直观的使用总结</h2>
@@ -288,105 +366,173 @@
 <li>Schedulers.newThread()：这个当然是代表创建一个新的常规线程</li>
 <li>AndroidSchedulers.mainThread()：这个代表Android中的UI线程，可以在这里更新页面操作</li>
 </ul>
-</div>
-                                    <div class="mdui-divider mdui-m-b-2"></div>
-                                    <div class="mdui-row-xs-2 post-fenye">
-                                       
-                                        <div class="mdui-col"> <div class="mdui-text-left"><a href="http://xuanguofeng.com/post/Android优化-内存优化/">Android优化-内存优化</a></div></div>
-                                        
 
-                                        
-                                        <div class="mdui-col"><div class="mdui-text-right "><a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）/">Android动画的分类与使用总结（参照官方api）</a></div> </div>
-                                       
-                                      </div>
-                                   
-                                    <div class="mdui-divider mdui-m-t-2 mdui-m-b-2"></div>
-                                    
-                                     <script src="http://xuanguofeng.com/media/scripts/Valine.min.js"></script>
- <div class="comment"></div>
+                          </div>
+                        </div>
+                        <div class="layout-post-social">
+                          <div class="item reader">
+                            <div id="/post/RxJava简单使用/" class="leancloud-visitors view"
+                              data-flag-title="RxJava简单使用">
+                              <span class="post-meta-item-text">阅读 </span>
+                              <span class="leancloud-visitors-count"></span>
+                            </div>
+                          </div>
+                        </div>
 
-<script>
-      new Valine({
-            el: '.comment',
+                        <div class="layout-post-navigation">
+                          <div class="navigation-list">
+                            
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Android优化-内存优化/" class="title">
+                                      <h4>Android优化-内存优化</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
 
-            app_id: '3VXd53AGbTHtzkEWuKpetFpd-gzGzoHsz',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>上一篇</span></div>
+                                  <div class="item">2017-12-06</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            <div class="post-card row">
+                              
+                              <div class="card-content col-12">
+                                <div class="card-body">
+                                  <div class="header">
+                                    <a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）/" class="title">
+                                      <h4>Android动画的分类与使用总结（参照官方api）</h4>
+                                    </a>
+                                  </div>
+                                  <div class="inner">
+                                    <div class="abstract">
+                                      <p><strong>为什么使用动画</strong>自从Android5.0以后，Google宣布了Material Design的设计语言，也增加了很多动画效果，使得app看起来更自然美观，交互体验更好。在我们的app里如果适当的使用动画的话，会给app带来更棒的交互体验，当然如果动画用的不合适或者滥用的话，也会带来更糟的体验。所以我们在了解动画机制的情况下适当的使用动画才是锦上添花。</p>
+<p>这里提供Google对Material Design对介绍地址：https://material.io/guidelines/motion/material-motion.html#</p>
 
-            app_key: 'JJ2PJkpVDHiAvQb3fez6sgRN',
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-footer">
+                                  <div class="item"><span>下一篇</span></div>
+                                  <div class="item">2017-06-15</div>
+                                </div>
+                              </div>
+                              
+                            </div>
 
+                            
+                          </div>
+                        </div>
 
-            placeholder: '一起交流下吧！',
-            
-            path: window.location.pathname,
-            pageSize: 30,
-            avatar:'mm', 
-       })
-    </script> 
-<script>
-    if(window.location.hash){
-        var checkExist = setInterval(function() {
-           if ($(window.location.hash).length) {
-              $('html, body').animate({scrollTop: $(window.location.hash).offset().top-90}, 1000);
-              clearInterval(checkExist);
-           }
-        }, 100);
-    }
-</script>
-                                </article>
+                        <div class="layout-comments"></div>
+                        
+                      </div>
+                    </div>
 
-                                    
+                    <div class="col-12 col-lg-2 d-none d-lg-block">
+                      <div class="layout-post-sidebar">
+                        <div class="layout-sidebar-item">
+                          <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#rxjava%E6%9C%80%E7%9B%B4%E8%A7%82%E7%9A%84%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93">RxJava最直观的使用总结</a>
+<ul>
+<li><a href="#%E4%B8%80-rxjava%E6%98%AF%E4%BB%80%E4%B9%88">一、RxJava是什么？</a></li>
+<li><a href="#%E4%BA%8C-rxjava%E7%9B%B8%E5%85%B3%E8%B5%84%E6%96%99">二、RxJava相关资料</a>
+<ul>
+<li><a href="#github%E5%9C%B0%E5%9D%80">Github地址</a></li>
+<li><a href="#%E6%96%87%E6%A1%A3%E5%9C%B0%E5%9D%80">文档地址</a></li>
+<li><a href="#%E4%BC%98%E7%A7%80%E5%8D%9A%E6%96%87">优秀博文</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F">三、观察者模式</a></li>
+<li><a href="#%E5%9B%9B-rxjava%E4%BD%BF%E7%94%A8">四、RxJava使用</a>
+<ul>
+<li><a href="#%E4%B8%80-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8">一、基本使用</a></li>
+<li><a href="#%E4%BA%8C-%E5%BC%82%E6%AD%A5">二、异步</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
                         </div>
                       </div>
-    
-                
-
-              </div>
-                    <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
+                    </div>
                   </div>
-                  
-              </footer>
-    </body>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-totop d-none"><i class="fa fa-angle-up" aria-hidden="true"></i></div>
+
+    	<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+
+  </div>
+</body>
+
 </html>

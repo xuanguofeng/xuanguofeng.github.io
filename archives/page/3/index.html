@@ -1,245 +1,359 @@
 <!DOCTYPE html>
-<html>
-            <head>
-        <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no" />
-        <meta charset="utf-8">
-        <title>开飞机的老舒克</title>
-        <link rel="stylesheet" href="http://xuanguofeng.com/styles/main.css">
-        <link rel="stylesheet" href="https://at.alicdn.com/t/font_1306644_jwtuc2zzbrd.css">
-        <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-        <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
-         <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
-         <script >hljs.initHighlightingOnLoad();</script>
+<html lang="zh-CN">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-143754165-1"></script>
+<head>
+	<meta charset="UTF-8" />
+<title>开飞机的老舒克</title>
+<meta name="description" content="Follow your heart">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link type='text/css' rel='stylesheet' href='http://xuanguofeng.com/styles/main.css' media='screen' />
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css">
+<link type="text/css" rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/jquery.js'></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-143754165-1');
+    hljs.initHighlightingOnLoad();
 </script>
+</head>
 
-    </head>
-    <body>
-              <header class="header mdui-m-b-5">      
-            <div class="container  ">
-                <div class="index-title animated fadeInDown mdui-text-center mdui-text-color-white mdui-m-b-2" style="animation-delay: 0.2s"><a href="http://xuanguofeng.com">开飞机的老舒克</a></div>
-                <div class="mdui-text-color-white animated fadeInDown mdui-text-center  mdui-m-b-3" style="animation-delay: 0.4s">Follow your heart</div>
-           
-            <nav id="nav" class="mdui-text-center animated fadeInDown" style="animation-delay: 0.6s">
-                   
-                            <li><a href="/">首页</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/archives">目录</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/tags">标签</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="http://xuanguofeng.com/post/book/">读书</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                            <li><a href="/post/about">关于</a>
-                                <span class="nav-style top"></span>
-                                <span class="nav-style bottom"></span>
-                                <span class="nav-style left"></span>
-                                <span class="nav-style right"></span>
-                                </li>
-                    
-                  </nav>
-                </div>
-        </header>
-        <div class="mdui-container ">
-                <div class="mdui-row">
-                        <div class="mdui-col-md-10 mdui-col-offset-md-1 mdui-m-t-1">
-                            <div class="mdui-row-md-2 mdui-row-xs-1">
-                                
-                                
+<body>
+	<div class="layout theme-dark">
+		<div class="layout-header">
 
-                    
-                              
-                               
-                                <article class="animated fadeIn" style="animation-delay:1s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-15</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/OkHttp_No.1/">Android热门开源框架-Okhttp源码探究一</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>OkHttp是目前很流行的网络请求框架。源码也设计很优秀的思想。有必要去探究一下源码。</p>
-<p>由于篇幅较长，分为五篇文章。本篇文章将讨论OkHttp的执行流程分析</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.3s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-13</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/Android优化-绘制优化/">Android优化-绘制优化</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p><strong>Android系统显示原理</strong><br>
-Android应用程序把经过测量，绘制，布局的surface缓存数据，通过SufraceFilnger把数据渲染到显示屏幕上通过Android的刷新机制来刷新数据。也就是说应用层负责绘制，系统层负责渲染，通过进程间通信把应用层需要绘制的数据传递到系统层服务，系统层服务他通过刷新机制把数据更新到屏幕。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.6s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-13</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/重温java基础-反射机制/">重温java基础-反射机制</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p><strong>反射是什么？</strong><br>
-在运行状态中，获取一个类的所有属性和方法。这种动态获取信息以及调用对象的方法的功能。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:1.9s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-12-06</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/Android优化-内存优化/">Android优化-内存优化</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>Java对象的生命周期经历7个阶段，分别是创建阶段、应用阶段、不可见阶段、不可达阶段、收集阶段、终结阶段、对象控件重新分配阶段。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.2s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-10-23</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/RxJava简单使用/">RxJava简单使用</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库，是通过使用观察者模式。<br>
-其实个人认为主要看其中的几个关键词就可以了有：异步，事件，观察者模式，看到这几个关键词其实大概对这个东西也就有了基本的印象。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.5s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-06-15</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）/">Android动画的分类与使用总结（参照官方api）</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p><strong>为什么使用动画</strong>自从Android5.0以后，Google宣布了Material Design的设计语言，也增加了很多动画效果，使得app看起来更自然美观，交互体验更好。在我们的app里如果适当的使用动画的话，会给app带来更棒的交互体验，当然如果动画用的不合适或者滥用的话，也会带来更糟的体验。所以我们在了解动画机制的情况下适当的使用动画才是锦上添花。</p>
-<p>这里提供Google对Material Design对介绍地址：https://material.io/guidelines/motion/material-motion.html#</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:2.8s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-05-24</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结/">Java常用排序算法冒泡排序与选择排序总结</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p>排序算法有好多种，也在特殊的场景中，我们经常需要对我们的数据进行排序，这里对经典的排序做一个记录整理。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                               
-                                <article class="animated fadeIn" style="animation-delay:3.1s;animation-duration: 2s">
-                                        <div class="mdui-col mdui-p-a-1">
-                                          <div class="archives mdui-p-a-3">
-                                            <div class="mdui-typo-body-2 mdui-m-b-1">2017-04-21</div>
-                                            <div class="mdui-m-b-2 archives-title"><a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用 (xuanguoengdeMBP 的冲突副本 2020-03-17)/">Material Design风格输入样式TextInputLayout使用</a></div>
-                                            <div class="mdui-typo-subheading mdui-m-b-1 mdui-text-truncate"><p><strong>TextInputLayout</strong>是Google基于Material Design风格出现的一个文本输入布局。主要特点在样式上，官方第一句介绍是当输入的文本显示或者隐藏的时候，EditText显示浮动标签的布局。</p>
-</div>
-                                          </div>
-                                </article>
-                                
-                                
-                                
-                              </div>
-                                                            <nav class="mdui-m-t-5">
-                                
-                                <div class="index-yema mdui-float-left"><a href="http://xuanguofeng.com/archives/page/2/">上一页</a></div>
-                                 
-                                
-                                <div class="index-yema mdui-float-right"><a href="http://xuanguofeng.com/archives/page/4/">下一页</a></div>
-                                 
-                                </nav>     
-                                    
-                        </div>
-                      </div>
-    
-                
+	<div class="layout-header-main">
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
 
-              </div>
-                     <footer class="footer mdui-m-t-5 mdui-text-center">
-               <nav class="social-links">
-                      <ul>
-                      
-                      	
-                        <li class="social-link"><a href="http://xuanguofeng.com/atom.xml" target="_blank"><i class="iconfont icon-rss"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://twitter.com/xuanguofeng" target="_blank"><i class="iconfont icon-twitter"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://github.com/xuanguofeng" target="_blank"><i class="iconfont icon-github"></i></a></li>
-                          
-                           
-                      	
-                        <li class="social-link"><a href="https://www.zhihu.com/people/xuan-guo-feng-47/activities" target="_blank"><i class="iconfont icon-zhihu"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://www.douban.com/people/xuanguofeng/" target="_blank"><i class="iconfont icon-douban"></i></a></li>
-                          
-                           
-                      
-                           
-                      
-                           
-                      	
-                        <li class="social-link"><a href="https://weibo.com/u/5350699930" target="_blank"><i class="iconfont icon-weibo"></i></a></li>
-                          
-                           
-                      
-                           
-                      </ul>
-                    </nav>
-                    <div class="copyright">
-                      <p>©开飞机的老舒克  2019 <br/> Theme <a href="https://github.com/shanbufun/gridea-theme-song" target="_blank"  title="宋"  >Song</a> by <a href="https://shanbu.fun/" target="_blank"  title="山卜方" >shanbufun</a> </p>
-                  </div>
-                  
-              </footer>
-    </body>
+					<div class="navbar">
+
+						<div class="logo">
+							<a href="http://xuanguofeng.com">
+								<img class="logo"
+									src="http://xuanguofeng.com/media/images/site_avatar.png?v=1594180321706"
+									alt="">
+							</a>
+						</div>
+
+						<div class="menu d-md-inline-block d-none">
+							<ul class="layout-navigation-list">
+								
+								<li class="layout-navigation-item"><a title="首页"
+										href="/">首页</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="目录"
+										href="/archives">目录</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="标签"
+										href="/tags">标签</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="读书"
+										href="http://xuanguofeng.com/post/book/">读书</a>
+								</li>
+								
+								<li class="layout-navigation-item"><a title="关于"
+										href="/post/about">关于</a>
+								</li>
+								
+							</ul>
+						</div>
+
+						<div class="item d-md-inline-block d-none">
+							<div class="search-icon">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</div>
+						</div>
+
+
+
+						<div class="d-md-inline-block d-none">
+							<div class="search-lightbox">
+								<div class="search-body">
+
+									<form id="gridea-search-form" data-update="1594180321706" action="/search/" class="search-form">
+										<input type="text" name="q" id="s" value="" class="search-field" placeholder="请输入搜索关键词" aria-label="请输入搜索关键词" required="">
+										<button type="submit" class="submit" aria-label="Submit">
+											<i class="fa fa-search" aria-hidden="true"></i>
+										</button>
+									</form>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="nav d-md-none d-inline-block">
+							<div class="trigger">
+								<i class="fa fa-bars layout-btn-toggle" aria-hidden="true"></i>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>
+		<div class="layout-collapse d-md-none">
+	<div class="layout-collapse-main">
+		<ul class="layout-collapse-list">
+			
+			<li class="layout-collapse-item"><a title="首页" href="/">首页</a></li>
+			
+			<li class="layout-collapse-item"><a title="目录" href="/archives">目录</a></li>
+			
+			<li class="layout-collapse-item"><a title="标签" href="/tags">标签</a></li>
+			
+			<li class="layout-collapse-item"><a title="读书" href="http://xuanguofeng.com/post/book/">读书</a></li>
+			
+			<li class="layout-collapse-item"><a title="关于" href="/post/about">关于</a></li>
+			
+
+		</ul>
+	</div>
+</div>
+
+		<div class="layout-content">
+			<div class="layout-content-main">
+				<div class="container">
+					<div class="row justify-content-lg-center">
+						<div class="col-12 col-lg-9">
+							<div class="layout-archive">
+								
+								
+
+								<div class="card">
+									<div class="card-header">
+										<div class="header-content">
+											<div class="title">2017</div>
+										</div>
+
+									</div>
+									<div class="card-body">
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/OkHttp_No.1/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/OkHttp_No.1/">Android热门开源框架-Okhttp源码探究一</a>
+													<div class="time">2017-12-15</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/Android优化-绘制优化/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/Android优化-绘制优化/">Android优化-绘制优化</a>
+													<div class="time">2017-12-13</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/重温java基础-反射机制/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/重温java基础-反射机制/">重温java基础-反射机制</a>
+													<div class="time">2017-12-13</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/Android优化-内存优化/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/Android优化-内存优化/">Android优化-内存优化</a>
+													<div class="time">2017-12-06</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/RxJava简单使用/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/RxJava简单使用/">RxJava简单使用</a>
+													<div class="time">2017-10-23</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/Android动画的分类与使用总结（参照官方api）/">Android动画的分类与使用总结（参照官方api）</a>
+													<div class="time">2017-06-15</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/Java常用排序算法冒泡排序与选择排序总结/">Java常用排序算法冒泡排序与选择排序总结</a>
+													<div class="time">2017-05-24</div>
+												</div>
+											</div>
+										</div>
+										
+										
+										
+										<div class="card-item">
+											<div class="thumb">
+												
+												<a href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用 (xuanguoengdeMBP 的冲突副本 2020-03-17)/"
+													style="background-image: url('http://xuanguofeng.com/images/avatar.png')"></a>
+												
+											</div>
+											<div class="list-content">
+												<div class="list-body">
+													<a class="title" href="http://xuanguofeng.com/post/Design风格文本输入样式TextInputLayout的使用 (xuanguoengdeMBP 的冲突副本 2020-03-17)/">Material Design风格输入样式TextInputLayout使用</a>
+													<div class="time">2017-04-21</div>
+												</div>
+											</div>
+										</div>
+										
+										
+									</div>
+								</div>
+								
+							</div>
+
+							<div class="layout-paginator">
+								<div class="paginator row">
+									<div class="col-6">
+										
+										<a href="http://xuanguofeng.com/archives/page/2/" class="btn btn-paginator width-100">上一页</a>
+										
+									</div>
+									<div class="col-6">
+										
+										<a href="http://xuanguofeng.com/archives/page/4/" class="btn btn-paginator width-100">下一页</a>
+										
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+			<div class="layout-footer">
+
+		<div class="container">
+			<div class="row justify-content-lg-center">
+				<div class="col-12 col-lg-9">
+					<div class="footer">
+						<div class="row">
+							<div class="col-12 col-md-9">
+								<div class="footer-copy">
+									
+									©开飞机的老舒克  2019
+									<div class="footer-icp d-none d-sm-inline-block">
+										<span class="px-2">⋅</span>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 d-none d-md-block">
+								<div class="footer-links">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src='http://xuanguofeng.com/media/scripts/main.js'></script>
+	
+	</div>
+</body>
+
 </html>
